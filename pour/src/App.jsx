@@ -1,7 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY)
+  ? createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
+  : null;
 
 /* ================================================================
-   POUR — a liquid recommendation index
+   EKQUARTER — a liquid recommendation index
    Single-file React app · drop in as App.jsx (Vite react template)
 ================================================================ */
 
@@ -71,8 +76,6 @@ const DRINKS = [
     build: ["Warm the milk gently", "Whisk in the spices", "Froth, pour, dust"] },
 ];
 
-const BY_ID = Object.fromEntries(DRINKS.map(d => [d.id, d]));
-
 const HERO_WORDS = [
   { word: "NEGRONI", id: "negroni" },
   { word: "PALOMA", id: "paloma" },
@@ -85,15 +88,39 @@ const TICKER = ["Negroni", "Paloma", "Old Fashioned", "Garden Gimlet", "Aperitiv
 
 /* --------------------------- HELPERS ---------------------------- */
 
-const score = (d, p) => {
-  let s = 2;
-  s += d.moods.includes(p.mood) ? 40 : 8;
-  const sd = Math.abs(d.str - p.strength);
-  s += sd === 0 ? 24 : sd === 1 ? 12 : 0;
-  s += p.temp === "any" ? 12 : d.temp === p.temp ? 18 : 0;
-  s += Math.round(16 * (1 - Math.abs(d.sweet - p.sweet) / 10));
-  return Math.min(100, s);
+const AXES = {
+  bitter: { bitterness: 1, herbal: .4, complexity: .3 }, citrus: { fruitiness: 1, carbonation: .5, sourness: .4 },
+  herbal: { herbal: 1, spice: .4, complexity: .3 }, smoky: { smokiness: 1, bitterness: .4, spice: .3 },
+  sweet: { creaminess: .7, fruitiness: .5, spice: .2 }, creamy: { creaminess: 1, spice: .3, herbal: .2 },
 };
+const scoreV2 = (d, p) => {
+  const mood = (d.moods || []).includes(p.mood) ? 30 : 8;
+  const delta = Math.abs((d.str ?? 0) - p.strength);
+  const strength = delta === 0 ? 20 : delta === 1 ? 10 : 0;
+  const temp = p.temp === "any" || d.temp === p.temp ? 15 : 0;
+  const sweet = Math.round(15 * (1 - Math.abs((d.sweet ?? 0) - p.sweet) / 10));
+  const weights = AXES[p.mood] || {};
+  const values = Object.keys(weights).map(k => d[k]);
+  const affinity = !values.length || values.some(v => v === null || v === undefined)
+    ? 10 : Object.entries(weights).reduce((sum, [k, w]) => sum + w * d[k], 0) / Object.values(weights).reduce((a, b) => a + b, 0) * 2;
+  return { match: Math.round(mood + strength + temp + sweet + affinity), components: { mood, strength, temp, sweet, affinity } };
+};
+const rankDrinks = (drinks, p) => {
+  const gated = drinks.filter(d => p.pour === "zero-proof" ? d.abv <= 0 : p.pour === "alcohol" ? d.abv > 0 : true);
+  const pool = gated.length ? gated : drinks;
+  const ranked = pool.map((d, index) => ({ ...d, ...scoreV2(d, p), index })).sort((a, b) => b.match - a.match || a.index - b.index);
+  if (ranked.length < 2) return ranked;
+  const top = ranked[0];
+  ranked.slice(1).sort((a, b) => {
+    const ad = a.base_spirit !== top.base_spirit && a.cat !== top.cat ? 1 : 0;
+    const bd = b.base_spirit !== top.base_spirit && b.cat !== top.cat ? 1 : 0;
+    return bd - ad;
+  }).forEach((d, i) => { ranked[i + 1] = d; });
+  return ranked;
+};
+const tierFor = n => n >= 85 ? "Top match" : n >= 70 ? "Strong" : "Exploratory";
+const axisLabel = { bitterness: "bitter", fruitiness: "fruit", carbonation: "bubbles", sourness: "sour", herbal: "herbal", spice: "spice", smokiness: "smoke", creaminess: "cream", complexity: "complex" };
+const randomAnswers = () => ({ pour: ["alcohol", "zero-proof", "either"][Math.floor(Math.random() * 3)], mood: MOODS[Math.floor(Math.random() * MOODS.length)].tag, strength: 1 + Math.floor(Math.random() * 3), temp: ["iced", "hot", "any"][Math.floor(Math.random() * 3)], sweet: Math.floor(Math.random() * 11) });
 
 const sweetWord = v => (v <= 2 ? "Bone dry" : v <= 4 ? "Dry-ish" : v <= 6 ? "Balanced" : v <= 8 ? "Sweet" : "Dessert");
 const strengthWord = v => ["", "Session-strength", "Standard proof", "Properly stiff"][v];
@@ -119,7 +146,7 @@ function useScramble(words, reduced) {
   const [text, setText] = useState(words[0]);
   const [idx, setIdx] = useState(0);
   useEffect(() => {
-    if (reduced) { setText(words[idx]); const t = setInterval(() => setIdx(i => (i + 1) % words.length), 2600); return () => clearInterval(t); }
+    if (reduced) { const t = setInterval(() => setIdx(i => (i + 1) % words.length), 2600); return () => clearInterval(t); }
     const CH = "AEKMNORSTXZ#%&*+";
     const target = words[idx]; let frame = 0, t1, t2;
     const step = () => {
@@ -135,14 +162,14 @@ function useScramble(words, reduced) {
     step();
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [idx]);
-  return text;
+  return reduced ? words[idx] : text;
 }
 
 function useCountUp(target, reduced) {
   const [v, setV] = useState(target);
   const prev = useRef(target);
   useEffect(() => {
-    if (reduced) { setV(target); prev.current = target; return; }
+    if (reduced) return;
     const from = prev.current, t0 = performance.now(), dur = 700;
     let raf;
     const tick = t => {
@@ -153,7 +180,7 @@ function useCountUp(target, reduced) {
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [target]);
-  return v;
+  return reduced ? target : v;
 }
 
 /* --------------------------- PIECES ----------------------------- */
@@ -227,11 +254,137 @@ function Marquee({ items, reverse = false }) {
   );
 }
 
+function SaveToggle({ drink, saved, onToggle }) {
+  return <button className={`save-toggle ${saved ? "saved" : ""}`} type="button" aria-pressed={saved}
+    aria-label={saved ? `${drink.name} saved — remove from shelf` : `Save ${drink.name} to your shelf`}
+    onClick={() => onToggle(drink)}><span className="row-cat">{saved ? "Saved ✳" : "Save to your shelf ✳"}</span></button>;
+}
+
+function AuthModal({ mode, onClose, onSuccess }) {
+  const [authStep, setAuthStep] = useState(1), [authEmail, setAuthEmail] = useState("");
+  const [code, setCode] = useState(""), [authBusy, setAuthBusy] = useState(false), [authError, setAuthError] = useState(""), [authNotice, setAuthNotice] = useState("");
+  const [cooldown, setCooldown] = useState(0);
+  const emailRef = useRef(null), codeRef = useRef(null), panelRef = useRef(null);
+  const title = mode === "save" ? "Sign in to keep this pour." : "Sign in, save your pours.";
+  useEffect(() => { const t = setTimeout(() => (authStep === 1 ? emailRef : codeRef).current?.focus(), 0); return () => clearTimeout(t); }, [authStep]);
+  useEffect(() => { if (!cooldown) return undefined; const t = setInterval(() => setCooldown(v => Math.max(0, v - 1)), 1000); return () => clearInterval(t); }, [cooldown]);
+  useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = "hidden"; return () => { document.body.style.overflow = previous; }; }, []);
+  useEffect(() => {
+    const key = e => {
+      if (e.key === "Escape") { e.preventDefault(); onClose(); return; }
+      if (e.key !== "Tab") return;
+      const items = [...panelRef.current.querySelectorAll("button:not([disabled]),input:not([disabled])")];
+      if (!items.length) return; const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", key); return () => document.removeEventListener("keydown", key);
+  }, [onClose]);
+  const send = async (resend = false) => {
+    if (!authEmail.trim() || authBusy || (resend && cooldown)) return;
+    setAuthBusy(true); setAuthError("");
+    const { error } = await supabase.auth.signInWithOtp({ email: authEmail.trim(), options: { shouldCreateUser: true } });
+    setAuthBusy(false);
+    if (error) setAuthError("Something went sideways — try again in a moment.");
+    else { setAuthStep(2); setCode(""); setCooldown(30); if (resend) setAuthNotice("Fresh code sent."); }
+  };
+  const verify = async value => {
+    if (value.length !== 6 || authBusy) return;
+    setAuthBusy(true); setAuthError("");
+    const { data, error } = await supabase.auth.verifyOtp({ email: authEmail.trim(), token: value, type: "email" });
+    setAuthBusy(false);
+    if (error || !data.session) { setAuthError("That code didn't take — request a fresh one."); setCode(""); setTimeout(() => codeRef.current?.focus(), 0); }
+    else onSuccess(data.session);
+  };
+  return <div className="auth-scrim"><div className="auth-panel" ref={panelRef} role="dialog" aria-modal="true" aria-labelledby="auth-title">
+    <button className="auth-close" type="button" aria-label="Close" onClick={onClose}>×</button>
+    <p className="eyebrow">The house list <span className="auth-star">✳</span></p><h2 id="auth-title" className="auth-title">{title}</h2>
+    {authStep === 1 ? <form onSubmit={e => { e.preventDefault(); send(); }}>
+      <label className="field-lab" htmlFor="auth-email">Email address</label>
+      <input ref={emailRef} id="auth-email" className="auth-input" type="email" autoComplete="email" inputMode="email" autoCapitalize="off" spellCheck="false" value={authEmail} onChange={e => setAuthEmail(e.target.value)} required />
+      <p className="auth-micro">No passwords here — we send a six-digit code instead.</p><button className="btn auth-submit" disabled={authBusy} type="submit">{authBusy ? "Sending…" : "Send the code →"}</button>
+    </form> : <div>
+      <p className="auth-sent">Six digits, sent to {authEmail.trim()}.</p>
+      <label className="sr-only" htmlFor="auth-code">Six digit code</label><input ref={codeRef} id="auth-code" className="auth-code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} value={code} onChange={e => { const v = e.target.value.replace(/\D/g, ""); setCode(v); if (v.length === 6) verify(v); }} />
+      <button className="btn auth-submit" disabled={code.length !== 6 || authBusy} onClick={() => verify(code)}>{authBusy ? "Checking…" : "Verify code →"}</button>
+      {cooldown ? <span className="auth-resend countdown" aria-live="polite">Fresh code in 0:{String(cooldown).padStart(2, "0")}</span> : <button className="next-ghost auth-resend" onClick={() => send(true)}>Send a fresh code</button>}
+      <button className="next-ghost auth-different" onClick={() => { setAuthStep(1); setCode(""); setAuthError(""); }}>← Different email</button>
+    </div>}
+    {authNotice && <p className="auth-notice" role="status">{authNotice}</p>}
+    {authError && <p className="ft-err auth-error" role="alert">{authError}</p>}
+  </div></div>;
+}
+
 /* ----------------------------- APP ------------------------------ */
 
 export default function App() {
   const reduced = useReduced();
+  const authEnabled = !!supabase;
+  const [session, setSession] = useState(null), [sessionLoading, setSessionLoading] = useState(authEnabled);
+  const sessionRef = useRef(null);
+  const [savedIds, setSavedIds] = useState(new Set()), [savedRows, setSavedRows] = useState([]);
+  const [authOpen, setAuthOpen] = useState(false), [authMode, setAuthMode] = useState("header"), pendingSave = useRef(null), invokingRef = useRef(null);
+  const [toast, setToast] = useState("");
+  const toastTimer = useRef(null);
+  const showToast = message => { setToast(message); clearTimeout(toastTimer.current); toastTimer.current = setTimeout(() => setToast(""), 4000); };
+  const closeAuth = (clearPending = true) => { if (clearPending) pendingSave.current = null; setAuthOpen(false); setTimeout(() => invokingRef.current?.focus(), 0); };
+  const openAuth = (mode = "header", trigger = null) => { setAuthMode(mode); invokingRef.current = trigger || document.activeElement; setAuthOpen(true); };
+  useEffect(() => {
+    if (!supabase) return undefined;
+    let mounted = true;
+    supabase.auth.getSession().then(({ data }) => { if (mounted) { sessionRef.current = data.session; setSession(data.session); setSessionLoading(false); } });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, next) => { sessionRef.current = next; setSession(next); setSessionLoading(false); if (!next) { setSavedIds(new Set()); setSavedRows([]); } });
+    return () => { mounted = false; listener.subscription.unsubscribe(); };
+  }, []);
+  useEffect(() => {
+    if (!supabase || !session) return undefined;
+    let mounted = true;
+    supabase.from("saved_drinks").select("drink_id, saved_at").eq("user_id", session.user.id).order("saved_at", { ascending: false })
+      .then(({ data }) => { if (mounted) { setSavedRows(data || []); setSavedIds(new Set((data || []).map(row => row.drink_id))); } }).catch(() => {});
+    return () => { mounted = false; };
+  }, [session]);
+  const consumePendingSave = async currentSession => {
+    const id = pendingSave.current; pendingSave.current = null;
+    if (id) await saveDrink(BY_ID[id], currentSession, true);
+  };
   const fine = typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches;
+  const [drinks, setDrinks] = useState(DRINKS);
+
+  useEffect(() => {
+    if (!supabase) return;
+    let mounted = true;
+    supabase
+      .from("drinks")
+       .select("id,name,category,abv,serving_temp,mood_tags,strength,sweetness,prep_time_min,garnish,featured,ingredients,preparation,description,image_url,base_spirit,sourness,bitterness,smokiness,fruitiness,herbal,creaminess,spice,carbonation,complexity")
+      .eq("status", "published")
+      .then(({ data, error }) => {
+        if (mounted && !error && data?.length) {
+          setDrinks(data.map(row => ({
+            id: row.id,
+            name: row.name,
+            cat: row.category,
+            abv: Number(row.abv),
+            temp: row.serving_temp,
+             moods: row.mood_tags || [],
+            str: row.strength,
+            sweet: row.sweetness,
+            time: row.prep_time_min ? `${row.prep_time_min} min` : "3 min",
+            garnish: row.garnish,
+            featured: row.featured,
+            desc: row.description,
+             ing: row.ingredients || [],
+             build: row.preparation || [],
+             seed: row.image_url?.match(/seed\/([^/]+)\//)?.[1] || row.id,
+             base_spirit: row.base_spirit, sourness: row.sourness, bitterness: row.bitterness, smokiness: row.smokiness,
+             fruitiness: row.fruitiness, herbal: row.herbal, creaminess: row.creaminess, spice: row.spice, carbonation: row.carbonation, complexity: row.complexity,
+          })));
+        }
+      })
+      .catch(() => {});
+    return () => { mounted = false; };
+  }, []);
+
+  const BY_ID = Object.fromEntries(drinks.map(d => [d.id, d]));
 
   /* header clock */
   const [now, setNow] = useState(() => new Date());
@@ -245,16 +398,36 @@ export default function App() {
   const heroDrink = BY_ID[HERO_WORDS.find(w => w.word === word)?.id || "negroni"] || BY_ID.negroni;
 
   /* recommendation engine */
-  const [prefs, setPrefs] = useState({ mood: "bitter", strength: 2, temp: "iced", sweet: 4 });
-  const ranked = useMemo(() => [...DRINKS].map(d => ({ ...d, match: score(d, prefs) })).sort((a, b) => b.match - a.match), [prefs]);
-  const best = ranked[0], runners = ranked.slice(1, 4);
-  const pct = useCountUp(best.match, reduced);
-  const surprise = () => setPrefs({ mood: MOODS[Math.floor(Math.random() * MOODS.length)].tag, strength: 1 + Math.floor(Math.random() * 3), temp: ["iced", "hot", "any"][Math.floor(Math.random() * 3)], sweet: Math.floor(Math.random() * 11) });
+  const [answers, setAnswers] = useState({ pour: "either", mood: null, strength: null, temp: null, sweet: 5 });
+  const [step, setStep] = useState(1), [pouring, setPouring] = useState(false), [revealed, setRevealed] = useState(false);
+  const [result, setResult] = useState(null), legendRef = useRef(null), timerRef = useRef(null), resultNameRef = useRef(null), firstFocus = useRef(true), focusTimer = useRef(null), scrollTimer = useRef(null);
+  const ranked = result?.ranked || [], best = result?.best, runners = ranked.slice(1, 4);
+  const pct = useCountUp(best?.match || 0, reduced);
+  const commitStep = n => { clearTimeout(timerRef.current); setStep(n); };
+  useEffect(() => { if (firstFocus.current) { firstFocus.current = false; return undefined; } if (pouring || revealed) return undefined; focusTimer.current = setTimeout(() => legendRef.current?.focus(), 0); return () => clearTimeout(focusTimer.current); }, [step, pouring, revealed]);
+  useEffect(() => { if (!revealed) return undefined; focusTimer.current = setTimeout(() => resultNameRef.current?.focus(), 0); return () => clearTimeout(focusTimer.current); }, [revealed]);
+  useEffect(() => { if (revealed && typeof window !== "undefined" && window.innerWidth <= 1000) { scrollTimer.current = setTimeout(() => document.querySelector(".result")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" }), 0); } return () => clearTimeout(scrollTimer.current); }, [revealed, reduced]);
+  const logReveal = (a, r, source) => {
+    if (!supabase || !r?.best) return;
+    let clientId;
+    try { clientId = localStorage.getItem("ekquarter_client_id"); if (!clientId) { clientId = crypto.randomUUID(); localStorage.setItem("ekquarter_client_id", clientId); } } catch (error) { console.warn("Could not identify match client", error); return; }
+     const user_id = sessionRef.current?.user?.id;
+     void supabase.from("quiz_submissions").insert({ client_id: clientId, ...(user_id ? { user_id } : {}), answers: { ...a, ...(source ? { source } : {}), quiz_version: 2 }, result_drink_id: r.best.id, result_scores: r.ranked.slice(0, 4).map(x => ({ id: x.id, match: x.match })) }).then(({ error }) => { if (error) console.warn("Could not log match", error); }).catch(error => console.warn("Could not log match", error));
+  };
+  const reveal = (a, source) => {
+    const rnk = rankDrinks(drinks, a), r = { ranked: rnk, best: rnk[0] };
+    setResult(r); setPouring(true); setRevealed(false);
+    if (reduced) { setPouring(false); setRevealed(true); logReveal(a, r, source); }
+    else timerRef.current = setTimeout(() => { setPouring(false); setRevealed(true); logReveal(a, r, source); }, 700);
+  };
+  const choose = (key, value) => { const next = { ...answers, [key]: value }; setAnswers(next); if (step < 5) timerRef.current = setTimeout(() => commitStep(step + 1), 300); };
+  const radioKey = (e, key, options) => { if (!["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(e.key)) return; e.preventDefault(); const i = options.indexOf(answers[key]), next = options[(i + (e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : options.length - 1)) % options.length]; choose(key, next); };
+  const surprise = () => { const a = randomAnswers(); setAnswers(a); reveal(a, "surprise"); };
 
   /* cellar */
   const [catFilter, setCatFilter] = useState("All");
   const [openId, setOpenId] = useState(null);
-  const cellarRows = DRINKS.filter(d => catFilter === "All" || d.cat === catFilter);
+  const cellarRows = drinks.filter(d => catFilter === "All" || d.cat === catFilter);
   const openInCellar = id => {
     setOpenId(id); setCatFilter("All");
     setTimeout(() => document.getElementById(`row-${id}`)?.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" }), 80);
@@ -263,22 +436,76 @@ export default function App() {
   /* footer */
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
 
-  const featured = DRINKS.filter(d => d.featured);
+  const featured = drinks.filter(d => d.featured);
+
+  const saveDrink = async (drink, currentSession = sessionRef.current, fromPending = false) => {
+    if (!drink || !currentSession) return;
+    const already = savedIds.has(drink.id);
+    setSavedIds(prev => { const next = new Set(prev); already ? next.delete(drink.id) : next.add(drink.id); return next; });
+    if (already) setSavedRows(prev => prev.filter(row => row.drink_id !== drink.id));
+    else setSavedRows(prev => [{ drink_id: drink.id, saved_at: new Date().toISOString() }, ...prev]);
+    const query = already
+      ? supabase.from("saved_drinks").delete().eq("user_id", currentSession.user.id).eq("drink_id", drink.id)
+      : supabase.from("saved_drinks").insert({ user_id: currentSession.user.id, drink_id: drink.id });
+    const { error } = await query;
+    if (error) {
+      setSavedIds(prev => { const next = new Set(prev); already ? next.add(drink.id) : next.delete(drink.id); return next; });
+      if (already) setSavedRows(prev => [...prev, { drink_id: drink.id, saved_at: new Date().toISOString() }]);
+      else setSavedRows(prev => prev.filter(row => row.drink_id !== drink.id));
+      showToast("Something went sideways — try again in a moment.");
+    } else if (fromPending) showToast(`✳ ${drink.name} — on your shelf.`);
+    else showToast(already ? `✳ ${drink.name} returned to the cellar.` : `✳ ${drink.name} — on your shelf.`);
+  };
+  const handleSave = drink => {
+    if (!authEnabled) return;
+    if (!session) { pendingSave.current = drink.id; openAuth("save"); return; }
+    void saveDrink(drink);
+  };
+  const handleAuthSuccess = async next => {
+    sessionRef.current = next; setSession(next); closeAuth(false); showToast(`✳ Signed in as ${next.user.email}.`);
+    await consumePendingSave(next);
+  };
+  const signOut = async () => { await supabase.auth.signOut(); showToast("✳ Signed out. The shelf keeps your seat."); };
+
+  const handleWaitlistSubmit = async e => {
+    e.preventDefault();
+    if (!email.trim() || busy) return;
+    setErr("");
+    setBusy(true);
+    if (!supabase) {
+      setErr("The list is offline right now — try again later.");
+      setBusy(false);
+      return;
+    }
+    try {
+      const { error } = await supabase.from("waitlist_subscribers").insert({ email: email.trim(), source: "footer" });
+      if (!error || error.code === "23505") setSent(true);
+      else setErr("Something went sideways — try again in a moment.");
+    } catch {
+      setErr("Something went sideways — try again in a moment.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <>
       <style>{CSS}</style>
       <Cursor enabled={fine && !reduced} />
       <div className="noise" aria-hidden="true" />
+      <div className="page-content" inert={authOpen}>
 
       {/* ---------- HEADER ---------- */}
       <header className="hd">
-        <a href="#top" className="logo">POUR<span>✳</span><small>vol. 04</small></a>
+        <a href="#top" className="logo">EkQuarter<span>✳</span></a>
         <nav className="hd-nav">
-          <a href="#match">The Match</a><a href="#cellar">Cellar</a><a href="#pours">House Pours</a><a href="#ritual">Ritual</a>
+           <a href="#match">The Match</a><a href="#cellar">Cellar</a><a href="#pours">House Pours</a><a href="#ritual">Ritual</a>{session && <a href="#shelf">Your Shelf</a>}
         </nav>
-        <div className="hd-clock">{clock}</div>
+        <div className="hd-clock"><span>{clock.split(" — ")[0]}</span><span className="clock-phase"> — {phase}</span></div>
+        {authEnabled && <div className="hd-account">{sessionLoading ? <span className="account-placeholder" /> : session ? <><span className="account-email">{session.user.email?.split("@")[0]}</span><button className="next-ghost" aria-label={`Sign out (${session.user.email})`} onClick={signOut}>Sign out</button></> : <button className="hd-signin" onClick={e => openAuth("header", e.currentTarget)}>Sign in</button>}</div>}
       </header>
 
       {/* ---------- HERO ---------- */}
@@ -292,7 +519,7 @@ export default function App() {
               <span className="ln"><span className="ln-i scramble" style={{ transitionDelay: "280ms" }}>{word}</span></span>
             </h1>
             <Reveal delay={400}>
-              <p className="hero-sub">Answer four small questions. Get one perfect pour. No lists, no noise — just the drink your evening has been describing.</p>
+               <p className="hero-sub">Answer five small questions. Get one perfect pour. No lists, no noise — just the drink your evening has been describing.</p>
               <a className="btn" href="#match">Find your pour <span className="arr">↓</span></a>
             </Reveal>
           </div>
@@ -322,66 +549,43 @@ export default function App() {
           <Reveal><p className="eyebrow">01 — The Match</p></Reveal>
           <MaskTitle lines={["Tell us your evening.", "We'll pour the answer."]} className="sec-title" />
 
-          <div className="match-grid">
-            {/* controls */}
-            <Reveal className="panel">
-              <div className="field">
-                <label className="field-lab">Mood</label>
-                <div className="chips">
-                  {MOODS.map(m => (
-                    <button key={m.tag} className={`chip ${prefs.mood === m.tag ? "on" : ""}`}
-                      aria-pressed={prefs.mood === m.tag}
-                      onClick={() => setPrefs(p => ({ ...p, mood: m.tag }))}>{m.label}</button>
-                  ))}
-                </div>
-              </div>
-              <div className="field">
-                <label className="field-lab">Strength</label>
-                <div className="seg">
-                  {STRENGTHS.map(s => (
-                    <button key={s.v} className={`seg-b ${prefs.strength === s.v ? "on" : ""}`}
-                      onClick={() => setPrefs(p => ({ ...p, strength: s.v }))}>{s.l}</button>
-                  ))}
-                </div>
-              </div>
-              <div className="field">
-                <label className="field-lab">Temperature</label>
-                <div className="seg">
-                  {TEMPS.map(t => (
-                    <button key={t.v} className={`seg-b ${prefs.temp === t.v ? "on" : ""}`}
-                      onClick={() => setPrefs(p => ({ ...p, temp: t.v }))}>{t.l}</button>
-                  ))}
-                </div>
-              </div>
-              <div className="field">
-                <label className="field-lab">Sweetness — <strong>{sweetWord(prefs.sweet)}</strong></label>
-                <input type="range" min="0" max="10" value={prefs.sweet} aria-label="Sweetness"
-                  onChange={e => setPrefs(p => ({ ...p, sweet: +e.target.value }))} />
-                <div className="range-ends"><span>bone dry</span><span>dessert</span></div>
-              </div>
-              <button className="btn ghost" onClick={surprise}>Surprise me <span className="arr">↻</span></button>
-            </Reveal>
-
+           <div className="match-grid">
+             {!revealed && !pouring && <Reveal className="panel quiz-card">
+               <div className="quiz-progress"><button className="quiz-back" onClick={() => commitStep(step - 1)} disabled={step === 1}>← Back</button><div className="progress-line" role="progressbar" aria-valuenow={step} aria-valuemin="1" aria-valuemax="5"><i style={{ width: `${step * 20}%` }} /><span className="sr-only">Step {step} of 5</span></div><span className="step-count">0{step} / 05</span></div>
+               <fieldset className="quiz-step">
+                 <legend ref={legendRef} tabIndex={-1}>{["", "First — what's tonight's pour?", "Which way should the flavour lean?", "How much kick?", "And the glass?", `Where should the sweetness land? — ${sweetWord(answers.sweet)}`][step]}</legend>
+                  {step === 1 && <div className="seg quiz-options" role="radiogroup">{[["alcohol","With alcohol"],["zero-proof","Zero-proof"],["either","Either way"]].map(([v,l], i) => <button role="radio" type="button" aria-checked={answers.pour === v} tabIndex={answers.pour != null ? (answers.pour === v ? 0 : -1) : (i === 0 ? 0 : -1)} className={`seg-b ${answers.pour === v ? "on" : ""}`} key={v} onKeyDown={e => radioKey(e,"pour",["alcohol","zero-proof","either"])} onClick={() => choose("pour",v)}>{l}</button>)}</div>}
+                 {step === 2 && <div className="chips quiz-options" role="radiogroup">{MOODS.map((m, i) => <button role="radio" type="button" aria-checked={answers.mood === m.tag} tabIndex={answers.mood != null ? (answers.mood === m.tag ? 0 : -1) : (i === 0 ? 0 : -1)} className={`chip ${answers.mood === m.tag ? "on" : ""}`} key={m.tag} onKeyDown={e => radioKey(e,"mood",MOODS.map(x => x.tag))} onClick={() => choose("mood",m.tag)}>{m.label}</button>)}</div>}
+                 {step === 3 && <div className="seg quiz-options" role="radiogroup">{STRENGTHS.map((s, i) => <button role="radio" type="button" aria-checked={answers.strength === s.v} tabIndex={answers.strength != null ? (answers.strength === s.v ? 0 : -1) : (i === 0 ? 0 : -1)} className={`seg-b ${answers.strength === s.v ? "on" : ""}`} key={s.v} onKeyDown={e => radioKey(e,"strength",STRENGTHS.map(x => x.v))} onClick={() => choose("strength",s.v)}>{s.l}</button>)}</div>}
+                 {step === 4 && <div className="seg quiz-options" role="radiogroup">{TEMPS.map((t, i) => <button role="radio" type="button" aria-checked={answers.temp === t.v} tabIndex={answers.temp != null ? (answers.temp === t.v ? 0 : -1) : (i === 0 ? 0 : -1)} className={`seg-b ${answers.temp === t.v ? "on" : ""}`} key={t.v} onKeyDown={e => radioKey(e,"temp",TEMPS.map(x => x.v))} onClick={() => choose("temp",t.v)}>{t.l}</button>)}</div>}
+                 {step === 5 && <><label className="field-lab" htmlFor="sweetness">{sweetWord(answers.sweet)}</label><input id="sweetness" type="range" min="0" max="10" value={answers.sweet} aria-label="Sweetness" aria-valuetext={sweetWord(answers.sweet)} onChange={e => setAnswers(a => ({ ...a, sweet: +e.target.value }))} /><div className="range-ends"><span>bone dry</span><span>dessert</span></div></>}
+               </fieldset>
+               <div className="quiz-actions">{step < 5 ? <button className="next-ghost" disabled={!answers[["", "pour", "mood", "strength", "temp"][step]]} onClick={() => commitStep(step + 1)}>Next →</button> : <button className="btn" onClick={() => reveal(answers)}>Pour it →</button>}</div>
+             </Reveal>}
+             {pouring && <div className="panel pouring"><Glass id="pouring" fill={75} width={120} /><p>Pouring your match…</p><span className="sr-only" role="status">Pouring your match…</span></div>}
             {/* result */}
-            <div className="result" key={best.id}>
+              {(revealed || result) && best && <div className={`result ${!revealed ? "dim" : ""}`} key={best.id} aria-live="polite" aria-hidden={!revealed}>
               <div className="result-top">
                 <Glass id="meter" fill={pct} width={92} className="meter" />
                 <div>
                   <p className="result-eyebrow">Your match</p>
-                  <div className="pct"><span className="pct-n">{pct}</span><span className="pct-d">/100</span></div>
+                   <div className="pct"><span className="pct-n">{pct}</span><span className="pct-d">/100</span><span className={`tier tier-${tierFor(best.match).split(" ")[0].toLowerCase()}`}>{tierFor(best.match)}</span></div>
                 </div>
               </div>
-              <h3 className="result-name">{best.name}</h3>
+               <h3 className="result-name" ref={resultNameRef} tabIndex={-1}>{best.name}</h3>
               <p className="result-meta">{best.cat} · {best.temp} · {best.time} · {best.abv}% abv</p>
-              <p className="result-desc">{best.desc}</p>
+               {best.abv <= 0 && <span className="zero-tag">Zero proof</span>}<p className="result-desc">{best.desc}</p>
+                <div className="why"><p className="field-lab">Why this pour</p><ul>{Object.entries(best.components).filter(([k,v]) => v >= ({mood:21,strength:14,temp:10.5,sweet:10.5,affinity:14}[k])).sort((a,b) => b[1]-a[1]).slice(0,3).map(([k]) => <li key={k}>{k === "mood" ? `${MOODS.find(m => m.tag === answers.mood)?.label || "Your direction"} — your direction, exactly` : k === "strength" ? `${strengthWord(answers.strength)}, as ordered` : k === "temp" ? `Served ${answers.temp === "any" ? "your way" : answers.temp}, as you asked` : k === "sweet" ? `Lands at ${sweetWord(answers.sweet)} on the dial` : `Built around ${axisLabel[Object.keys(AXES[answers.mood] || {})[0]] || "balanced"} notes`}</li>)}</ul></div>
+               {Object.entries(best.components).every(([k,v]) => v < ({mood:21,strength:14,temp:10.5,sweet:10.5,affinity:14}[k])) && <p className="why-fallback">The closest pour in the cellar tonight</p>}
               <div className="notes">
                 {best.moods.map(m => <span className="note" key={m}>{m}</span>)}
                 <span className="note">{strengthWord(best.str)}</span>
                 <span className="note">{sweetWord(best.sweet)}</span>
               </div>
-              <button className="btn" onClick={() => openInCellar(best.id)}>Open recipe in the cellar <span className="arr">↓</span></button>
+                  <div className="result-actions"><button className="btn" onClick={() => openInCellar(best.id)}>Open recipe in the cellar <span className="arr">↓</span></button>{authEnabled && <SaveToggle drink={best} saved={savedIds.has(best.id)} onToggle={handleSave} />}</div>
+                 <div className="quiz-ghosts"><button className="next-ghost" onClick={() => { clearTimeout(timerRef.current); setRevealed(false); commitStep(1); }}>Tune your pour</button><button className="next-ghost" onClick={surprise}>Surprise me ↻</button></div>
 
-              <div className="runners">
+                   <div className="runners">
                 <p className="field-lab">Also worth the glass</p>
                 {runners.map(r => (
                   <button className="runner" key={r.id} onClick={() => openInCellar(r.id)}>
@@ -390,11 +594,10 @@ export default function App() {
                     <span className="runner-p">{r.match}%</span>
                   </button>
                 ))}
-              </div>
+                 </div></div>}
             </div>
           </div>
-        </div>
-      </section>
+       </section>
 
       {/* ---------- 02 · THE CELLAR ---------- */}
       <section id="cellar" className="sec sec-alt">
@@ -406,7 +609,7 @@ export default function App() {
             <div className="cat-filter">
               {["All", ...CATS].map(c => (
                 <button key={c} className={`chip ${catFilter === c ? "on" : ""}`} onClick={() => setCatFilter(c)}>
-                  {c} <small>{c === "All" ? DRINKS.length : DRINKS.filter(d => d.cat === c).length}</small>
+                   {c} <small>{c === "All" ? drinks.length : drinks.filter(d => d.cat === c).length}</small>
                 </button>
               ))}
             </div>
@@ -417,13 +620,13 @@ export default function App() {
               const open = openId === d.id;
               return (
                 <div className={`row ${open ? "open" : ""}`} id={`row-${d.id}`} key={d.id}>
-                  <button className="row-head" onClick={() => setOpenId(open ? null : d.id)} aria-expanded={open}>
-                    <span className="row-num">{String(i + 1).padStart(2, "0")}</span>
-                    <span className="row-name">{d.name}</span>
-                    <span className="row-cat">{d.cat}</span>
-                    <span className="row-abv">{d.abv}%</span>
-                    <span className="row-x">{open ? "–" : "+"}</span>
-                  </button>
+                   <div className="row-head-grid" onClick={e => { if (e.target.closest(".save-toggle")) return; setOpenId(open ? null : d.id); }}><button className="row-head" onClick={e => { if (e.detail === 0) { e.stopPropagation(); setOpenId(open ? null : d.id); } }} aria-expanded={open}>
+                     <span className="row-num">{String(i + 1).padStart(2, "0")}</span>
+                     <span className="row-name">{d.name}</span>
+                     <span className="row-cat">{d.cat}</span>
+                     <span className="row-abv">{d.abv}%</span>
+                     <span className="row-x">{open ? "–" : "+"}</span>
+                   </button>{authEnabled && <SaveToggle drink={d} saved={savedIds.has(d.id)} onToggle={handleSave} />}</div>
                   <div className="row-body"><div className="row-inner">
                     <div className="row-img kb"><img src={`https://picsum.photos/seed/${d.seed}/560/420`} alt={d.name} loading="lazy" /></div>
                     <div className="row-txt">
@@ -452,7 +655,7 @@ export default function App() {
               <article className={`pcard ${i % 2 ? "dark" : ""}`} key={d.id} style={{ "--i": i }}>
                 <div className="pcard-c">
                   <span className="pcard-num">{String(i + 1).padStart(2, "0")}</span>
-                  <h3 className="pcard-name">{d.name}</h3>
+                   <div className="pcard-head"><h3 className="pcard-name">{d.name}</h3>{authEnabled && <SaveToggle drink={d} saved={savedIds.has(d.id)} onToggle={handleSave} />}</div>
                   <p className="pcard-cat">{d.cat} · {d.abv}% abv · {d.time}</p>
                   <p className="pcard-desc">{d.desc}</p>
                   <div className="pills">{d.ing.map(x => <span className="pill" key={x}>{x}</span>)}</div>
@@ -485,6 +688,11 @@ export default function App() {
         </div>
       </section>
 
+      {session && authEnabled && <section id="shelf" className="sec shelf-sec"><div className="wrap"><Reveal><p className="eyebrow">05 — Your Shelf</p></Reveal><MaskTitle lines={["Kept for another", "evening."]} className="sec-title" />
+        <div className="shelf-rows">{savedRows.filter(row => BY_ID[row.drink_id]).map((row, i) => { const d = BY_ID[row.drink_id]; return <div className="shelf-row" key={d.id}><span className="row-num">{String(i + 1).padStart(2, "0")}</span><span className="row-name">{d.name}</span><span className="row-cat">{d.cat}</span><span className="row-abv">{d.abv}%</span><SaveToggle drink={d} saved onToggle={handleSave} /></div>; })}</div>
+        {!savedRows.some(row => BY_ID[row.drink_id]) && <div className="shelf-empty"><p>Nothing shelved yet.</p><a className="btn ghost" href="#match">Find your pour <span className="arr">↓</span></a></div>}
+      </div></section>}
+
       <Marquee items={["Bitter", "Sweet", "Iced", "Stirred", "Zero proof", "Golden hour", "One large cube", "Sip slowly"]} reverse />
 
       {/* ---------- FOOTER ---------- */}
@@ -496,24 +704,28 @@ export default function App() {
               <p className="field-lab">The Friday Pour — one recipe a week</p>
               {sent
                 ? <p className="ft-ok">✳ You're on the list. First pour this Friday.</p>
-                : (
-                  <form className="ft-form" onSubmit={e => { e.preventDefault(); if (email.trim()) setSent(true); }}>
-                    <input type="email" required placeholder="you@evenings.com" value={email} onChange={e => setEmail(e.target.value)} aria-label="Email" />
-                    <button className="btn" type="submit">Pour it in <span className="arr">→</span></button>
-                  </form>
+                 : (
+                   <form className="ft-form" onSubmit={handleWaitlistSubmit}>
+                     <input type="email" required placeholder="you@evenings.com" value={email} onChange={e => setEmail(e.target.value)} aria-label="Email" />
+                     <button className="btn" type="submit" disabled={busy}>Pour it in <span className="arr">→</span></button>
+                     {err && <p className="ft-err" role="alert" aria-live="polite">{err}</p>}
+                   </form>
                 )}
             </div>
             <div className="ft-links">
-              <a href="#match">The Match</a><a href="#cellar">Cellar</a><a href="#pours">House Pours</a><a href="#top">Back to top ↑</a>
+               <a href="#match">The Match</a><a href="#cellar">Cellar</a><a href="#pours">House Pours</a>{session && <a href="#shelf">Your Shelf</a>}<a href="#top">Back to top ↑</a>
             </div>
           </div>
           <div className="ft-base">
-            <span>© 2025 POUR Index — vol. 04</span>
+            <span>© 2026 EkQuarter</span>
             <span>Drink with intention. Legal age only.</span>
             <span>Stirred, never shaken*</span>
           </div>
         </div>
       </footer>
+      </div>
+      {authOpen && <AuthModal mode={authMode} onClose={closeAuth} onSuccess={handleAuthSuccess} />}
+      <div className={`toast ${toast ? "toast-show" : ""}`} aria-live="polite">{toast}</div>
     </>
   );
 }
@@ -524,8 +736,8 @@ const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Archivo:wght@400;500;600;700&display=swap');
 
 :root{
-  --paper:#F3EFE6; --paper2:#EAE4D5; --ink:#191510; --ink60:rgba(25,21,16,.62);
-  --line:rgba(25,21,16,.16); --accent:#DF4B1B; --pour:#DE9A3B; --hd:64px;
+  --paper:#F6EFE4; --paper2:#EDE2D0; --ink:#17110F; --ink60:rgba(23,17,15,.66);
+   --line:rgba(23,17,15,.16); --accent:#A24812; --pour:#F1B35B; --focus:#A24812; --err:#B3261E; --ok:#2E5E3A; --warn:var(--accent); --tag-zero:#54233C; --match-excellent:var(--ink); --match-strong:var(--accent); --match-exploratory:var(--ink60); --hd:64px;
   --disp:"Fraunces",Georgia,serif; --body:"Archivo","Helvetica Neue",sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
@@ -535,6 +747,7 @@ body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 section{scroll-margin-top:calc(var(--hd) + 10px)}
 .wrap{max-width:1240px;margin:0 auto;padding:0 5vw}
 .sec{padding:110px 0}
@@ -554,7 +767,7 @@ body .h1 .ln-i{transform:translateY(112%)}
 body.loaded .h1 .ln-i{transform:none}
 
 /* header */
-.hd{position:fixed;inset:0 0 auto;height:var(--hd);display:flex;align-items:center;justify-content:space-between;padding:0 5vw;background:rgba(243,239,230,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:80}
+.hd{position:fixed;inset:0 0 auto;height:var(--hd);display:flex;align-items:center;justify-content:space-between;padding:0 5vw;background:rgba(246,239,228,.86);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:80}
 .logo{font-family:var(--disp);font-weight:600;font-size:20px;letter-spacing:.01em}
 .logo span{color:var(--accent);display:inline-block;margin:0 6px}
 .logo small{font-family:var(--body);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink60)}
@@ -576,6 +789,7 @@ body.loaded .h1 .ln-i{transform:none}
 .btn:hover .arr{transform:translateX(4px)}
 .btn.ghost{background:transparent;color:var(--ink)}
 .btn.ghost:hover{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.55;cursor:default}
 
 .hero-stage{position:relative;display:flex;justify-content:center;padding:20px 0}
 .hero-glass{transition:transform .6s cubic-bezier(.2,.7,.2,1)}
@@ -629,8 +843,13 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.3);background:v
 input[type=range]::-moz-range-track{height:2px;background:var(--line)}
 input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-radius:50%;background:var(--ink)}
 .range-ends{display:flex;justify-content:space-between;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink60);margin-top:6px}
+.quiz-card{min-height:330px;padding-bottom:env(safe-area-inset-bottom)}
+.quiz-progress{height:32px;display:grid;grid-template-columns:80px 1fr 60px;align-items:center;gap:14px}
+.quiz-back,.next-ghost{min-height:44px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink60)}
+.quiz-back{text-align:left}.quiz-back:disabled{visibility:hidden}.progress-line{height:1px;background:var(--line)}.progress-line i{display:block;height:2px;background:var(--accent);transition:width .25s}.step-count{font-variant-numeric:tabular-nums;text-align:right;font-size:12px;letter-spacing:.12em}.quiz-step{border:0;margin-top:38px}.quiz-step legend{font-family:var(--disp);font-size:clamp(1.8rem,3vw,2.7rem);line-height:1.1;margin-bottom:28px;outline:none}.quiz-options{width:100%}.quiz-actions{margin-top:28px;text-align:right}.next-ghost:hover{color:var(--accent)}.pouring{display:grid;place-items:center;align-content:center;gap:8px;min-height:330px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.tier{font-family:var(--body);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;border-radius:999px;margin-left:14px;vertical-align:middle}.tier-top{background:var(--ink);color:var(--pour)}.tier-strong{border:1px solid var(--accent);color:var(--accent)}.tier-exploratory{border:1px solid var(--line);color:var(--ink60)}.zero-tag{display:inline-block;border:1px solid var(--tag-zero);color:var(--tag-zero);padding:4px 9px;border-radius:999px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}.why{margin:22px 0}.why ul{list-style:none}.why li{padding:7px 0;border-bottom:1px solid var(--line);font-family:var(--disp);font-style:italic}.why-fallback{font-family:var(--disp);font-style:italic;color:var(--ink60);margin:22px 0}.quiz-ghosts{display:flex;gap:22px;margin-top:20px;flex-wrap:wrap}
 
 .result{border:1px solid var(--ink);padding:38px;background:var(--paper);animation:pop-in .5s ease both;position:relative}
+.result.dim{opacity:.55;pointer-events:none}
 .result::before{content:"✳";position:absolute;top:20px;right:26px;color:var(--accent);font-size:18px}
 .result-top{display:flex;align-items:center;gap:28px;margin-bottom:8px}
 .result-eyebrow{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink60);font-weight:600}
@@ -660,7 +879,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 .cat-filter .chip.on{background:none;color:var(--accent);border-color:var(--accent)}
 .row{border-bottom:1px solid var(--line)}
 .row-head{display:grid;grid-template-columns:54px 1fr auto auto 30px;align-items:baseline;gap:18px;width:100%;padding:24px 8px;text-align:left;transition:padding-left .35s cubic-bezier(.2,.7,.2,1),background .35s}
-.row-head:hover{padding-left:20px;background:rgba(25,21,16,.04)}
+.row-head:hover{padding-left:20px;background:rgba(23,17,15,.04)}
 .row-num{font-family:var(--disp);font-style:italic;color:var(--accent);font-size:15px}
 .row-name{font-family:var(--disp);font-size:clamp(1.4rem,2.4vw,1.9rem);font-weight:500;letter-spacing:-.01em}
 .row-cat,.row-abv{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink60)}
@@ -684,9 +903,9 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 
 /* stacked house pours */
 .stack{display:grid;gap:34px}
-.pcard{position:sticky;top:calc(var(--hd) + 26px + var(--i)*26px);border:1px solid var(--ink);background:var(--paper);display:grid;grid-template-columns:1.05fr .95fr;min-height:440px;overflow:hidden;box-shadow:0 -8px 30px rgba(25,21,16,.06)}
-.pcard.dark{background:var(--ink);color:var(--paper)}
-.pcard.dark .pill{border-color:rgba(243,239,230,.3)}
+.pcard{position:sticky;top:calc(var(--hd) + 26px + var(--i)*26px);border:1px solid var(--ink);background:var(--paper);display:grid;grid-template-columns:1.05fr .95fr;min-height:440px;overflow:hidden;box-shadow:0 -8px 30px rgba(23,17,15,.06)}
+.pcard.dark{background:var(--ink);color:var(--paper);--line:rgba(246,239,228,.2);--focus:var(--pour)}
+.pcard.dark .pill{border-color:rgba(246,239,228,.45)}
 .pcard.dark .pcard-cat{color:var(--pour)}
 .pcard-c{padding:44px 46px;position:relative}
 .pcard-num{position:absolute;top:18px;right:26px;font-family:var(--disp);font-size:96px;font-weight:300;opacity:.12;line-height:1}
@@ -698,14 +917,16 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 .pcard-build{list-style:none}
 .pcard-build li{padding:8px 0;border-top:1px solid var(--line);font-size:14px;opacity:.85}
 .pcard-build li::before{content:"— ";color:var(--accent)}
+.pcard.dark .pcard-build li::before{color:var(--pour)}
 .pcard-img{overflow:hidden;border-left:1px solid var(--line)}
-.pcard.dark .pcard-img{border-color:rgba(243,239,230,.2)}
+.pcard.dark .pcard-img{border-color:rgba(246,239,228,.2)}
+.row-img img,.pcard-img img{filter:sepia(.16) saturate(1.05)}
 
 /* ritual */
 .ritual{border-top:1px solid var(--ink)}
 .rrow{display:grid;grid-template-columns:130px 1fr 1.4fr 40px;gap:20px;align-items:center;padding:30px 18px;border-bottom:1px solid var(--line);transition:background .35s,color .35s,padding-left .35s}
-.rrow:hover{background:var(--ink);color:var(--paper);padding-left:32px}
-.rrow:hover .r-note{color:rgba(243,239,230,.65)}
+.rrow:hover{background:var(--ink);color:var(--paper);padding-left:32px;--focus:var(--pour)}
+.rrow:hover .r-note{color:rgba(246,239,228,.65)}
 .rrow:hover .r-arrow{color:var(--pour)}
 .r-time{font-family:var(--disp);font-style:italic;font-size:clamp(1.5rem,2.6vw,2.1rem);font-variant-numeric:tabular-nums}
 .r-name{font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
@@ -720,7 +941,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
 .ft-form{display:flex;gap:16px;align-items:flex-end;max-width:460px}
 .ft-form input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--ink);padding:12px 2px;font-family:var(--body);font-size:16px;color:var(--ink);outline:none;transition:border-color .3s}
 .ft-form input:focus{border-color:var(--accent)}
-.ft-ok{font-family:var(--disp);font-style:italic;font-size:20px;color:var(--accent);animation:pop-in .5s ease both}
+.ft-ok{font-family:var(--disp);font-style:italic;font-size:20px;color:var(--ok);animation:pop-in .5s ease both}
+.ft-err{font-size:13px;letter-spacing:.02em;color:var(--err);margin-top:10px}
 .ft-links{display:flex;flex-direction:column;gap:8px;text-align:right;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
 .ft-links a:hover{color:var(--accent)}
 .ft-base{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid var(--line);padding-top:22px;font-size:12px;letter-spacing:.08em;color:var(--ink60)}
@@ -737,7 +959,8 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
   .hero-grid{grid-template-columns:1fr;gap:24px}
   .hero-stage{order:-1;padding:0 0 8px}
   .badge{right:14%}
-  .match-grid,.cellar-grid{grid-template-columns:1fr}
+   .match-grid,.cellar-grid{grid-template-columns:1fr}
+   .seg{width:100%}.seg-b{flex:1;padding:10px 8px}.quiz-card{padding-bottom:env(safe-area-inset-bottom)}
   .cellar-left{position:static}
   .cat-filter{flex-direction:row;flex-wrap:wrap}
   .cat-filter .chip{width:auto;border:1px solid var(--line);border-radius:999px;padding:8px 14px;font-family:var(--body);font-size:13px}
@@ -749,6 +972,7 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
   .ft-grid{grid-template-columns:1fr}
   .ft-links{text-align:left;flex-direction:row;flex-wrap:wrap;gap:18px}
 }
+@media (pointer:coarse){.chip,.seg-b,.quiz-back,.next-ghost,.btn{min-height:44px}.seg-b{padding:12px 10px}input[type=range]{height:44px}input[type=range]::-webkit-slider-thumb{width:28px;height:28px;margin-top:-13px}input[type=range]::-moz-range-thumb{width:28px;height:28px}}
 
 /* reduced motion */
 @media (prefers-reduced-motion:reduce){
@@ -757,4 +981,19 @@ input[type=range]::-moz-range-thumb{width:18px;height:18px;border:none;border-ra
   .rv,.mtitle .ln-i,.h1 .ln-i{opacity:1!important;transform:none!important}
   .c-dot,.c-ring{display:none}
 }
+
+/* account, saves, auth */
+.hd-account{display:flex;align-items:center;justify-content:flex-end;gap:12px;min-width:132px;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.hd-signin{font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:4px 0;position:relative}.hd-signin::after{content:"";position:absolute;left:0;bottom:0;width:100%;height:1px;background:var(--accent)}
+.account-email{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.account-placeholder{display:block;width:132px;height:20px}
+.row-head-grid{display:grid;grid-template-columns:54px 1fr auto auto 150px 30px;align-items:baseline;gap:18px;width:100%;padding:24px 8px;transition:padding-left .35s,background .35s;cursor:pointer}.row-head-grid:hover{padding-left:20px;background:rgba(23,17,15,.04)}.row-head-grid:has(.row-head:focus-visible){outline:2px solid var(--focus);outline-offset:-2px}
+.row-head{display:contents}.row-head-grid .row-num,.row-head-grid .row-name,.row-head-grid .row-cat,.row-head-grid .row-abv,.row-head-grid .row-x{padding:0}.row-head-grid .row-x{grid-column:6}
+.save-toggle{min-height:44px;display:flex;align-items:center;justify-content:flex-start;text-align:left}.save-toggle .row-cat{color:var(--ink60);white-space:nowrap;margin:0;font-size:10px;letter-spacing:.1em}.save-toggle .row-cat::first-letter{color:var(--ink60)}.save-toggle.saved .row-cat{color:var(--accent)}.pcard.dark .save-toggle.saved .row-cat{color:var(--pour)}
+.result-actions{display:flex;align-items:center;gap:20px;flex-wrap:wrap}.result-actions .save-toggle{padding:0 4px}.pcard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.pcard-head .save-toggle{position:relative;z-index:2}
+.shelf-sec{background:var(--paper2)}.shelf-rows{border-top:1px solid var(--ink)}.shelf-row{display:grid;grid-template-columns:54px 1fr auto auto 150px;align-items:center;gap:18px;padding:20px 8px;border-bottom:1px solid var(--line)}.shelf-empty{display:flex;align-items:center;gap:24px}.shelf-empty p{font-family:var(--disp);font-style:italic;font-size:20px;color:var(--ink60)}
+.auth-scrim{position:fixed;inset:0;z-index:140;background:rgba(23,17,15,.5);overflow:auto;overscroll-behavior:contain;display:grid;place-items:center;padding:30px}.auth-panel{position:relative;width:min(440px,90vw);border:1px solid var(--ink);background:var(--paper);padding:42px 34px 34px;animation:pop-in .4s ease both}.auth-close{position:absolute;right:8px;top:8px;width:44px;height:44px;font-size:28px;font-weight:300}.auth-star{font-size:18px;margin-left:8px}.auth-title{font-family:var(--disp);font-size:clamp(2rem,6vw,3rem);font-weight:500;line-height:1.05;margin-bottom:32px}.auth-input{display:block;width:100%;background:transparent;border:0;border-bottom:1px solid var(--ink);padding:10px 2px;font:inherit;font-size:18px;outline:none}.auth-input:focus{border-color:var(--accent)}.auth-micro,.auth-sent{color:var(--ink60);font-size:13px;margin:14px 0 24px}.auth-submit{width:100%;justify-content:center}.auth-code{display:block;width:100%;background:transparent;border:1px solid var(--ink);padding:12px;text-align:center;font-size:30px;letter-spacing:.45em;font-variant-numeric:tabular-nums;outline:none;margin:20px 0 18px}.auth-code:focus{border-color:var(--accent)}.auth-resend{display:block;margin:20px auto 0}.countdown{display:block;text-align:center;color:var(--ink60);font-size:12px;letter-spacing:.08em;font-variant-numeric:tabular-nums}.auth-different{display:block;margin:12px auto 0}.auth-error{margin-top:18px}.auth-notice{font-size:13px;color:var(--ok);margin-top:16px;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:150;background:var(--ink);color:var(--paper);border-radius:999px;padding:11px 18px;font-size:13px;white-space:nowrap;opacity:0;pointer-events:none}.toast-show{opacity:1;animation:pop-in .35s ease both}
+@media (max-width:600px){.clock-phase{display:none}.hd-account{min-width:92px}.account-placeholder{width:92px}.hd{padding-inline:4vw}.hd-clock{font-size:10px}.shelf-row{grid-template-columns:34px 1fr auto 100px;gap:8px}.shelf-row .row-abv{display:none}.row-head-grid{grid-template-columns:34px 1fr auto 110px 24px;gap:8px}.row-head-grid .row-cat{display:none}.row-head-grid .save-toggle{grid-column:4}.row-head-grid .row-x{grid-column:5}.save-toggle .row-cat{font-size:9px}.auth-panel{padding-inline:24px}}
+@media (prefers-reduced-motion:reduce){.auth-panel,.toast{animation-duration:.001ms!important;animation-iteration-count:1!important}}
+@media (prefers-reduced-motion:reduce){.toast-show{animation-duration:.001ms!important;animation-iteration-count:1!important}}
 `;

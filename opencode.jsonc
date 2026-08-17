@@ -1,0 +1,13 @@
+﻿{
+  // OpenCode project config. Multi-agent team defined in .opencode/agents/.
+  "$schema": "https://opencode.ai/config.json",
+  // Sessions start in Sol (orchestrator) mode; switch agents via the agent picker.
+  "default_agent": "sol-orchestrator",
+  "mcp": {
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?project_ref=ojptrukzildmkilwponx&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching",
+      "enabled": true
+    }
+  }
+}

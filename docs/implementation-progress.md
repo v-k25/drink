@@ -144,8 +144,8 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 - [x] **0.2 — Brand foundation:** Replaced the dark rose/brass theme with Jaipur Editorial limestone, carbon ink, lac red and muted saffron; changed typography to Newsreader and Manrope; updated metadata, browser theme and security headers.
 - [x] **0.3 — Motion foundation:** Installed Motion and added an accessible, non-blocking clipped-SVG glass loader plus reduced-motion-aware section reveals.
 - [x] **1.1 — Homepage shell:** Rebuilt the responsive navigation, hero, Find My Sip explanation, Party Planner/0%/Jaipur supporting stories, early-access conversion hierarchy and shared footer.
-- [ ] **1.2 — Signature story:** Implement the scroll-built cocktail interaction and reduced-motion/mobile fallbacks.
-- [ ] **1.3 — Supporting stories:** Add Party Planner, 0%, Jaipur, editorial previews, future ecosystem, and responsible footer.
+- [x] **1.2 — Signature story:** Implemented the sticky scroll-built cocktail with progressive liquid, ice and garnish layers using Motion `useScroll`/`useTransform`; added a complete static reduced-motion state and responsive stacked layout.
+- [x] **1.3 — Supporting stories:** Added Party Planner, first-class 0%, Jaipur-first, early-access and responsible-use narratives while keeping venues and events supporting-only.
 - [x] **2.1 — Marketing routes:** Built static, metadata-aware routes for How It Works, Find My Sip, Party Planner, Jaipur, 0%, Guides, About, FAQ, Contact and Responsible Use with a reusable editorial layout and substantive, scope-safe copy.
 - [ ] **3.1 — Early access:** Add segmented, consent-aware demand capture after integration approval.
 - [ ] **4.1 — SEO and analytics:** Route metadata, sitemap/robots, structured data, event taxonomy, and internal linking.
@@ -153,4 +153,4 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 
 ## Current checkpoint
 
-**1.2 — Signature story** is next. The visual foundation, homepage shell and full informational route set are complete; the next checkpoint turns the cocktail placeholder into the required scroll-built motion.dev interaction.
+**3.1 — Early access** is next. The marketing narrative, route set and both signature motion moments are complete; the next checkpoint adds persistent, segmented Jaipur demand capture after database integration verification.

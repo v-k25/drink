@@ -1,7 +1,8 @@
-import { ArrowDown, ArrowRight, CalendarDays, Martini, Sparkles } from 'lucide-react'
+import { ArrowDown, ArrowRight, CalendarDays, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { CocktailStory } from '@/components/cocktail-story'
 import { GlassLoader } from '@/components/glass-loader'
 import { Reveal } from '@/components/reveal'
 import { SiteFooter } from '@/components/site-footer'
@@ -73,22 +74,7 @@ export function DrinkLanding() {
         </Reveal>
       </section>
 
-      <section className="px-5 py-24 md:px-10 md:py-32">
-        <Reveal className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
-          <div className="order-2 flex flex-col items-start gap-6 lg:order-1">
-            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Signature story</p>
-            <h2 className="text-balance font-serif text-5xl leading-[0.95] md:text-7xl">Build the recommendation, ingredient by ingredient.</h2>
-            <p className="max-w-xl text-pretty leading-relaxed text-muted-foreground">Scroll through the logic behind a Jaipur evening: the mood sets the base, taste shapes the pour, the occasion adds detail and your preferences finish it.</p>
-            <Link href="/how-it-works" className="flex items-center gap-3 border-b border-foreground pb-2 text-sm font-bold uppercase tracking-[0.14em]">How matching works <ArrowRight aria-hidden="true" /></Link>
-          </div>
-          <div className="order-1 border border-border bg-foreground p-8 text-background lg:order-2">
-            <div className="flex aspect-square items-center justify-center border border-background/20">
-              <Martini className="size-36 text-secondary" strokeWidth={1} aria-hidden="true" />
-            </div>
-            <p className="pt-5 text-xs uppercase tracking-[0.2em] text-background/60">Interactive cocktail story arrives in checkpoint 3</p>
-          </div>
-        </Reveal>
-      </section>
+      <CocktailStory />
 
       <section className="border-y border-border bg-foreground px-5 py-24 text-background md:px-10 md:py-32">
         <Reveal className="mx-auto grid max-w-7xl gap-px bg-background/20 lg:grid-cols-2">

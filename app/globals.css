@@ -36,6 +36,12 @@
   --color-card: var(--card);
   --color-foreground: var(--foreground);
   --color-background: var(--background);
+  --color-brass: var(--brass);
+  --color-rose-brand: var(--rose-brand);
+  --color-cream: var(--cream);
+  --color-ink: var(--ink);
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -45,119 +51,91 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/*
+  Pink City After Dark — fixed brand palette (dark by design).
+  Ink black #0D0B0E · Cream #F2EDE4 · Jaipur rose #E48FA8 · Warm amber (brass) #D9A05B
+*/
 :root {
-  color-scheme: light;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
   color-scheme: dark;
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
+  --ink: oklch(0.17 0.012 320);
+  --cream: oklch(0.94 0.014 84);
+  --rose-brand: oklch(0.75 0.1 5);
+  --brass: oklch(0.74 0.093 70);
 
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    color-scheme: dark;
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
+  --background: var(--ink);
+  --foreground: var(--cream);
+  --card: oklch(0.21 0.014 320);
+  --card-foreground: var(--cream);
+  --popover: oklch(0.21 0.014 320);
+  --popover-foreground: var(--cream);
+  --primary: var(--rose-brand);
+  --primary-foreground: var(--ink);
+  --secondary: var(--brass);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.26 0.012 320);
+  --muted-foreground: oklch(0.68 0.012 320);
+  --accent: oklch(0.26 0.014 320);
+  --accent-foreground: var(--cream);
+  --destructive: oklch(0.62 0.19 25);
+  --border: oklch(0.94 0.014 84 / 12%);
+  --input: oklch(0.94 0.014 84 / 16%);
+  --ring: var(--rose-brand);
+  --chart-1: var(--rose-brand);
+  --chart-2: var(--brass);
+  --chart-3: var(--cream);
+  --chart-4: oklch(0.55 0.08 5);
+  --chart-5: oklch(0.45 0.06 70);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.21 0.014 320);
+  --sidebar-foreground: var(--cream);
+  --sidebar-primary: var(--rose-brand);
+  --sidebar-primary-foreground: var(--ink);
+  --sidebar-accent: oklch(0.26 0.014 320);
+  --sidebar-accent-foreground: var(--cream);
+  --sidebar-border: oklch(0.94 0.014 84 / 12%);
+  --sidebar-ring: var(--rose-brand);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Brass hairline ornament */
+.brass-hairline {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(0.74 0.093 70 / 55%),
+    transparent
+  );
+  height: 1px;
+}
+
+/* Loading glass fill keyframes (vector-only, GPU-friendly transform) */
+@keyframes glass-fill-rise {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(18%);
+  }
+}
+@keyframes loader-fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
   }
 }

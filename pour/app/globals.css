@@ -1,0 +1,125 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --color-limestone: var(--limestone);
+  --color-lac: var(--lac);
+  --color-saffron: var(--saffron);
+  --color-ink: var(--ink);
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  color-scheme: light;
+  --limestone: oklch(0.94 0.019 78);
+  --ink: oklch(0.2 0.018 65);
+  --lac: oklch(0.47 0.16 31);
+  --saffron: oklch(0.72 0.13 69);
+  --background: var(--limestone);
+  --foreground: var(--ink);
+  --card: oklch(0.975 0.012 78);
+  --card-foreground: var(--ink);
+  --popover: oklch(0.975 0.012 78);
+  --popover-foreground: var(--ink);
+  --primary: var(--lac);
+  --primary-foreground: var(--limestone);
+  --secondary: var(--saffron);
+  --secondary-foreground: var(--ink);
+  --muted: oklch(0.89 0.022 75);
+  --muted-foreground: oklch(0.46 0.024 65);
+  --accent: oklch(0.86 0.045 70);
+  --accent-foreground: var(--ink);
+  --destructive: oklch(0.54 0.19 27);
+  --border: oklch(0.31 0.025 64 / 18%);
+  --input: oklch(0.31 0.025 64 / 24%);
+  --ring: var(--lac);
+  --chart-1: var(--lac);
+  --chart-2: var(--saffron);
+  --chart-3: var(--ink);
+  --chart-4: oklch(0.62 0.08 155);
+  --chart-5: oklch(0.57 0.06 248);
+  --radius: 0.35rem;
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--ink);
+  --sidebar-primary: var(--lac);
+  --sidebar-primary-foreground: var(--limestone);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--lac);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply bg-background;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+.editorial-rule {
+  height: 1px;
+  background: var(--border);
+}
+
+.ink-grid {
+  background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+}

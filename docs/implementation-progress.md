@@ -146,11 +146,11 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 - [x] **1.1 — Homepage shell:** Rebuilt the responsive navigation, hero, Find My Sip explanation, Party Planner/0%/Jaipur supporting stories, early-access conversion hierarchy and shared footer.
 - [ ] **1.2 — Signature story:** Implement the scroll-built cocktail interaction and reduced-motion/mobile fallbacks.
 - [ ] **1.3 — Supporting stories:** Add Party Planner, 0%, Jaipur, editorial previews, future ecosystem, and responsible footer.
-- [ ] **2.1 — Marketing routes:** Build the complete Phase 1 sitemap with shared structure and substantive copy.
+- [x] **2.1 — Marketing routes:** Built static, metadata-aware routes for How It Works, Find My Sip, Party Planner, Jaipur, 0%, Guides, About, FAQ, Contact and Responsible Use with a reusable editorial layout and substantive, scope-safe copy.
 - [ ] **3.1 — Early access:** Add segmented, consent-aware demand capture after integration approval.
 - [ ] **4.1 — SEO and analytics:** Route metadata, sitemap/robots, structured data, event taxonomy, and internal linking.
 - [ ] **5.1 — Final validation:** Responsive, keyboard, reduced motion, progressive enhancement, route integrity, console, build, and performance checks.
 
 ## Current checkpoint
 
-**1.2 — Signature story** is next. The visual and motion foundations plus homepage narrative shell are complete; the next checkpoint turns the cocktail placeholder into the required scroll-built interaction.
+**1.2 — Signature story** is next. The visual foundation, homepage shell and full informational route set are complete; the next checkpoint turns the cocktail placeholder into the required scroll-built motion.dev interaction.

@@ -141,9 +141,9 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 ## Checkpoint log
 
 - [x] **0.1 — Phase 1 architecture:** Reframed scope as the marketing website, defined roadmap, sitemap, boundaries, motion direction, content needs, metrics, compliance assumptions, and risks.
-- [ ] **0.2 — Brand foundation:** Replace the current palette, typography, metadata, browser theme, focus styles, and baseline editorial tokens.
-- [ ] **0.3 — Motion foundation:** Install Motion and add the accessible non-blocking loading-glass component.
-- [ ] **1.1 — Homepage shell:** Rebuild header, hero, Find My Sip explanation, and conversion hierarchy.
+- [x] **0.2 — Brand foundation:** Replaced the dark rose/brass theme with Jaipur Editorial limestone, carbon ink, lac red and muted saffron; changed typography to Newsreader and Manrope; updated metadata, browser theme and security headers.
+- [x] **0.3 — Motion foundation:** Installed Motion and added an accessible, non-blocking clipped-SVG glass loader plus reduced-motion-aware section reveals.
+- [x] **1.1 — Homepage shell:** Rebuilt the responsive navigation, hero, Find My Sip explanation, Party Planner/0%/Jaipur supporting stories, early-access conversion hierarchy and shared footer.
 - [ ] **1.2 — Signature story:** Implement the scroll-built cocktail interaction and reduced-motion/mobile fallbacks.
 - [ ] **1.3 — Supporting stories:** Add Party Planner, 0%, Jaipur, editorial previews, future ecosystem, and responsible footer.
 - [ ] **2.1 — Marketing routes:** Build the complete Phase 1 sitemap with shared structure and substantive copy.
@@ -153,4 +153,4 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 
 ## Current checkpoint
 
-**0.2 — Brand foundation** is next. The old dark rose/brass visual system and Fraunces/Geist pairing are being replaced before page composition work continues.
+**1.2 — Signature story** is next. The visual and motion foundations plus homepage narrative shell are complete; the next checkpoint turns the cocktail placeholder into the required scroll-built interaction.

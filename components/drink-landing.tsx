@@ -1,151 +1,156 @@
+import { ArrowDown, ArrowRight, CalendarDays, Martini, Sparkles } from 'lucide-react'
 import Image from 'next/image'
-import { ArrowDown, ArrowRight, Menu, Search } from 'lucide-react'
+import Link from 'next/link'
 
-const journey = [
-  { label: 'Your taste', detail: 'Bright, smoky, crisp or bold' },
-  { label: 'Your mood', detail: 'Quiet night or full celebration' },
-  { label: 'Your moment', detail: 'Budget, place and occasion' },
-  { label: 'Your sip', detail: 'A match made for tonight' },
+import { GlassLoader } from '@/components/glass-loader'
+import { Reveal } from '@/components/reveal'
+import { SiteFooter } from '@/components/site-footer'
+import { SiteHeader } from '@/components/site-header'
+
+const signals = [
+  ['Taste', 'Crisp, bitter, smoky, bright'],
+  ['Mood', 'Slow evening or loud celebration'],
+  ['Moment', 'Occasion, place and company'],
+  ['Budget', 'A match that respects the night'],
 ]
-
-function Header() {
-  return (
-    <header className="absolute inset-x-0 top-0 z-10">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-6 md:px-10" aria-label="Main navigation">
-        <a href="#top" className="font-serif text-xl leading-none tracking-tight md:text-2xl">
-          <span className="block">THE SIP</span>
-          <span className="block">SOCIETY</span>
-        </a>
-        <div className="hidden items-center gap-8 text-sm uppercase tracking-[0.14em] md:flex">
-          <a className="transition-colors hover:text-primary" href="#journey">Explore</a>
-          <a className="transition-colors hover:text-primary" href="#zero">Zero proof</a>
-          <a className="transition-colors hover:text-primary" href="#jaipur">Jaipur</a>
-          <span className="h-5 w-px bg-border" aria-hidden="true" />
-          <a className="flex items-center gap-2 transition-colors hover:text-primary" href="#journey">
-            <Search className="size-4" aria-hidden="true" /> Search
-          </a>
-        </div>
-        <a href="#journey" className="hidden rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-transform hover:-translate-y-0.5 md:block">
-          Find my sip
-        </a>
-        <a href="#journey" className="rounded-full border border-border p-3 md:hidden" aria-label="Skip to Find my sip">
-          <Menu className="size-5" aria-hidden="true" />
-        </a>
-      </nav>
-    </header>
-  )
-}
-
-function Hero() {
-  return (
-    <section id="top" className="relative flex min-h-screen items-end overflow-hidden md:items-center">
-      <Image src="/images/hero-glass.png" alt="A rose and amber cocktail in a coupe glass" fill priority sizes="100vw" className="object-cover object-[62%_center] md:object-center" />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,var(--background)_0%,color-mix(in_oklab,var(--background)_82%,transparent)_42%,color-mix(in_oklab,var(--background)_10%,transparent)_78%)]" />
-      <div className="relative mx-auto flex w-full max-w-7xl flex-col items-start gap-7 px-5 pb-20 pt-36 md:px-10 md:pb-16">
-        <p className="text-sm uppercase tracking-[0.24em] text-secondary">Personal pours, thoughtfully found</p>
-        <h1 className="max-w-3xl text-balance font-serif text-6xl leading-[0.88] tracking-[-0.055em] sm:text-7xl md:text-8xl lg:text-[7.5rem]">
-          What should I drink tonight?
-        </h1>
-        <p className="max-w-md text-pretty text-base leading-relaxed text-foreground/75 md:text-lg">
-          Your personalized guide to excellent cocktails, zero-proof pours and nights worth remembering.
-        </p>
-        <a href="#journey" className="flex items-center gap-3 border-b border-secondary pb-2 text-sm uppercase tracking-[0.16em] text-secondary">
-          Begin your pour <ArrowDown className="size-4" aria-hidden="true" />
-        </a>
-      </div>
-    </section>
-  )
-}
-
-function Journey() {
-  return (
-    <section id="journey" className="px-5 py-24 md:px-10 md:py-36">
-      <div className="mx-auto flex max-w-7xl flex-col gap-16">
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-5 text-center">
-          <p className="text-sm uppercase tracking-[0.24em] text-primary">The art of you, crafted</p>
-          <h2 className="text-balance font-serif text-5xl leading-none tracking-tight md:text-7xl">One night. One perfect pour.</h2>
-          <p className="text-pretty leading-relaxed text-muted-foreground">Tell us what the evening feels like. We&apos;ll turn a few details into a drink that fits.</p>
-        </div>
-        <ol className="grid gap-px overflow-hidden rounded-3xl border border-border bg-border md:grid-cols-4">
-          {journey.map((step, index) => (
-            <li key={step.label} className="flex min-h-64 flex-col justify-between gap-8 bg-background p-7">
-              <span className="font-mono text-sm text-secondary">0{index + 1}</span>
-              <div className="flex flex-col gap-3">
-                <h3 className="font-serif text-3xl">{step.label}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{step.detail}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <a href="#jaipur" className="mx-auto flex items-center gap-3 rounded-full bg-primary px-7 py-4 font-medium text-primary-foreground transition-transform hover:-translate-y-0.5">
-          Find my sip <ArrowRight className="size-4" aria-hidden="true" />
-        </a>
-      </div>
-    </section>
-  )
-}
-
-function Jaipur() {
-  return (
-    <section id="jaipur" className="border-y border-border px-5 py-20 md:px-10 md:py-28">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="flex flex-col items-start gap-7 lg:pr-12">
-          <p className="text-sm uppercase tracking-[0.24em] text-primary">Launching first in the Pink City</p>
-          <h2 className="text-balance font-serif text-6xl leading-[0.9] tracking-tight md:text-8xl">Jaipur first.</h2>
-          <p className="max-w-lg text-pretty text-lg leading-relaxed text-foreground/70">A city with impeccable taste deserves a better way to choose what comes next. Join the first circle of drinkers shaping Drink in Jaipur.</p>
-          <a href="mailto:hello@drink.club?subject=Jaipur%20waitlist" className="rounded-full border border-primary px-7 py-4 text-primary transition-colors hover:bg-primary hover:text-primary-foreground">Join the Jaipur waitlist</a>
-        </div>
-        <div className="overflow-hidden rounded-[2rem] border border-secondary/40 bg-card p-3">
-          <Image src="/images/jaipur-duotone.png" alt="Hawa Mahal in Jaipur at dusk" width={1024} height={1024} sizes="(min-width: 1024px) 55vw, 100vw" className="aspect-[4/5] w-full rounded-3xl object-cover" />
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function ZeroProof() {
-  return (
-    <section id="zero" className="px-5 py-20 md:px-10 md:py-28">
-      <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-cream text-ink lg:grid-cols-2">
-        <div className="p-3">
-          <Image src="/images/zero-percent-mocktail.png" alt="Watermelon, lime and mint zero-proof drink" width={1024} height={1024} sizes="(min-width: 1024px) 50vw, 100vw" className="aspect-square w-full rounded-3xl object-cover" />
-        </div>
-        <div className="flex flex-col items-start justify-center gap-7 px-7 py-14 md:px-14 lg:px-16">
-          <span className="rounded-full bg-rose-brand px-4 py-2 text-sm font-medium uppercase tracking-[0.16em]">The 0% path</span>
-          <h2 className="text-balance font-serif text-5xl leading-[0.95] tracking-tight md:text-7xl">0% is a first-class seat.</h2>
-          <p className="text-pretty text-lg leading-relaxed text-ink/70">Complexity, ceremony and refreshment without compromise. Our zero-proof matches get the same attention as every other pour.</p>
-          <a href="#journey" className="flex items-center gap-3 border-b border-ink pb-2 font-medium">Explore 0% <ArrowRight className="size-4" aria-hidden="true" /></a>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="border-t border-border px-5 py-10 md:px-10">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 text-sm text-muted-foreground md:flex-row md:items-end md:justify-between">
-        <p className="font-serif text-3xl text-foreground">Drink, Jaipur.</p>
-        <div className="flex flex-wrap gap-6">
-          <a className="hover:text-foreground" href="#journey">Find my sip</a>
-          <a className="hover:text-foreground" href="#zero">Zero proof</a>
-          <a className="hover:text-foreground" href="mailto:hello@drink.club">Contact</a>
-        </div>
-        <p>© 2026 Drink. Please enjoy responsibly.</p>
-      </div>
-    </footer>
-  )
-}
 
 export function DrinkLanding() {
   return (
     <main className="overflow-hidden">
-      <Header />
-      <Hero />
-      <Journey />
-      <Jaipur />
-      <ZeroProof />
-      <Footer />
+      <GlassLoader />
+      <SiteHeader />
+
+      <section className="relative min-h-screen overflow-hidden pt-32">
+        <div className="absolute inset-0 ink-grid opacity-35" aria-hidden="true" />
+        <div className="relative mx-auto grid min-h-[calc(100vh-8rem)] max-w-7xl items-center gap-10 px-5 pb-16 md:px-10 lg:grid-cols-[1.08fr_0.92fr]">
+          <div className="flex flex-col items-start gap-7">
+            <p className="border-l-2 border-primary pl-4 text-xs font-bold uppercase tracking-[0.22em] text-primary">Jaipur-first · Alcoholic and 0%</p>
+            <h1 className="max-w-4xl text-balance font-serif text-6xl leading-[0.88] tracking-[-0.055em] sm:text-7xl lg:text-[7.4rem]">
+              Tonight has a taste. <em className="font-normal text-primary">Find yours.</em>
+            </h1>
+            <p className="max-w-xl text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
+              Find My Sip turns your taste, mood, occasion and budget into a drink recommendation you can understand—not a list to scroll through.
+            </p>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <Link href="/find-my-sip" className="flex items-center justify-center gap-3 bg-primary px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5">
+                Preview Find My Sip <ArrowRight aria-hidden="true" />
+              </Link>
+              <Link href="/zero-percent" className="flex items-center justify-center gap-3 border border-foreground px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] transition-colors hover:bg-foreground hover:text-background">
+                Explore the 0% path
+              </Link>
+            </div>
+            <a href="#how" className="mt-5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+              See how it works <ArrowDown aria-hidden="true" />
+            </a>
+          </div>
+          <div className="relative mx-auto w-full max-w-lg border border-foreground/20 bg-card p-3 shadow-[18px_18px_0_var(--primary)]">
+            <Image src="/images/hero-glass.png" alt="A composed cocktail photographed as an editorial still life" width={1024} height={1024} priority sizes="(min-width: 1024px) 40vw, 90vw" className="aspect-[4/5] w-full object-cover saturate-[0.65] sepia-[0.12]" />
+            <div className="absolute bottom-7 left-7 bg-background px-4 py-3 font-serif text-2xl italic">Made for this moment.</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" className="border-y border-border bg-card px-5 py-24 md:px-10 md:py-32">
+        <Reveal className="mx-auto flex max-w-7xl flex-col gap-14">
+          <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">The drink-first difference</p>
+            <div className="flex flex-col gap-6">
+              <h2 className="max-w-4xl text-balance font-serif text-5xl leading-[0.95] tracking-tight md:text-7xl">Not where should we go. First, <em>what fits tonight?</em></h2>
+              <p className="max-w-2xl text-pretty leading-relaxed text-muted-foreground">A structured recommendation—not an AI guess—maps the details of your night to an explainable sip.</p>
+            </div>
+          </div>
+          <ol className="grid border border-border md:grid-cols-2 lg:grid-cols-4">
+            {signals.map(([label, detail], index) => (
+              <li key={label} className="flex min-h-56 flex-col justify-between gap-8 border-b border-border p-6 last:border-b-0 md:border-r md:odd:border-r lg:border-b-0 lg:last:border-r-0">
+                <span className="text-xs font-bold text-primary">0{index + 1}</span>
+                <div className="flex flex-col gap-2">
+                  <h3 className="font-serif text-3xl">{label}</h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">{detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </Reveal>
+      </section>
+
+      <section className="px-5 py-24 md:px-10 md:py-32">
+        <Reveal className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-2">
+          <div className="order-2 flex flex-col items-start gap-6 lg:order-1">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Signature story</p>
+            <h2 className="text-balance font-serif text-5xl leading-[0.95] md:text-7xl">Build the recommendation, ingredient by ingredient.</h2>
+            <p className="max-w-xl text-pretty leading-relaxed text-muted-foreground">Scroll through the logic behind a Jaipur evening: the mood sets the base, taste shapes the pour, the occasion adds detail and your preferences finish it.</p>
+            <Link href="/how-it-works" className="flex items-center gap-3 border-b border-foreground pb-2 text-sm font-bold uppercase tracking-[0.14em]">How matching works <ArrowRight aria-hidden="true" /></Link>
+          </div>
+          <div className="order-1 border border-border bg-foreground p-8 text-background lg:order-2">
+            <div className="flex aspect-square items-center justify-center border border-background/20">
+              <Martini className="size-36 text-secondary" strokeWidth={1} aria-hidden="true" />
+            </div>
+            <p className="pt-5 text-xs uppercase tracking-[0.2em] text-background/60">Interactive cocktail story arrives in checkpoint 3</p>
+          </div>
+        </Reveal>
+      </section>
+
+      <section className="border-y border-border bg-foreground px-5 py-24 text-background md:px-10 md:py-32">
+        <Reveal className="mx-auto grid max-w-7xl gap-px bg-background/20 lg:grid-cols-2">
+          <article className="flex min-h-[32rem] flex-col justify-between gap-10 bg-foreground p-8 md:p-12">
+            <Sparkles className="size-8 text-secondary" aria-hidden="true" />
+            <div className="flex flex-col items-start gap-5">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-secondary">Find My Sip · Hero feature</p>
+              <h2 className="font-serif text-5xl leading-none md:text-6xl">A recommendation with a reason.</h2>
+              <p className="max-w-lg leading-relaxed text-background/65">A guided teaser for taste, mood, occasion, budget, strength and preference. No booking. No delivery. Just a clearer choice.</p>
+              <Link href="/find-my-sip" className="border-b border-secondary pb-2 text-sm font-bold uppercase tracking-[0.14em] text-secondary">Preview the experience</Link>
+            </div>
+          </article>
+          <article className="flex min-h-[32rem] flex-col justify-between gap-10 bg-foreground p-8 md:p-12">
+            <CalendarDays className="size-8 text-secondary" aria-hidden="true" />
+            <div className="flex flex-col items-start gap-5">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-secondary">Party Planner · Supporting feature</p>
+              <h2 className="font-serif text-5xl leading-none md:text-6xl">Plan the pours before the place.</h2>
+              <p className="max-w-lg leading-relaxed text-background/65">Party details become drink recommendations, quantities and a shopping list. Venue ideas remain useful context—not the product.</p>
+              <Link href="/party-planner" className="border-b border-secondary pb-2 text-sm font-bold uppercase tracking-[0.14em] text-secondary">See the planner concept</Link>
+            </div>
+          </article>
+        </Reveal>
+      </section>
+
+      <section className="px-5 py-24 md:px-10 md:py-32">
+        <Reveal className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.95fr_1.05fr]">
+          <div className="border border-border bg-secondary p-3">
+            <Image src="/images/zero-percent-mocktail.png" alt="A layered watermelon, lime and mint zero-percent drink" width={1024} height={1024} sizes="(min-width: 1024px) 45vw, 90vw" className="aspect-square w-full object-cover saturate-[0.75]" />
+          </div>
+          <div className="flex flex-col items-start justify-center gap-6">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">0% is not an alternative route</p>
+            <h2 className="text-balance font-serif text-6xl leading-[0.9] md:text-8xl">Every bit of the ritual. None of the alcohol.</h2>
+            <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">For non-drinkers, designated drivers, health-conscious nights and anyone who simply prefers 0%. The complete experience stays open.</p>
+            <Link href="/zero-percent" className="flex items-center gap-3 bg-foreground px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-background">Enter the 0% experience <ArrowRight aria-hidden="true" /></Link>
+          </div>
+        </Reveal>
+      </section>
+
+      <section className="border-t border-border px-5 py-24 md:px-10 md:py-32">
+        <Reveal className="mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+          <div className="flex flex-col items-start gap-6">
+            <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Launching in one city, properly</p>
+            <h2 className="font-serif text-7xl leading-[0.85] md:text-9xl">Jaipur,<br /><em>first.</em></h2>
+            <p className="max-w-md leading-relaxed text-muted-foreground">Local tastes, local moments and a city-specific editorial guide before we earn the right to expand.</p>
+            <Link href="/jaipur" className="border-b border-foreground pb-2 text-sm font-bold uppercase tracking-[0.14em]">Explore the Jaipur launch</Link>
+          </div>
+          <div className="relative border border-border bg-primary p-3 shadow-[-18px_18px_0_var(--secondary)]">
+            <Image src="/images/jaipur-duotone.png" alt="Hawa Mahal representing the Jaipur-first launch" width={1024} height={1024} sizes="(min-width: 1024px) 55vw, 90vw" className="aspect-[5/4] w-full object-cover grayscale-[0.35]" />
+          </div>
+        </Reveal>
+      </section>
+
+      <section className="bg-primary px-5 py-20 text-primary-foreground md:px-10">
+        <Reveal className="mx-auto flex max-w-5xl flex-col items-center gap-7 text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.22em]">Early access · Jaipur</p>
+          <h2 className="text-balance font-serif text-6xl leading-[0.9] md:text-8xl">Help shape what Jaipur drinks next.</h2>
+          <p className="max-w-xl text-pretty leading-relaxed text-primary-foreground/75">Join the launch circle for product previews, 0% updates and the first invitation when Find My Sip goes live.</p>
+          <Link href="/early-access" className="bg-background px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground">Join the Jaipur list</Link>
+        </Reveal>
+      </section>
+
+      <SiteFooter />
     </main>
   )
 }

@@ -2,17 +2,18 @@
 
 ## Repository layout
 
-- The only real project is **`pour/`** — a Vite 8 + React 19 app (JS/JSX, no TypeScript). The root `README.md` is a stub ("EkQuarter"), not documentation.
-- The entire app lives in **`pour/src/App.jsx`**: drink data (`DRINKS`), the recommendation engine (`score()`), custom hooks (`useReduced`, `useInView`, `useScramble`, `useCountUp`), all components, and the full stylesheet as an inline `` `CSS` `` template string. Keep it single-file; don't extract components or move CSS to `App.css` unless explicitly asked.
-- Drink images are remote `https://picsum.photos/seed/<seed>/...` URLs keyed by each drink's `seed` field — no local image assets.
+- The real project is the **repository root** — a Next.js 16 (App Router) + React 19 + Tailwind 4 + TypeScript marketing site ("Drink" / EkQuarter). Routes live in `app/` (a `[slug]` catch-all driven by `lib/marketing-pages.ts` plus dedicated routes like `app/early-access/`), shared components in `components/`, content/helpers in `lib/`.
+- Design system: "Jaipur Editorial" — Newsreader serif + Manrope sans via next/font; tokens (`--limestone`, `--ink`, `--lac`, `--saffron`) in `app/globals.css`. Motion via the `motion` package; reduced-motion is first-class (`useReducedMotion` + CSS).
+- Persistence: Supabase project **EkQuarter** (MCP pre-connected). `public.waitlist_subscribers` is insert-only from clients (RLS, no read-back); early-access writes go through a Next.js server action using server-only env vars (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
+- The Phase 1 plan and checkpoint log live in **`docs/implementation-progress.md`** — read it first. Update it after every completed checkpoint.
 - `.fallow/` is an external tool's cache — never touch it.
 
-## Commands (run from `pour/`)
+## Commands (run from repo root)
 
-- `npm run dev` — dev server (smoke-test UI changes here)
-- `npm run build` — production build
-- `npm run lint` — ESLint (flat config in `eslint.config.js`)
-- **No test framework exists.** Verification = lint + build (+ manual dev-server check for UI work).
+- `pnpm dev` — dev server (smoke-test UI changes here)
+- `pnpm build` — production build (type-checks)
+- `pnpm start` — production server (post-build smoke)
+- **No lint script exists.** Verification = build + production-server smoke (+ manual dev check for UI work).
 
 ## Codebase conventions
 
@@ -45,7 +46,7 @@ Smallest change that fully solves the requirement. No unrelated rewrites, new de
 
 ### Verification is mandatory
 
-Not done until checks were actually run: `npm run lint` + `npm run build` in `pour/` (dev-server smoke test for UI). Never claim a check passed unless executed.
+Not done until checks were actually run: `pnpm build` at the repo root (+ production-server smoke test for UI). Never claim a check passed unless executed.
 
 ### Git safety
 

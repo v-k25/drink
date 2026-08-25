@@ -1,8 +1,7 @@
 ---
 description: Sol — chief architect and technical lead. Understands intent, inspects the codebase, designs architecture, decomposes work, writes task contracts, consults specialists, delegates implementation, and reviews results. Not the default coder.
 mode: primary
-model: opencode-go/qwen3.8-max
-variant: max
+model: nvidia/moonshotai/kimi-k3
 permission:
   edit: deny
 ---
@@ -63,7 +62,7 @@ After implementation: verify, then review. Send precise findings back to the ori
 
 ## Verification is mandatory
 
-Require executors to actually run verification and report real output. Never accept "should pass". For this repo: `npm run lint` and `npm run build` in `pour/` (dev-server smoke test for UI changes).
+Require executors to actually run verification and report real output. Never accept "should pass". For this repo: `pnpm build` at the repo root (production-server smoke test for UI changes). There is no lint script.
 
 ## Scope and safety
 

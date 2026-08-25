@@ -9,7 +9,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Structured matching', title: 'A recommendation you can understand.', body: 'A structured taxonomy maps your inputs to drink attributes. The result explains why it fits, so discovery feels useful rather than mysterious.', items: ['No LLM recommendation core', 'Clear attribute matching', 'Exclusions respected', 'Reasoning in plain language'] },
       { label: 'Supporting context', title: 'Then decide where the night goes.', body: 'Jaipur guides, venue mood and event context support the sip. We do not sell tickets, take bookings or turn your choice into a transaction.' },
     ],
-    cta: { title: 'See the matching idea before launch.', body: 'Explore the Find My Sip preview, then tell us what kind of release you want first.', primary: 'Preview Find My Sip', href: '/find-my-sip', secondary: 'Join early access', secondaryHref: '/early-access' },
+    cta: { title: 'See the matching idea before launch.', body: 'Explore the Find My Sip preview, then tell us what kind of release you want first.', primary: 'Preview Find My Sip', href: '/find-my-sip', secondary: 'Join early access', secondaryHref: '/early-access?from=how-it-works' },
   },
   'find-my-sip': {
     eyebrow: 'Hero feature · 02', title: 'Not “what is popular?” What fits you tonight?',
@@ -20,7 +20,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'The result', title: 'A match with a reason—not a roulette wheel.', body: 'Each recommendation will show the attributes that made it fit, suitable 0% alternatives and useful Jaipur context when available.' },
       { label: 'The promise', title: 'Discovery without pressure to purchase.', body: 'Find My Sip is designed as guidance. It does not sell alcohol, arrange delivery, accept bookings or promote irresponsible consumption.' },
     ],
-    cta: { title: 'Help shape the first sip matches.', body: 'Choose Find My Sip in early access and tell us whether your preference is alcoholic, 0%, or both.', primary: 'Request early access', href: '/early-access', secondary: 'Explore 0%', secondaryHref: '/zero-percent' },
+    cta: { title: 'Help shape the first sip matches.', body: 'Choose Find My Sip in early access and tell us whether your preference is alcoholic, 0%, or both.', primary: 'Request early access', href: '/early-access?from=find-my-sip', secondary: 'Explore 0%', secondaryHref: '/zero-percent' },
   },
   'party-planner': {
     eyebrow: 'Supporting feature · 03', title: 'Plan the drinks first. Let the rest support them.',
@@ -30,7 +30,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Drink plan', title: 'Recommendations become useful quantities.', body: 'The future planner turns suitable serves into quantities and a simple shopping list. This is guidance, not delivery or commerce.' },
       { label: 'Supporting suggestions', title: 'Venue context comes last, deliberately.', body: 'Only after the drink plan will Jaipur venue or event ideas appear, and only when they genuinely fit the occasion.' },
     ],
-    cta: { title: 'Planning a Jaipur gathering?', body: 'Register Party Planner interest so we can prioritize the most useful group-planning needs.', primary: 'Register interest', href: '/early-access', secondary: 'How it works', secondaryHref: '/how-it-works' },
+    cta: { title: 'Planning a Jaipur gathering?', body: 'Register Party Planner interest so we can prioritize the most useful group-planning needs.', primary: 'Register interest', href: '/early-access?from=party-planner', secondary: 'How it works', secondaryHref: '/how-it-works' },
   },
   jaipur: {
     eyebrow: 'Launch city · 04', title: 'Built Jaipur-first, not India-generic.',
@@ -40,7 +40,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Supporting discovery', title: 'Events and venues remain context.', body: 'A DJ night, poetry set, pool gathering or cruise-style party can explain the mood. It does not become a ticketing or booking flow.' },
       { label: 'Future cities', title: 'A local model designed to travel carefully.', body: 'The route structure can expand later, but only after Jaipur content and demand establish what deserves to scale.' },
     ],
-    cta: { title: 'Tell us you want Jaipur first.', body: 'Join the Jaipur list and select the experiences—Find My Sip, Party Planner or 0%—that matter to you.', primary: 'Join Jaipur access', href: '/early-access', secondary: 'Read the guides', secondaryHref: '/guides' },
+    cta: { title: 'Tell us you want Jaipur first.', body: 'Join the Jaipur list and select the experiences—Find My Sip, Party Planner or 0%—that matter to you.', primary: 'Join Jaipur access', href: '/early-access?from=jaipur', secondary: 'Read the guides', secondaryHref: '/guides' },
   },
   'zero-percent': {
     eyebrow: 'First-class path · 05', title: 'Zero percent. One hundred percent part of the night.',
@@ -50,7 +50,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Inclusive by design', title: 'No dead ends based on eligibility.', body: 'Anyone not eligible for alcohol-related features continues into a useful 0% experience with the same quality of explanation and city context.' },
       { label: 'Public surface', title: 'A more responsible way to lead.', body: 'The 0% story gives the public marketing site a broad, compliant and genuinely inclusive entry point without disguising the brand purpose.' },
     ],
-    cta: { title: 'Put 0% on the Jaipur launch list.', body: 'Register your interest and help us learn which alcohol-free profiles and occasions matter most.', primary: 'Choose 0% interest', href: '/early-access', secondary: 'See Find My Sip', secondaryHref: '/find-my-sip' },
+    cta: { title: 'Put 0% on the Jaipur launch list.', body: 'Register your interest and help us learn which alcohol-free profiles and occasions matter most.', primary: 'Choose 0% interest', href: '/early-access?from=zero-percent', secondary: 'See Find My Sip', secondaryHref: '/find-my-sip' },
   },
   guides: {
     eyebrow: 'Editorial · 06', title: 'Notes for a more considered night in Jaipur.',
@@ -60,7 +60,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Jaipur nights', title: 'Plan around the moment, not a ranking.', body: 'Seasonal rooftop evenings, intimate gatherings, live performances and late-night energy become useful context for choosing a drink.' },
       { label: 'Responsible culture', title: 'Good nights include good decisions.', body: 'Eligibility, pacing, hydration, transport planning and complete 0% options are part of the editorial system—not hidden legal copy.' },
     ],
-    cta: { title: 'Get the first Jaipur field notes.', body: 'Join early access to hear when the first guides and product preview are published.', primary: 'Notify me', href: '/early-access', secondary: 'Responsible use', secondaryHref: '/responsible-use' },
+    cta: { title: 'Get the first Jaipur field notes.', body: 'Join early access to hear when the first guides and product preview are published.', primary: 'Notify me', href: '/early-access?from=guides', secondary: 'Responsible use', secondaryHref: '/responsible-use' },
   },
   about: {
     eyebrow: 'About · 07', title: 'A drink-first answer to nightlife overload.',
@@ -70,7 +70,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Our boundary', title: 'Focused enough to be trustworthy.', body: 'We are not building ticketing, delivery, bookings, payments, vendor management or logistics. Supporting context must improve the sip decision.' },
       { label: 'Our launch', title: 'Jaipur deserves specificity.', body: 'Starting with one city lets the product learn local moments and language before considering broader expansion.' },
     ],
-    cta: { title: 'Follow the Jaipur build.', body: 'Join the early group helping us validate a more focused kind of nightlife companion.', primary: 'Join early access', href: '/early-access', secondary: 'Contact us', secondaryHref: '/contact' },
+    cta: { title: 'Follow the Jaipur build.', body: 'Join the early group helping us validate a more focused kind of nightlife companion.', primary: 'Join early access', href: '/early-access?from=about', secondary: 'Contact us', secondaryHref: '/contact' },
   },
   faq: {
     eyebrow: 'Questions · 08', title: 'Clear answers before the first recommendation.',
@@ -80,7 +80,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Do you sell or book?', title: 'No sales, delivery, tickets or reservations.', body: 'The product focuses on drink recommendations and drink-first planning. Venue and event information is supporting context only.' },
       { label: 'Is 0% supported?', title: 'Yes—from the first screen to the final result.', body: '0% is a complete path for preference, eligibility and occasion. It is not a secondary “other” category.' },
     ],
-    cta: { title: 'Still have a question?', body: 'Send a note or register for launch updates. We will expand support content as real questions emerge.', primary: 'Contact us', href: '/contact', secondary: 'Join access', secondaryHref: '/early-access' },
+    cta: { title: 'Still have a question?', body: 'Send a note or register for launch updates. We will expand support content as real questions emerge.', primary: 'Contact us', href: '/contact', secondary: 'Join access', secondaryHref: '/early-access?from=faq' },
   },
   contact: {
     eyebrow: 'Contact · 09', title: 'Tell us what Jaipur needs from a drink-first companion.',
@@ -90,7 +90,7 @@ export const marketingPages: Record<string, MarketingPageData> = {
       { label: 'Editorial', title: 'Local knowledge over generic listicles.', body: 'We welcome credible Jaipur perspectives on neighborhoods, culture, seasonality and responsible nightlife.' },
       { label: 'Support', title: 'A dedicated help center comes later.', body: 'support.mywebsite.in is reserved for the future product. Until then, the responsible-use and FAQ pages hold essential guidance.' },
     ],
-    cta: { title: 'Prefer launch updates?', body: 'Early access is the best place to register feature interest while the Jaipur release is being shaped.', primary: 'Join early access', href: '/early-access', secondary: 'Read FAQ', secondaryHref: '/faq' },
+    cta: { title: 'Prefer launch updates?', body: 'Early access is the best place to register feature interest while the Jaipur release is being shaped.', primary: 'Join early access', href: '/early-access?from=contact', secondary: 'Read FAQ', secondaryHref: '/faq' },
   },
   'responsible-use': {
     eyebrow: 'Responsible use · 10', title: 'A better night never requires alcohol.',

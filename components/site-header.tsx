@@ -27,7 +27,7 @@ export function SiteHeader() {
             <Link key={item.href} className="transition-colors hover:text-primary" href={item.href}>{item.label}</Link>
           ))}
         </div>
-        <Link href="/early-access" className="hidden bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5 md:block">
+        <Link href="/early-access?from=header" className="hidden bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5 md:block">
           Join early access
         </Link>
         <button
@@ -46,7 +46,7 @@ export function SiteHeader() {
             {navItems.map((item) => (
               <Link key={item.href} className="font-serif text-3xl" href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
             ))}
-            <Link href="/early-access" className="mt-2 bg-primary px-5 py-4 text-center text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground" onClick={() => setOpen(false)}>
+            <Link href="/early-access?from=header" className="mt-2 bg-primary px-5 py-4 text-center text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground" onClick={() => setOpen(false)}>
               Join early access
             </Link>
           </div>

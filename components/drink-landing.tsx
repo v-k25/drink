@@ -132,7 +132,7 @@ export function DrinkLanding() {
           <p className="text-xs font-bold uppercase tracking-[0.22em]">Early access · Jaipur</p>
           <h2 className="text-balance font-serif text-6xl leading-[0.9] md:text-8xl">Help shape what Jaipur drinks next.</h2>
           <p className="max-w-xl text-pretty leading-relaxed text-primary-foreground/75">Join the launch circle for product previews, 0% updates and the first invitation when Find My Sip goes live.</p>
-          <Link href="/early-access" className="bg-background px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground">Join the Jaipur list</Link>
+          <Link href="/early-access?from=home" className="bg-background px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground">Join the Jaipur list</Link>
         </Reveal>
       </section>
 

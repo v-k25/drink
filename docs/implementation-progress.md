@@ -1,6 +1,6 @@
 # Phase 1 implementation plan and progress
 
-Last updated: 2026-08-24
+Last updated: 2026-08-25
 
 ## Working agreement
 
@@ -138,6 +138,13 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 - Production waitlist persistence requires explicit provider, consent, privacy, and retention decisions.
 - Any feature serving transactions, operators, vendors, or logistics must be re-evaluated against the drink-first boundary.
 
+## Early-access data decisions
+
+- **Provider:** the existing EkQuarter Supabase project. The marketing server action inserts into `public.waitlist_subscribers` via PostgREST with a publishable key, under the existing insert-only RLS policy (no read-back).
+- **Consent:** an explicit required checkbox records agreement; `consent_at` timestamps it and `consent_version` tags the copy shown (`early-access-v1`).
+- **Retention:** rows are kept until the Jaipur launch, never sold or shared, and deleted on request via hello@mywebsite.in. Duplicate emails are rejected case-insensitively (`waitlist_email_unique`) and answered with an already-on-the-list state.
+- **Data minimization:** only email, selected interests, optional drink preference, CTA attribution and consent metadata are stored. No names, no analytics PII.
+
 ## Checkpoint log
 
 - [x] **0.1 — Phase 1 architecture:** Reframed scope as the marketing website, defined roadmap, sitemap, boundaries, motion direction, content needs, metrics, compliance assumptions, and risks.
@@ -147,10 +154,10 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 - [x] **1.2 — Signature story:** Implemented the sticky scroll-built cocktail with progressive liquid, ice and garnish layers using Motion `useScroll`/`useTransform`; added a complete static reduced-motion state and responsive stacked layout.
 - [x] **1.3 — Supporting stories:** Added Party Planner, first-class 0%, Jaipur-first, early-access and responsible-use narratives while keeping venues and events supporting-only.
 - [x] **2.1 — Marketing routes:** Built static, metadata-aware routes for How It Works, Find My Sip, Party Planner, Jaipur, 0%, Guides, About, FAQ, Contact and Responsible Use with a reusable editorial layout and substantive, scope-safe copy.
-- [ ] **3.1 — Early access:** Add segmented, consent-aware demand capture after integration approval.
+- [x] **3.1 — Early access:** Added the /early-access route with segmented, consent-aware capture: a validated server action writes to Supabase waitlist_subscribers (interests, preference, CTA attribution, consent version) under the existing insert-only RLS policy, with duplicate handling, a honeypot and the five early-access analytics events.
 - [ ] **4.1 — SEO and analytics:** Route metadata, sitemap/robots, structured data, event taxonomy, and internal linking.
 - [ ] **5.1 — Final validation:** Responsive, keyboard, reduced motion, progressive enhancement, route integrity, console, build, and performance checks.
 
 ## Current checkpoint
 
-**3.1 — Early access** is next. The marketing narrative, route set and both signature motion moments are complete; the next checkpoint adds persistent, segmented Jaipur demand capture after database integration verification.
+**4.1 — SEO and analytics** is next. Early-access capture is live on Supabase; the next checkpoint formalizes route metadata, sitemap/robots, structured data, the full event taxonomy and internal linking.

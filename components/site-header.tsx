@@ -3,6 +3,7 @@
 import { Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
+import { trackEvent } from '@/lib/analytics'
 
 const navItems = [
   { href: '/find-my-sip', label: 'Find My Sip' },
@@ -18,16 +19,34 @@ export function SiteHeader() {
   return (
     <header className="absolute inset-x-0 top-0 z-40 border-b border-border/60 text-foreground">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5 md:px-10" aria-label="Main navigation">
-        <Link href="/" className="font-serif text-xl leading-none tracking-tight" onClick={() => setOpen(false)}>
+        <Link
+          href="/"
+          className="font-serif text-xl leading-none tracking-tight"
+          onClick={() => {
+            trackEvent('cta_clicked', { source: 'logo', destination: '/' })
+            setOpen(false)
+          }}
+        >
           <span className="block">THE SIP</span>
           <span className="block">SOCIETY</span>
         </Link>
         <div className="hidden items-center gap-7 text-xs font-medium uppercase tracking-[0.14em] lg:flex">
           {navItems.map((item) => (
-            <Link key={item.href} className="transition-colors hover:text-primary" href={item.href}>{item.label}</Link>
+            <Link
+              key={item.href}
+              className="transition-colors hover:text-primary"
+              href={item.href}
+              onClick={() => trackEvent('cta_clicked', { source: `nav:${item.label.toLowerCase()}`, destination: item.href })}
+            >
+              {item.label}
+            </Link>
           ))}
         </div>
-        <Link href="/early-access?from=header" className="hidden bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5 md:block">
+        <Link
+          href="/early-access?from=header"
+          className="hidden bg-primary px-5 py-3 text-xs font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5 md:block"
+          onClick={() => trackEvent('cta_clicked', { source: 'header', destination: '/early-access?from=header' })}
+        >
           Join early access
         </Link>
         <button
@@ -44,9 +63,26 @@ export function SiteHeader() {
         <div className="border-t border-border bg-background px-5 py-6 lg:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-5">
             {navItems.map((item) => (
-              <Link key={item.href} className="font-serif text-3xl" href={item.href} onClick={() => setOpen(false)}>{item.label}</Link>
+              <Link
+                key={item.href}
+                className="font-serif text-3xl"
+                href={item.href}
+                onClick={() => {
+                  trackEvent('cta_clicked', { source: `nav:${item.label.toLowerCase()}`, destination: item.href })
+                  setOpen(false)
+                }}
+              >
+                {item.label}
+              </Link>
             ))}
-            <Link href="/early-access?from=header" className="mt-2 bg-primary px-5 py-4 text-center text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground" onClick={() => setOpen(false)}>
+            <Link
+              href="/early-access?from=header"
+              className="mt-2 bg-primary px-5 py-4 text-center text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground"
+              onClick={() => {
+                trackEvent('cta_clicked', { source: 'header', destination: '/early-access?from=header' })
+                setOpen(false)
+              }}
+            >
               Join early access
             </Link>
           </div>

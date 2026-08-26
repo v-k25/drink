@@ -1,6 +1,6 @@
 # Phase 1 implementation plan and progress
 
-Last updated: 2026-08-25
+Last updated: 2026-08-26
 
 ## Working agreement
 
@@ -155,9 +155,9 @@ A future **Sip Intent** score will weight stronger actions more heavily: complet
 - [x] **1.3 — Supporting stories:** Added Party Planner, first-class 0%, Jaipur-first, early-access and responsible-use narratives while keeping venues and events supporting-only.
 - [x] **2.1 — Marketing routes:** Built static, metadata-aware routes for How It Works, Find My Sip, Party Planner, Jaipur, 0%, Guides, About, FAQ, Contact and Responsible Use with a reusable editorial layout and substantive, scope-safe copy.
 - [x] **3.1 — Early access:** Added the /early-access route with segmented, consent-aware capture: a validated server action writes to Supabase waitlist_subscribers (interests, preference, CTA attribution, consent version) under the existing insert-only RLS policy, with duplicate handling, a honeypot and the five early-access analytics events.
-- [ ] **4.1 — SEO and analytics:** Route metadata, sitemap/robots, structured data, event taxonomy, and internal linking.
+- [x] **4.1 — SEO and analytics:** Fixed the slug-page double brand-suffix title bug; added canonical and OpenGraph url/siteName to the root layout; shipped sitemap.xml and robots.txt routes; embedded Organization/WebSite JSON-LD globally and FAQPage JSON-LD on /faq; introduced a typed event taxonomy (cta_clicked, cocktail_story_milestone, returning_visitor) wired through a TrackedLink component, header and marketing-page CTAs, scroll milestones and a privacy-conscious visitor flag; extended footer internal links.
 - [ ] **5.1 — Final validation:** Responsive, keyboard, reduced motion, progressive enhancement, route integrity, console, build, and performance checks.
 
 ## Current checkpoint
 
-**4.1 — SEO and analytics** is next. Early-access capture is live on Supabase; the next checkpoint formalizes route metadata, sitemap/robots, structured data, the full event taxonomy and internal linking.
+**5.1 — Final validation** is next. SEO and analytics shipped: sitemap, robots, JSON-LD, typed events and internal links. The final checkpoint covers responsive, keyboard, reduced-motion, progressive-enhancement, route integrity, console, build and performance validation.

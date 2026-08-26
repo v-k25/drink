@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import { Manrope, Newsreader } from 'next/font/google'
+import { VisitorSignal } from '@/components/visitor-signal'
 import './globals.css'
 
 const newsreader = Newsreader({
@@ -24,11 +25,14 @@ export const metadata: Metadata = {
     'A Jaipur-first, drink-first nightlife companion matching taste, mood, occasion and budget with alcoholic and 0% recommendations.',
   generator: 'v0.app',
   keywords: ['drink recommendation Jaipur', 'Find My Sip', 'Jaipur nightlife guide', 'mocktails Jaipur', '0% drinks Jaipur'],
+  alternates: { canonical: '/' },
   openGraph: {
     title: 'Drink — Find your sip in Jaipur',
     description: 'A better answer to what you should drink tonight — alcoholic or 0%.',
     type: 'website',
     locale: 'en_IN',
+    url: 'https://mywebsite.in',
+    siteName: 'Drink',
   },
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
@@ -42,11 +46,31 @@ export const viewport: Viewport = {
   userScalable: true,
 }
 
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      name: 'Drink',
+      url: 'https://mywebsite.in',
+      email: 'hello@mywebsite.in',
+    },
+    {
+      '@type': 'WebSite',
+      name: 'Drink',
+      url: 'https://mywebsite.in',
+      inLanguage: 'en-IN',
+    },
+  ],
+}
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en-IN" className={`bg-background ${newsreader.variable} ${manrope.variable}`}>
       <body className="font-sans antialiased">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
         {children}
+        <VisitorSignal />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

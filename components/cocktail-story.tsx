@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'motion/react'
+import { trackEvent } from '@/lib/analytics'
 
 const stages = [
   ['01', 'The glass', 'A clean structure for a warm Jaipur night.'],
@@ -10,10 +11,23 @@ const stages = [
   ['04', 'The finish', 'A restrained garnish makes the recommendation yours.'],
 ]
 
+const MILESTONES = [25, 50, 75, 100] as const
+
 export function CocktailStory() {
   const targetRef = useRef<HTMLDivElement>(null)
+  const milestonesHit = useRef<Set<number>>(new Set())
   const reduceMotion = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: targetRef, offset: ['start start', 'end end'] })
+
+  useMotionValueEvent(scrollYProgress, 'change', (progress) => {
+    const percent = progress * 100
+    for (const threshold of MILESTONES) {
+      if (percent >= threshold && !milestonesHit.current.has(threshold)) {
+        milestonesHit.current.add(threshold)
+        trackEvent('cocktail_story_milestone', { percent: threshold })
+      }
+    }
+  })
 
   const liquidScale = useTransform(scrollYProgress, [0.18, 0.72], [0.05, 1])
   const iceOpacity = useTransform(scrollYProgress, [0.12, 0.28], [0, 1])

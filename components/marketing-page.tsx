@@ -2,6 +2,7 @@
 
 import { ArrowRight, Check, MapPin, Sparkles } from 'lucide-react'
 import Link from 'next/link'
+import { trackEvent } from '@/lib/analytics'
 import { Reveal } from '@/components/reveal'
 import { SiteFooter } from '@/components/site-footer'
 import { SiteHeader } from '@/components/site-header'
@@ -18,6 +19,8 @@ export type MarketingPageData = {
 const icons = [Sparkles, Check, MapPin]
 
 export function MarketingPage({ data }: { data: MarketingPageData }) {
+  const ctaPrefix = `cta:${data.eyebrow.split('·')[0].trim().toLowerCase().replace(/\s+/g, '-')}`
+
   return (
     <main>
       <SiteHeader />
@@ -65,8 +68,22 @@ export function MarketingPage({ data }: { data: MarketingPageData }) {
             <p className="max-w-xl leading-relaxed text-background/65">{data.cta.body}</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href={data.cta.href} className="inline-flex items-center justify-center gap-2 bg-primary px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-primary-foreground transition-transform hover:-translate-y-0.5">{data.cta.primary}<ArrowRight className="size-4" aria-hidden="true" /></Link>
-            {data.cta.secondary && data.cta.secondaryHref ? <Link href={data.cta.secondaryHref} className="inline-flex items-center justify-center border border-background/35 px-6 py-4 text-sm font-bold uppercase tracking-[0.12em]">{data.cta.secondary}</Link> : null}
+            <Link
+              href={data.cta.href}
+              className="inline-flex items-center justify-center gap-2 bg-primary px-6 py-4 text-sm font-bold uppercase tracking-[0.12em] text-primary-foreground transition-transform hover:-translate-y-0.5"
+              onClick={() => trackEvent('cta_clicked', { source: `${ctaPrefix}:primary`, destination: data.cta.href })}
+            >
+              {data.cta.primary}<ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+            {data.cta.secondary && data.cta.secondaryHref ? (
+              <Link
+                href={data.cta.secondaryHref}
+                className="inline-flex items-center justify-center border border-background/35 px-6 py-4 text-sm font-bold uppercase tracking-[0.12em]"
+                onClick={() => trackEvent('cta_clicked', { source: `${ctaPrefix}:secondary`, destination: data.cta.secondaryHref ?? '' })}
+              >
+                {data.cta.secondary}
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>

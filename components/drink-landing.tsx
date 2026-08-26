@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowRight, CalendarDays, Sparkles } from 'lucide-react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { TrackedLink } from '@/components/tracked-link'
 
 import { CocktailStory } from '@/components/cocktail-story'
 import { GlassLoader } from '@/components/glass-loader'
@@ -33,12 +33,12 @@ export function DrinkLanding() {
               Find My Sip turns your taste, mood, occasion and budget into a drink recommendation you can understand—not a list to scroll through.
             </p>
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Link href="/find-my-sip" className="flex items-center justify-center gap-3 bg-primary px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5">
+              <TrackedLink trackSource="home:hero:find-my-sip" href="/find-my-sip" className="flex items-center justify-center gap-3 bg-primary px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-primary-foreground transition-transform hover:-translate-y-0.5">
                 Preview Find My Sip <ArrowRight aria-hidden="true" />
-              </Link>
-              <Link href="/zero-percent" className="flex items-center justify-center gap-3 border border-foreground px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] transition-colors hover:bg-foreground hover:text-background">
+              </TrackedLink>
+              <TrackedLink trackSource="home:hero:zero-percent" href="/zero-percent" className="flex items-center justify-center gap-3 border border-foreground px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] transition-colors hover:bg-foreground hover:text-background">
                 Explore the 0% path
-              </Link>
+              </TrackedLink>
             </div>
             <a href="#how" className="mt-5 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
               See how it works <ArrowDown aria-hidden="true" />
@@ -84,7 +84,7 @@ export function DrinkLanding() {
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-secondary">Find My Sip · Hero feature</p>
               <h2 className="font-serif text-5xl leading-none md:text-6xl">A recommendation with a reason.</h2>
               <p className="max-w-lg leading-relaxed text-background/65">A guided teaser for taste, mood, occasion, budget, strength and preference. No booking. No delivery. Just a clearer choice.</p>
-              <Link href="/find-my-sip" className="border-b border-secondary pb-2 text-sm font-bold uppercase tracking-[0.14em] text-secondary">Preview the experience</Link>
+              <TrackedLink trackSource="home:feature:find-my-sip" href="/find-my-sip" className="border-b border-secondary pb-2 text-sm font-bold uppercase tracking-[0.14em] text-secondary">Preview the experience</TrackedLink>
             </div>
           </article>
           <article className="flex min-h-[32rem] flex-col justify-between gap-10 bg-foreground p-8 md:p-12">
@@ -93,7 +93,7 @@ export function DrinkLanding() {
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-secondary">Party Planner · Supporting feature</p>
               <h2 className="font-serif text-5xl leading-none md:text-6xl">Plan the pours before the place.</h2>
               <p className="max-w-lg leading-relaxed text-background/65">Party details become drink recommendations, quantities and a shopping list. Venue ideas remain useful context—not the product.</p>
-              <Link href="/party-planner" className="border-b border-secondary pb-2 text-sm font-bold uppercase tracking-[0.14em] text-secondary">See the planner concept</Link>
+              <TrackedLink trackSource="home:feature:party-planner" href="/party-planner" className="border-b border-secondary pb-2 text-sm font-bold uppercase tracking-[0.14em] text-secondary">See the planner concept</TrackedLink>
             </div>
           </article>
         </Reveal>
@@ -108,7 +108,7 @@ export function DrinkLanding() {
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">0% is not an alternative route</p>
             <h2 className="text-balance font-serif text-6xl leading-[0.9] md:text-8xl">Every bit of the ritual. None of the alcohol.</h2>
             <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">For non-drinkers, designated drivers, health-conscious nights and anyone who simply prefers 0%. The complete experience stays open.</p>
-            <Link href="/zero-percent" className="flex items-center gap-3 bg-foreground px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-background">Enter the 0% experience <ArrowRight aria-hidden="true" /></Link>
+            <TrackedLink trackSource="home:zero-percent" href="/zero-percent" className="flex items-center gap-3 bg-foreground px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-background">Enter the 0% experience <ArrowRight aria-hidden="true" /></TrackedLink>
           </div>
         </Reveal>
       </section>
@@ -119,7 +119,7 @@ export function DrinkLanding() {
             <p className="text-xs font-bold uppercase tracking-[0.22em] text-primary">Launching in one city, properly</p>
             <h2 className="font-serif text-7xl leading-[0.85] md:text-9xl">Jaipur,<br /><em>first.</em></h2>
             <p className="max-w-md leading-relaxed text-muted-foreground">Local tastes, local moments and a city-specific editorial guide before we earn the right to expand.</p>
-            <Link href="/jaipur" className="border-b border-foreground pb-2 text-sm font-bold uppercase tracking-[0.14em]">Explore the Jaipur launch</Link>
+            <TrackedLink trackSource="home:jaipur" href="/jaipur" className="border-b border-foreground pb-2 text-sm font-bold uppercase tracking-[0.14em]">Explore the Jaipur launch</TrackedLink>
           </div>
           <div className="relative border border-border bg-primary p-3 shadow-[-18px_18px_0_var(--secondary)]">
             <Image src="/images/jaipur-duotone.png" alt="Hawa Mahal representing the Jaipur-first launch" width={1024} height={1024} sizes="(min-width: 1024px) 55vw, 90vw" className="aspect-[5/4] w-full object-cover grayscale-[0.35]" />
@@ -132,7 +132,7 @@ export function DrinkLanding() {
           <p className="text-xs font-bold uppercase tracking-[0.22em]">Early access · Jaipur</p>
           <h2 className="text-balance font-serif text-6xl leading-[0.9] md:text-8xl">Help shape what Jaipur drinks next.</h2>
           <p className="max-w-xl text-pretty leading-relaxed text-primary-foreground/75">Join the launch circle for product previews, 0% updates and the first invitation when Find My Sip goes live.</p>
-          <Link href="/early-access?from=home" className="bg-background px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground">Join the Jaipur list</Link>
+          <TrackedLink trackSource="home:early-access" href="/early-access?from=home" className="bg-background px-7 py-4 text-sm font-bold uppercase tracking-[0.14em] text-foreground">Join the Jaipur list</TrackedLink>
         </Reveal>
       </section>
 

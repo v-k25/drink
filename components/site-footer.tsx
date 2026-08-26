@@ -5,6 +5,9 @@ const links = [
   { href: '/faq', label: 'FAQ' },
   { href: '/responsible-use', label: 'Responsible use' },
   { href: '/contact', label: 'Contact' },
+  { href: '/about', label: 'About' },
+  { href: '/guides', label: 'Guides' },
+  { href: '/early-access', label: 'Early access' },
 ]
 
 export function SiteFooter() {

@@ -61,8 +61,8 @@ export function CocktailStory() {
             <div className="relative h-[27rem] w-72" role="img" aria-label="A cocktail glass progressively filled with ice, citrus liquid and a garnish as the page scrolls">
               <motion.div
                 aria-hidden="true"
-                className="absolute bottom-[4.5rem] left-[2.75rem] h-[15.5rem] w-[12.5rem] origin-bottom bg-secondary"
-                style={{ scaleY: reduceMotion ? 1 : liquidScale, clipPath: 'polygon(4% 0, 96% 0, 78% 100%, 22% 100%)' }}
+                className="absolute bottom-[7.625rem] left-[3.25rem] h-[12.5rem] w-[11.5rem] origin-bottom bg-secondary"
+                style={{ scaleY: reduceMotion ? 1 : liquidScale, clipPath: 'polygon(0% 0, 100% 0, 72% 100%, 28% 100%)' }}
               />
               <motion.div aria-hidden="true" className="absolute bottom-[9rem] left-[5.1rem] grid grid-cols-2 gap-3" style={{ opacity: reduceMotion ? 1 : iceOpacity }}>
                 <span className="size-14 rotate-12 border border-background/65 bg-background/15" />

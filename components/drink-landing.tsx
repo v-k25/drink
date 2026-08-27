@@ -17,7 +17,7 @@ const signals = [
 
 export function DrinkLanding() {
   return (
-    <main className="overflow-hidden">
+    <main className="overflow-x-clip">
       <GlassLoader />
       <SiteHeader />
 

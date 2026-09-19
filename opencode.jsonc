@@ -1,4 +1,4 @@
-﻿{
+{
   // OpenCode project config. Multi-agent team defined in .opencode/agents/.
   "$schema": "https://opencode.ai/config.json",
   // Sessions start in Sol (orchestrator) mode; switch agents via the agent picker.
@@ -8,6 +8,19 @@
       "type": "remote",
       "url": "https://mcp.supabase.com/mcp?project_ref=ojptrukzildmkilwponx&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching",
       "enabled": true
+    }
+  },
+  "provider": {
+    "openrouter": {
+      "models": {
+        "qwen/qwen3.8-27b:free": {
+          "name": "Qwen 3.8 27B",
+          "limit": {
+            "context": 262144,
+            "output": 235929
+          }
+        }
+      }
     }
   }
 }

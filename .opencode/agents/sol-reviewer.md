@@ -1,7 +1,7 @@
 ---
 description: Sol — independent final engineering reviewer. Read-only. Checks correctness, agreement with the approved plan, architecture consistency, security, error handling, tests, and contract mismatches. Reports BLOCKING / IMPORTANT / OPTIONAL findings.
 mode: subagent
-model: nvidia/moonshotai/kimi-k3
+model: nvidia/z-ai/glm-5.3-flash
 permission:
   edit: deny
 ---

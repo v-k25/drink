@@ -2,35 +2,38 @@
 
 ## Repository layout
 
-- The real project is the **repository root** — a Next.js 16 (App Router) + React 19 + Tailwind 4 + TypeScript marketing site ("Drink" / EkQuarter). Routes live in `app/` (a `[slug]` catch-all driven by `lib/marketing-pages.ts` plus dedicated routes like `app/early-access/`), shared components in `components/`, content/helpers in `lib/`.
-- Design system: "Jaipur Editorial" — Newsreader serif + Manrope sans via next/font; tokens (`--limestone`, `--ink`, `--lac`, `--saffron`) in `app/globals.css`. Motion via the `motion` package; reduced-motion is first-class (`useReducedMotion` + CSS).
-- Persistence: Supabase project **EkQuarter** (MCP pre-connected). `public.waitlist_subscribers` is insert-only from clients (RLS, no read-back); early-access writes go through a Next.js server action using server-only env vars (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
-- The Phase 1 plan and checkpoint log live in **`docs/implementation-progress.md`** — read it first. Update it after every completed checkpoint.
-- `.fallow/` is an external tool's cache — never touch it.
+This is a Next.js 16 App Router + React 19 + Tailwind 4 + TypeScript project. The current public surface is the neutral placeholder in `app/`; the preserved backend action is `app/early-access/actions.ts`.
 
-## Commands (run from repo root)
+Read `docs/implementation-progress.md` first and update it after every completed checkpoint.
 
-- `pnpm dev` — dev server (smoke-test UI changes here)
-- `pnpm build` — production build (type-checks)
-- `pnpm start` — production server (post-build smoke)
-- **No lint script exists.** Verification = build + production-server smoke (+ manual dev check for UI work).
+Persistence uses the existing EkQuarter Supabase project. Preserve the server action’s validation, consent, insert-only behavior, credentials, and environment files. New backend work is outside the current reset scope.
 
-## Codebase conventions
+`.fallow/`, `.opencode/`, `docs/agent-workflow.md`, recovery archives, product spreadsheets/images, and mockup output are preserved source-adjacent material. Do not touch them unless explicitly requested.
 
-- Reduced motion is first-class: `useReduced()` gates JS animation (scramble, count-up, custom cursor), and a `prefers-reduced-motion` CSS block nulls transitions. Preserve both paths when touching animation code.
-- Custom cursor renders only on `pointer: fine` devices; interactive controls carry `aria-pressed`/`aria-expanded`/`aria-label`.
-- Styling uses CSS custom properties (`--paper`, `--ink`, `--accent`, `--pour`) and `clamp()` for fluid type. Visual language: Fraunces display serif, Archivo body, paper/ink palette.
+## Commands and verification
+
+- `pnpm dev` — development server
+- `pnpm build` — production build
+- `pnpm start` — production server
+- `node node_modules/typescript/bin/tsc --noEmit` — standalone TypeScript check
+- `git diff --check` — whitespace check
+
+No lint script exists. Do not change package or lockfiles to hide dependency drift. If pnpm is unavailable, use Corepack with `pnpm_config_verify_deps_before_run=warn`.
+
+## Backend note
+
+The existing early-access server action and Supabase persistence are backend surfaces. Preserve their validation, consent and insert-only behavior. New product backend work is outside the current marketing-site phase.
 
 ## Engineering workflow (multi-agent)
 
-Team roles: **Sol** (architect/planner/reviewer), **Luna** (primary implementer), **Terra** (fast utility), **Kimi** (frontend/UI specialist), **DeepSeek** (backend specialist). Role prompts live in `.opencode/agents/`.
+Use only native ChatGPT/Codex agents for this project: **Astra** (director, architect and final reviewer), **Luna** (normal implementation), **Terra** (small mechanical work), **Sol** (optional bounded analysis/review). Do not invoke OpenCode or external-provider agents, including Kimi/DeepSeek. `.opencode/` is legacy configuration, not the active workflow. See `docs/agent-workflow.md`.
 
-1. Sol plans, defines acceptance criteria, and writes a narrow task contract.
-2. For significant frontend or backend work, Sol gets a specialist critique (Kimi / DeepSeek) before finalizing.
-3. Cheapest competent executor implements: Terra for tiny/mechanical work, Luna for normal work; Kimi/DeepSeek only when implementation depends on their specialty.
-4. Executor verifies (lint + build).
-5. Sol reviews; findings go back to the original executor for repair. Sol does not silently rewrite.
-6. Max 2 repair cycles; if the same failure repeats, Sol re-assesses architecture/spec first.
+1. Astra inspects the problem, freezes scope/interfaces and writes acceptance criteria.
+2. Default to one executor. Get a separate critique only for a concrete unresolved design, security or architecture risk.
+3. In native Codex explicitly select `gpt-5.6-luna` for normal implementation or `gpt-5.6-terra` for mechanical work, with `fork_turns: none` and a self-contained narrow contract. Astra uses `gpt-6-astra`; optional Sol uses `gpt-5.6-sol`. Never silently inherit Astra for routine execution.
+4. Parallelize disjoint files only, normally at most two workers. Workers run focused checks; one designated worker runs the integrated build. Never race builds in the shared checkout.
+5. Astra reviews the diff and verification evidence. Findings return to the same executor; Astra does not silently rewrite their implementation.
+6. Max two repair cycles; repeated failure triggers scope/architecture reassessment. No recursive delegation unless the contract explicitly permits it.
 
 ### Task contract
 
@@ -38,7 +41,7 @@ Every delegated task includes: objective, minimal context, allowed scope (files/
 
 ### Escalation and cost
 
-Cheapest competent route, in order: Terra → Luna → specialist → Sol. Escalate only when justified (task nature, repeated failure, high-risk, expensive-to-reverse). Investigate unclear bugs before delegating them.
+Choose the smallest competent model directly; do not run every role as an automatic chain. Keep handoffs concise, send file paths and relevant excerpts instead of brainstorming history, and reuse workers for repairs. Escalate to Astra for unresolved architecture. Report actual token usage only when available; never promise measured savings without measurements.
 
 ### Scope control
 
@@ -46,7 +49,7 @@ Smallest change that fully solves the requirement. No unrelated rewrites, new de
 
 ### Verification is mandatory
 
-Not done until checks were actually run: `pnpm build` at the repo root (+ production-server smoke test for UI). Never claim a check passed unless executed.
+Not done until checks were actually run: `pnpm build` and `node node_modules/typescript/bin/tsc --noEmit` at the repo root (+ production-server smoke test for UI). Current Next config skips build-time type validation, so the separate TypeScript check is required. If pnpm is absent from PATH, use Corepack. The local pnpm 11 installation currently warns about dependency/lockfile drift and ignored package.json overrides; do not silently reinstall or change dependencies to hide this. Never claim a check passed unless executed.
 
 ### Git safety
 
@@ -54,8 +57,22 @@ Commit only when asked. Never force-push, rewrite history, delete unrelated file
 
 ### Definition of done
 
-Implemented + acceptance criteria met + verification passed + no known blockers + Sol review passed (non-trivial changes) + final response states what changed and what was verified.
+Implemented + acceptance criteria met + verification passed + no known blockers + Astra review passed (non-trivial changes) + final response states what changed and what was verified.
 
-### Backend note
+## Scope and design
 
-This repo has no backend. DeepSeek involvement applies only if backend/server work is introduced.
+The current page is intentionally neutral: white background, system fonts, no forms, animation, analytics, old fonts, creative assets, sitemap, or inherited brand requirements. Future cream/berry/plum, rounded sans-serif, Jaipur, and togetherness ideas are exploratory only; do not implement them until requested and approved.
+
+## Graphify
+
+Graphify is installed locally. For broad exploration use `graphify query "question" --budget 1200` or `graphify affected "symbol" --depth 2`, and verify results against source. Refresh after a completed checkpoint with `graphify extract . --code-only --no-cluster --max-workers 2`. The ignored `graphify-out/` directory is navigation aid only.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

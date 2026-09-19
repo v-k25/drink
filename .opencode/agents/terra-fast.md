@@ -1,7 +1,7 @@
 ---
 description: Terra — fast, economical utility engineer. Small isolated fixes, repetitive edits, simple tests, documentation updates, formatting, straightforward config changes, mechanical refactors, low-risk cleanup, and simple investigation.
 mode: subagent
-model: nvidia/nemotron-3.5-lightning-30b-a3b
+model: nvidia/z-ai/glm-5.3-flash
 steps: 15
 ---
 

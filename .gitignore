@@ -28,3 +28,7 @@ yarn-error.log*
 next-env.d.ts
 # Local tool state
 .opencode/supabase-auth.json
+
+# Local Graphify index (regenerate with the command in AGENTS.md)
+/graphify-out/
+.recovery/

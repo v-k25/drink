@@ -1,163 +1,238 @@
-# Phase 1 implementation plan and progress
+# Implementation progress
 
-Last updated: 2026-08-26
+### Party Planner one-page Phase 1 checkpoint — 2026-09-19
 
-## Working agreement
+Converted the party planner from a 3-step wizard into a one-page flow per the Phase 1 contract: gate (step 0) → build surface (step 1) → receipt on the same page (step 2). Deleted the stepper nav + `steps` array, all "Step N of 3" eyebrows, the old People & budget step, and the build-surface Back button; `move(1)`/`move(2)` retargeted (gate/saved flows → 1, review → 2). The guests/budget form moved into a new Guests & budget `<dialog>` (invalid-only hints, same preset chips, Done) opened via the meter row's Edit pill and auto-opened exactly once on reaching the build surface with invalid basics (`basicsPrompted` ref). The desktop inventory aside was removed in favor of a floating plum cart pill (≥901px) that opens the existing inventory dialog restyled as a right-anchored slide-over; drag-drop validation moved unchanged onto the pill and the open dialog, with `inventoryTrigger` set by whichever surface opened it. Ten hand-authored category SVGs (`public/images/drinks/*.svg`, viewBox 100×112) render on product cards, inventory lines and receipt lines with placeholder fallback via `categoryArt`/`artFor`. Product grid is now `repeat(auto-fill, minmax(210px, 1fr))` with the old fixed-column breakpoints removed; `inventoryPanel` and stepper CSS deleted. toggleCategory/removeCategory/undoRemoval/showToast/reviewList, steppers, filters dialog, modals, print and affordability rule untouched. Phase 2 (copy polish, localStorage draft, chip tweaks, lean-lines dedup) deliberately not started.
 
-- Keep the active implementation plan and meaningful progress in this `docs/` folder.
-- Implement Phase 1 in small, independently verifiable checkpoints.
-- Update this document after every completed checkpoint.
-- Commit and push each completed checkpoint to the current GitHub branch.
+Verification executed: `node node_modules/typescript/bin/tsc --noEmit` exited 0; `$env:pnpm_config_verify_deps_before_run='warn'; corepack pnpm build` compiled successfully with /party-planner static (existing drift/override warnings only); `git diff --check` clean apart from pre-existing line-ending warnings; production smoke on port 3124 returned 200 with "Party Planner" content and 200 for `/images/drinks/beer.svg`; the smoke server was stopped after. Legacy `scripts/*.cjs` were not run (out of scope, assert older UI). No commit or deployment.
 
-## Product boundary
+### Agent model update - 2026-09-18
 
-Phase 1 is the Jaipur-first public marketing site for a drink-first nightlife companion. It explains and validates the product, captures segmented early-access intent, and prepares visitors for future product and support subdomains.
+All agents now use `nvidia/z-ai/glm-5.3-flash` (union-alpha stealth period expired; free qwen3.8-27b tier rate-limited; Supabase MCP temporarily disabled in opencode.jsonc).
 
-The product answers: **“Given my taste, mood, occasion, budget, preferences, and location, what should I drink tonight?”**
+### Budget-awareness - 2026-09-18
 
-- **Hero feature:** Find My Sip, presented as structured and explainable matching.
-- **Secondary feature:** Party Planner, always flowing from party details to drinks, quantities, and a shopping list before any supporting venue context.
-- **First-class path:** 0% recommendations for non-drinkers, designated drivers, health-conscious visitors, personal preference, and visitors ineligible for alcohol-related paths.
-- **Launch market:** Jaipur only. Architecture may scale to later cities, but Phase 1 copy and examples remain Jaipur-first.
-- **Future ecosystem:** `app.mywebsite.in` and `support.mywebsite.in` appear only as clearly labeled Coming Soon or Early Access destinations.
+Step 3 now adds client-side budget awareness in `planner.tsx` (scoped styles in `planner.module.css`): ₹2,000/₹5,000/₹10,000 budget presets with pressed state cleared by manual edits, a shelf line reporting remaining and per-guest budget, per-card fit tiers that de-emphasise non-fitting cards with normal Add disabled plus an "Add anyway (over budget)" escape hatch sharing the same add path, a "Within budget (N)" narrowing chip, and polite post-add budget announcements. All client-side over already-valid plans: over-budget lists remain valid; a single `fitsBudget` helper drives the narrowing and never mutates inventory. `planner-inventory-check.cjs` covers presets, tiers, escape hatch and chip behaviour; its clear-all expectation now uses the raised `limit0` because "Clear all filters" resets filters/search but not the show-more pagination, so the shelf correctly renders `limit0` products after clearing. Limits: Chromium-only, mocked services. Verification executed: Corepack production build and standalone TypeScript exited 0; planner-inventory, planner-ux, design-polish, party-planner-backend and early-access suites all passed; `git diff --check` clean with existing line-ending warnings; no listeners remained on 311x/312x loopback ports. Existing pnpm drift/override warnings remain; nothing installed, committed or deployed.
 
-## Phase roadmap
+### Category-shelf filters — 2026-09-17
 
-### Phase 1 — `mywebsite.in` marketing website (active)
+Added client-only brand and pack-size toggle chips to step 3 in `planner.tsx` with scoped wrapping styles in `planner.module.css`. Facets and stable counts come from the entire browsed category; selections use per-category records, OR within each facet and AND across facets and text search. Clear-all and empty-state Reset filters clear only that category's facets/search. The polite result line reports matches out of category total, independent of the unchanged six-card/+6 limit. Inventory membership, quantities, Add/drop validation, backend and saved-plan behavior remain unchanged; the new filter records reset alongside search when starting/editing a plan.
 
-**Objective:** Establish the drink-first proposition, validate Jaipur demand, demonstrate the product logic, publish useful editorial content, and capture segmented early-access intent.
+Extended `planner-inventory-check.cjs` without removing assertions or changing fixtures. Actual production runs passed filter counts/touch targets, keyboard toggles, two-brand and two-size OR, cross-facet/search AND, A/B persistence and scoped clearing, empty reset, identical inventory IDs/quantities/totals, zero filter POST requests, and filtered Add/native desktop drag at 1440/390; wrapping also checked at 320. Existing catalogue sufficed; deny-by-default mocks unchanged.
 
-**Includes:**
+Verification executed: `$env:pnpm_config_verify_deps_before_run='warn'; corepack.cmd pnpm build` exited 0; standalone TypeScript exited 0; `planner-inventory-check.cjs`, `planner-ux-check.cjs` (delegates to inventory suite), `design-polish-check.cjs`, `party-planner-backend-check.cjs` and `early-access-check.cjs` all passed. Production smoke curl returned 200; zero browser page errors. An additional isolated production browser probe printed/asserted `Showing 75 of 75 drinks` for both 6 and 12 rendered cards, `Showing 7 of 75 drinks` for Tuborg, and `Showing 0 of 75 drinks` for empty search, then successful reset. All test-owned process trees were stopped. Existing pnpm dependency-drift/ignored-override warnings remain; nothing installed, committed or deployed.
 
-- Marketing sitemap and responsive editorial design system.
-- Find My Sip and Party Planner explanation/teasers.
-- Signature loading-glass and scroll-built-cocktail motion stories.
-- Jaipur launch and first-class 0% narratives.
-- Guides, FAQs, responsible-use framing, contact, and early-access capture.
-- SEO, analytics taxonomy, accessibility, performance, and compliance review surfaces.
+Evidence: `output/playwright/planner-inventory/filtered-shelf-{1440,390}.png`, `filter-empty-{1440,390,320}.png`, plus regenerated existing suite evidence. Mobile filtered shelf and desktop empty state opened and inspected. Full-page captures stitch fixed UI at viewport-relative positions; not evidence of physical-device behavior. Chromium/mock-only; no real SMS/cloud writes. Director/Astra review pending. No fixture/backend/catalogue/dependency changes.
 
-**Excludes:** Functional recommendation engine, accounts, booking, ticketing, delivery, alcohol sales, payments, marketplace operations, vendor/promoter tools, and production support center.
+### Saved-compatibility and sticky repair — 2026-09-17
 
-**Success criteria:** Visitors understand the positioning and can express measurable Jaipur, Find My Sip, Party Planner, or 0% intent.
+Director initial review passed (source, model, CSS, screenshots) and the director personally executed planner-inventory-check and design-polish-check, both passing. This bounded repair closed the two named gaps; no other redesign.
 
-### Phase 2 — `app.mywebsite.in` product experience (future)
+1. Saved edge coverage: `scripts/fixtures/design-polish/mock-supabase.cjs` optionally seeds two complete, internally consistent historical snapshots (unique UUIDs, correct totals, guest counts 41/42) behind the test-process env flag `PLANNER_INVENTORY_SAVED_EDGES=1` — no app backdoor, no live data. One snapshot has two same-category Beer siblings with the second at a changed pack size (+100 ml); the other has one normal sibling plus one product ID absent from the current catalogue. `scripts/planner-inventory-check.cjs --saved-edges` passed against the production build: both snapshots pass normal `validSaved` validation, open and edit/reprice retain both siblings and quantities (2 and 3), the changed-size item blocks review with exactly one per-item review gate whose button focuses that item's own input, and the missing item blocks review, is labelled unavailable, and its removal preserves the valid sibling (quantity 2, review enabled). Exercised at 1440x900, 390x844, 320x480 (drawer) and 720x450.
 
-Structured Find My Sip engine first, then drink-first Party Planner. Accounts are added only if saved preferences or results justify them. Events and venues remain supporting context.
+2. Sticky/footer verification: per-control geometry evidence after focus + `scrollIntoView` is recorded in `output/playwright/planner-inventory/saved-edge-geometry.json` (control, footer, host rects, elementFromPoint hit test, sticky state) with viewport screenshots `edge-<kind>-<width>-<label>.png`. Measured separation held for the last item's quantity input, the size-review button and Remove at every tested viewport — no overlap was found, so no scroll-padding/bottom-reserve CSS change was made (`git diff --no-index` against the pre-repair CSS copy is empty). The 720x450 viewport is the documented 200% CSS-viewport-reflow equivalent of 1440x900; physical browser zoom was not available and is explicitly not claimed. Primary Review/Save actions remained reachable in every case.
 
-### Phase 3 — `support.mywebsite.in` support experience (future)
+3. Copy cleanup in `planner.tsx` only: singular item/pack wording in the add announcement, inventory count line, product badge, mobile bar button and receipt line; the subtotal now reads "Subtotal · incomplete" whenever any inventory item is unavailable, has an invalid/missing quantity or still needs size review, in both the desktop panel and mobile bar; existing `incompleteReason` text retained. No test assertion was weakened; the inventory suite additionally now asserts the per-item review-gate count and disabled review until review/removal.
 
-Searchable help, eligibility and responsible-use guidance, app troubleshooting, privacy/account help, and escalation paths informed by real support demand.
+Verification after the app edits, all executed: Corepack production build passed (existing pnpm drift/override warnings only), standalone `tsc --noEmit` passed, `party-planner-check`, `party-planner-backend-check` and `early-access-check` passed, `planner-inventory-check --saved-edges` passed, `design-polish-check` passed (including legacy saved flows), full `planner-inventory-check` passed with zero page errors and curl 200, and `planner-ux-check` passed. Pre-repair copies are `tmp/planner-inventory/*.before-director-repair`; app diff vs pre-repair is 9 insertions/6 deletions in planner.tsx only; CSS and actions.ts unchanged. Evidence screenshots `edge-*.png` were opened and inspected; only test-owned loopback servers were spawned and stopped. No deps/config/db/backend change, no commit or deployment. Director final approval remains pending on these returned results.
 
-## Phase 1 sitemap
+### Product inventory planner — 2026-09-17
 
-- `/` — primary drink-first narrative and conversion journey
-- `/how-it-works` — explainable matching logic
-- `/find-my-sip` — marketing teaser, not the full app
-- `/party-planner` — drink-first planning teaser
-- `/jaipur` — Jaipur launch and local intent
-- `/zero-percent` — complete 0% proposition
-- `/guides` — editorial index
-- `/guides/[slug]` — extensible article template
-- `/about` — brand positioning and principles
-- `/faq` — product, launch, 0%, and eligibility answers
-- `/contact` — business contact surface
-- `/responsible-use` — eligibility, safety, and compliance framing
-- `/early-access` — segmented demand capture
+Implemented the requested product-ID inventory (multiple distinct drinks per category), explicit +1-pack add/repeat merge, validated optional native desktop drop, active-category/search shelf, original neutral placeholder, per-item raw quantity validation/remove/size-review state, category-removal confirmation, sticky desktop inventory and mobile subtotal/review + native drawer. Added sticky step progression and final Save/Edit/export navigation. Existing wire/snapshot shapes remain; model permits distinct same-category lines while retaining canonical arithmetic/validation; the only action change deduplicates saved categories. No migration or live backend changes.
 
-## Homepage narrative order
+Final Corepack production build and standalone TypeScript passed. Model/backend/early-access checks passed (backend includes old/new saves, list/retry/edit and tampered snapshots). Final production design-polish, planner-ux and new planner-inventory scripts all executed and passed with curl 200, zero page errors, native drag/foreign drop, raw invalid/bounds, mixed/sibling totals, category confirmations, keyboard/touch drawer flow, deep-scroll actions, all-line guest exports and mocked sibling save/reopen/edit. Planner-ux now calls the stronger inventory suite instead of obsolete singleton/swap tests. Existing new/edit/delete and legacy saved regressions remain in design-polish. Browser checks use only loopback plus deny-by-default fixtures; only owned servers stopped. Existing pnpm/Git warnings remain; no installs, commit or deployment.
 
-1. Responsible Jaipur-first hero with Early Access and Find My Sip teaser actions.
-2. Find My Sip inputs and explainable matching proposition.
-3. Signature scroll-built cocktail: glass → ice → mixer → layers → garnish → match.
-4. Drink-first Party Planner flow.
-5. Complete 0% story.
-6. Jaipur launch story.
-7. Jaipur guides and responsible nightlife editorial previews.
-8. Segmented waitlist conversion block.
-9. Coming Soon references for the future app and support center.
-10. Responsible-use and legal-review footer.
+Before copies and dirty-tree evidence: `tmp/planner-inventory/`. Old-build second-Beer baseline intentionally failed; fresh build passes. Screenshots at 1440/768/390/320, drawer/reduced-height images, PDF, trace and results: `output/playwright/planner-inventory/`. Desktop shelf, mobile shelf/final, entry/category and drawer screenshots opened and inspected. Native Tab focus trace documents a browser-chrome BODY stop, then dialog return, never an underlying page control. Details and honest intermediate-failure account: `docs/planner-inventory.md`.
 
-## Design and motion direction
+Limits requiring director review: Chromium/mock-only; no real device swipe/on-screen keyboard/browser zoom test; reduced-height 320x480 is not actual keyboard evidence. Unavailable saved product and changed-size per-product handling are implemented but not injected into browser fixtures. No director approval claimed. Final `git diff --check` passed with existing line-ending warnings; `graphify extract . --code-only --no-cluster --max-workers 2` passed (268 nodes, 435 edges).
 
-### Jaipur Editorial
+### Planner UX repair - 2026-09-17
 
-- Warm limestone and paper surfaces, carbon ink, controlled lac red, and a small muted-saffron accent.
-- Authored editorial display serif paired with a restrained humanist/grotesk sans.
-- Asymmetric magazine composition, measured rules, folio details, ingredient notes, and generous whitespace.
-- Ingredient studies, vessels, hands, 0% serves, and Jaipur architectural details instead of bottle glamour or consumption-heavy party imagery.
-- No neon nightlife cliché, purple/pink gradients, glassmorphism, decorative glows, or generic AI-dashboard styling.
+Director final review passed on source and desktop/mobile screenshots (reported by the director; not direct director browser execution), with one narrow accessibility finding: quantity input IDs `quantity-*`, `quantity-hint-*` and `quantity-status-*` interpolated raw category names, so a category containing a space would split the `aria-describedby` ID list and break label/help linkage. Fixed in `app/party-planner/planner.tsx` by encoding a whitespace-free token (`encodeURIComponent`) for those DOM IDs and references; product/selection/data keys and visible labels were not changed. The catalogue has no multiword category, so `scripts/planner-ux-check.cjs` now validates that every generated quantity ID and `aria-describedby` reference token is whitespace-free and resolves, and that describedby text content exists. The first assertion sweep also covered unrelated dialogs and caught the pre-existing conditional `confirmation-description` reference (rendered only while that dialog is open); the assertion was rescoped to quantity inputs per the finding's scope, and the app needed no further change. Rerun after the fix: Corepack production build, standalone TypeScript, `party-planner-check`, `party-planner-backend-check`, `early-access-check`, `git diff --check` (existing line-ending warnings), `design-polish-check.cjs` and `planner-ux-check.cjs` all passed; zero page errors. Director review is recorded as passed for the scoped UX after this linkage fix.
 
-### Signature motion
+Implemented the frozen planner-only UX contract in `app/party-planner/planner.tsx` and `planner.module.css`. Replaced the perpetual hero with a 1.45rem Party Planner identity and 1.7–2rem step headings. Initial load no longer focuses the heading; user-driven step navigation and confirmed saved edits (including same-step edits) still do. Outline suppression is scoped to the noninteractive destination heading; keyboard skip-link, checkbox and input rings remain visible.
 
-Motion uses the official `motion` package and motion.dev patterns. The requested Motion MCP is unavailable in this environment, so official documentation is the source of truth and this limitation remains recorded.
+Production baseline diagnosis was observed before editing: Chromium focused the entry H2 on mount, with computed `rgb(16, 16, 16) auto 1px` outline. Clicking eligibility moved focus to INPUT and removed that H2 outline; checkbox border and geometry did not change. It was not a duplicate checkbox border. Baseline and after desktop/mobile entry screenshots plus activeElement/outline/geometry evidence are in `output/playwright/planner-ux/before-results.json` and `after-results.json`; after entry activeElement is BODY and heading outline remains absent before/after clicking.
 
-- **Loading glass:** lightweight clipped SVG liquid fill; no fake delay; content remains accessible; static filled-glass fallback under reduced motion.
-- **Scroll-built cocktail:** compositor-friendly SVG/CSS transforms driven by scroll progress. The illustration may be sticky on larger screens but remains in-flow and shortened on mobile.
-- **Supporting motion:** restrained reveals and tactile hover/focus feedback only.
-- **Avoid:** ambient loops, cursor followers, large parallax backgrounds, layout-property animation, long mobile sticky traps, and motion on essential copy.
+First product click now selects directly, leaving quantity blank. Selected product, pack ml, per-pack price, explicit pack count and line total are grouped; chosen cards retain `aria-pressed=true` and Selected text. Searches may hide the card but never the selected-item group. Replacement cards are dashed/amber and labelled Previewing replacement, retain `aria-pressed=false`, and require Confirm swap or Cancel. Original selection/quantity stay intact during preview. Quantity controls are labelled 44px minimum buttons; empty + chooses 1, minus is disabled at empty/1, plus at 1000, and both disable on nonempty invalid text. Invalid values remain verbatim with inline correction text. Changed pack sizes preserve the explicit review gate, including across further swaps, and its button focuses the quantity input through a category ref (never search). Category/product/pack counts are explicit. Budget/shortfall/completeness feedback sits near review, labels incomplete subtotals and explicitly allows valid over-budget lists. Model/catalogue/actions/session/schema and all receipt/export/saved protections are unchanged.
 
-## Compliance assumptions
+Verification actually executed: Corepack fallback production build (`pnpm_config_verify_deps_before_run=warn corepack.cmd pnpm build`), standalone `node node_modules/typescript/bin/tsc --noEmit`, `node scripts/party-planner-check.cjs`, `node scripts/party-planner-backend-check.cjs`, `node scripts/early-access-check.cjs`, and `git diff --check` passed. Existing pnpm dependency/override and Git line-ending warnings remain; no install/config change. Updated `scripts/design-polish-check.cjs` to assert first-click selection and blank quantity rather than redundant confirmation; its complete production regression passed including guest exports, saved save/open/edit, same-step destination focus, Cancel/Escape, failed/busy/retry deletion. New `scripts/planner-ux-check.cjs` passed its mock-only production curl 200 and browser regression: compact steps 1–4, task controls in view at 390x844, no overflow at 1440/768/390/320, keyboard rings and checkbox Space, first-click/persistent selection, blank/+/-/typed/bounds/invalid counts, show-more/search retention, two-category whole-basket arithmetic, replacement Cancel/Confirm, changed-size invalid-count gate and quantity focus, cheapest shortfall, canonical final receipt and category removal. Zero page errors. Cached Playwright and Chromium 1228 were used via the supplied environment overrides. Only test-owned loopback servers were stopped; no live SMS/persistence writes.
 
-- Public marketing remains alcohol-adjacent, not a direct alcohol advertisement or purchase surface.
-- 0% content remains fully useful and never becomes a dead end.
-- Copy and visuals must not target minors or imply risky, excessive, status-based, or performance-enhancing consumption.
-- Eligibility and state sensitivity are acknowledged without blocking general or 0% content.
-- All launch copy, imagery, promotions, consent language, and state-specific treatment require qualified India-focused legal review.
+Evidence: before copies and preexisting dirty-tree capture in `tmp/planner-ux/*.baseline`, `status-before.txt`, `dirty-before.diff`; incremental per-file diffs in `tmp/planner-ux/*.diff`; screenshots of entry/form/categories/selection/quantity/replacement/final at the specified widths in `output/playwright/planner-ux/`. Entry before/after, selected mobile and replacement desktop were visually inspected. Graphify refresh `graphify extract . --code-only --no-cluster --max-workers 2` passed (256 nodes, 411 edges). Limits: Chromium-only, mocked account services; real phone/cloud setup deliberately untested. No commit/deployment. No known implementation blocker; independent director/Astra review remains pending.
 
-## Content and data requirements
+### Design polish convergence - 2026-09-17
 
-- Drink taxonomy, taste attributes, strength and budget bands, mood/occasion mappings, preference exclusions, and explainable match language.
-- 0% category definitions with equal recommendation depth.
-- Party-size and future quantity assumptions plus shopping-list definitions.
-- Jaipur neighborhoods, local nightlife categories, credible sources, and city visual assets.
-- Approved brand story, FAQ, privacy/data-use, eligibility, responsible-use, consent, and legal-review copy.
-- Editorial briefs for Jaipur discovery, occasions/moods, drink education, 0% culture, and responsible nightlife.
+Director source/visual review of app diffs and home/dialog screenshots passed with no blocking UI issue (reported by the director; not direct director browser execution). Fixed the reproducibility finding: `scripts/design-polish-check.cjs` now loads maintained `scripts/fixtures/design-polish/mock-upstream.cjs`, which requires its sibling `mock-supabase.cjs`, not temporary mocks. Synthetic credentials, in-memory persistence and deny-by-default upstream behavior are retained. Audit output remains in `tmp/design-polish/`, created recursively if absent. Existing temporary mocks remain untouched. No app/backend/config/dependency/environment changes; prior production build remains valid, so no rebuild was run.
 
-## Analytics and validation framework
+After final fixture/script edits, `node scripts/design-polish-check.cjs` exited 0 with: `PASS: production responsive homepage/planner, local font/icons, guest export, all confirmation cancel/Escape/focus/confirm, nested edit and mocked delete failure/busy/retry; no live writes.` Overrides: `PLAYWRIGHT_MODULE=C:\Users\vritr\AppData\Local\npm-cache\_npx\31e32ef8478fbf80\node_modules\playwright`; `PLAYWRIGHT_CHROMIUM_EXECUTABLE=C:\Users\vritr\AppData\Local\ms-playwright\chromium-1228\chrome-win64\chrome.exe`. Standalone `node node_modules/typescript/bin/tsc --noEmit` passed. `git diff --check` passed with existing line-ending warnings. `graphify extract . --code-only --no-cluster --max-workers 2` passed (238 nodes, 385 edges). Fresh screenshots/results are in `output/playwright/allcheers-design-polish/`; before copies are `tmp/design-polish/*.before-convergence`. Only the test-owned server was stopped. Chromium/mock-only limitations remain; no live SMS/data writes, commit or deployment. No remaining blocker for the scoped fixture repair.
 
-Phase 1 events:
+### Design polish recheck - 2026-09-17
 
-- Early-access form viewed, started, submitted, succeeded, and failed.
-- CTA source and destination.
-- Find My Sip teaser started/completed.
-- Party Planner teaser engaged.
-- Scroll-built cocktail milestones reached.
-- Jaipur interest and 0% interest selected.
-- Feature navigation and guide engagement.
-- Returning visitor signal with privacy-conscious implementation.
+The requested website implementation and original baseline/diff evidence were already present at this session's start. Preserved that dirty tree rather than reimplementing it. This pass changed only `scripts/design-polish-check.cjs` and the two polish documentation files, plus permitted evidence/Graphify output. Added regression coverage for cancelling an edit with a divergent draft, confirmed saved edit while already on step 3 (both dialogs close and destination focus is restored), and denied-clipboard share fallback. Added full authoritative font/license links and verified both Git blob hashes. Corrected the model-swap note: Terra, not Terraform; other agents were unchanged by that swap.
 
-Primary metrics are waitlist conversion, CTA click-through, teaser interaction, Jaipur-interest capture, 0% interest, content engagement, and returning visitors.
+Verification executed here: `$env:pnpm_config_verify_deps_before_run='warn'; corepack.cmd pnpm build` passed (pnpm absent from PATH); `node node_modules/typescript/bin/tsc --noEmit`, `node scripts/party-planner-check.cjs`, `node scripts/party-planner-backend-check.cjs`, `node scripts/early-access-check.cjs`, and `git diff --check` passed. Existing dependency drift/ignored overrides and Git line-ending warnings remain; nothing was installed. The first production browser attempt could not launch because cached Playwright expected missing Chromium 1243. Rerun used existing Chromium 1228 via `PLAYWRIGHT_CHROMIUM_EXECUTABLE`, with cached Playwright via `PLAYWRIGHT_MODULE`; passed responsive home/planner at 1440/768/390/320, local font and icon HTTP checks, guest export, Cancel/Escape focus/state, same-step edit, mocked delete failure/busy/duplicate suppression/retry. A subsequent full-suite run passed build/types/focused checks but exposed an overly strict exact accessible-name selector in the new clipboard-fallback test. Replaced it with an explicit fallback-status wait and readonly-textarea assertion; the complete production browser regression then passed, including fallback. No application change was needed. Only its own loopback production server was stopped. No live account/SMS/data writes. Graphify code-only refresh passed: 230 nodes, 377 edges.
 
-A future **Sip Intent** score will weight stronger actions more heavily: completed recommendation, saved/shared match, shopping-list generation, and context exploration. It is not treated as a Phase 1 product KPI.
+Evidence: original pre-polish copies/diffs remain at `tmp/design-polish/baseline/` and `tmp/design-polish/diff/`. This session's before copies are `tmp/design-polish/*.before-recheck`, incremental diffs are `tmp/design-polish/recheck-*.diff`; fresh screenshots and results are `output/playwright/allcheers-design-polish/`. Desktop/mobile home and dialog screenshots were inspected. Limits: Chromium-only automated browser coverage; real phone/cloud-save setup remains deliberately untested; director/Astra review has NOT been performed for this checkpoint. Earlier statements below are historical evidence, not checks performed by this session.
 
-## Risks and review gates
+### Design polish checkpoint - 2026-09-17
 
-- India alcohol-adjacent marketing is legally and state sensitive; qualified legal review is mandatory before launch.
-- Motion may harm low-end mobile performance; simplify aggressively based on measurement.
-- Jaipur localization must use credible local knowledge rather than generic nightlife SEO copy.
-- Production waitlist persistence requires explicit provider, consent, privacy, and retention decisions.
-- Any feature serving transactions, operators, vendors, or logistics must be re-evaluated against the drink-first boundary.
+With the owner-approved bounded polish applied after the Luna model restart, verification passes: production build, standalone TypeScript, focused planner/backend/early-access checks, whitespace check and the new `scripts/design-polish-check.cjs` production browser regression (own server, deny-by-default in-memory mock upstream, external requests blocked) all passed. Homepage/`/party-planner` showed no horizontal overflow at 1440/768/390/320; local Nunito Sans and icon/favicon returned 200 from loopback; hero links/anchors resolve; guest export and copy fallback work; new/edit/delete confirmations cancel via button and Escape with state and trigger focus preserved; confirmed edit closes both dialogs and focuses the new heading; mocked saved delete shows failure/busy/async/error handling with no duplicate request and a successful retry; no real auth, persistence or SMS writes. Screenshots and `results.json` are in `output/playwright/allcheers-design-polish/`; baseline/incremental diff paths are in `tmp/design-polish/`. Existing pnpm drift/override warnings persist unchanged; no install was performed to mask them. The homepage links to the working Party Planner. No commit or deployment.
 
-## Early-access data decisions
+- Self-hosted properly licensed Nunito Sans variable (400–800, `app/fonts/NunitoSans-variable.ttf` + `OFL.txt` from google/fonts `ofl/nunitosans`; git hash-object verified against the API listing; via `next/font/local` swap with Arial fallback; body/controls inherit; no runtime external fonts).
+- Tracking retuned (headings `-.055em`→`-.035em`, logo `-.07em`→`-.045em`); legibility confirmed in the four-width screenshots.
+- Homepage keeps the emotional hero; concise lede replaces redundant copy; working-planner CTA first with honest future finder; helper explains guest print/share; list preview says "Print or share your list"; header prioritises the planner with early access retained below.
+- All three `window.confirm` uses replaced by one small branded native `<dialog>` (branded copy, Cancel initial focus, Escape cancel via `cancel` event, native focus containment, trigger focus restored on cancel). Saved-plans dialog stays open on cancel; confirmed edit closes both and focuses the new heading; delete preserves busy/error/async semantics with no mutation before confirmation and no duplicate on repeated clicks; `autoFocus` may add a redundant `autofocus` attribute during hydration but did not break native focus in browser checks.
+- New original favicon: `app/icon.svg` + `public/favicon.ico` (16/32/48 frames; no new dependency; served 200 in browser checks).
+- Withdrawn contrast criticism not acted on; palette, reduced-motion behaviour and layout patterns preserved.
 
-- **Provider:** the existing EkQuarter Supabase project. The marketing server action inserts into `public.waitlist_subscribers` via PostgREST with a publishable key, under the existing insert-only RLS policy (no read-back).
-- **Consent:** an explicit required checkbox records agreement; `consent_at` timestamps it and `consent_version` tags the copy shown (`early-access-v1`).
-- **Retention:** rows are kept until the Jaipur launch, never sold or shared, and deleted on request via hello@mywebsite.in. Duplicate emails are rejected case-insensitively (`waitlist_email_unique`) and answered with an already-on-the-list state.
-- **Data minimization:** only email, selected interests, optional drink preference, CTA attribution and consent metadata are stored. No names, no analytics PII.
+Evidence: baseline copies (`tmp/design-polish/baseline/`, suffixed `.baseline` so they are not compiler inputs), per-file incremental diffs (`tmp/design-polish/diff/`), production browser regression (`scripts/design-polish-check.cjs`, results/screenshots in `output/playwright/allcheers-design-polish/`, mock audit in `tmp/design-polish/mock-audit.json`, server log in `tmp/design-polish/production-server.log`). License provenance: Nunito Sans variable TTF and OFL.txt downloaded from google/fonts `ofl/nunitosans` main; git hash-object pins `ccc85657…`/`2ae17359…` match the GitHub API listing; OFL verified complete (correct header, closing section, 4393 bytes). Untouched: backend actions/session/model/catalogue, form fields/validation/consent, db/env/secrets, package/lock/config/agent files, noindex, existing images.
 
-## Checkpoint log
+Limits: Chromium-only browser coverage and mocked account persistence; real phone/SMS/cloud-save behavior remains untested. The graphify code-only refresh passed (230 nodes, 377 edges).
 
-- [x] **0.1 — Phase 1 architecture:** Reframed scope as the marketing website, defined roadmap, sitemap, boundaries, motion direction, content needs, metrics, compliance assumptions, and risks.
-- [x] **0.2 — Brand foundation:** Replaced the dark rose/brass theme with Jaipur Editorial limestone, carbon ink, lac red and muted saffron; changed typography to Newsreader and Manrope; updated metadata, browser theme and security headers.
-- [x] **0.3 — Motion foundation:** Installed Motion and added an accessible, non-blocking clipped-SVG glass loader plus reduced-motion-aware section reveals.
-- [x] **1.1 — Homepage shell:** Rebuilt the responsive navigation, hero, Find My Sip explanation, Party Planner/0%/Jaipur supporting stories, early-access conversion hierarchy and shared footer.
-- [x] **1.2 — Signature story:** Implemented the sticky scroll-built cocktail with progressive liquid, ice and garnish layers using Motion `useScroll`/`useTransform`; added a complete static reduced-motion state and responsive stacked layout.
-- [x] **1.3 — Supporting stories:** Added Party Planner, first-class 0%, Jaipur-first, early-access and responsible-use narratives while keeping venues and events supporting-only.
-- [x] **2.1 — Marketing routes:** Built static, metadata-aware routes for How It Works, Find My Sip, Party Planner, Jaipur, 0%, Guides, About, FAQ, Contact and Responsible Use with a reusable editorial layout and substantive, scope-safe copy.
-- [x] **3.1 — Early access:** Added the /early-access route with segmented, consent-aware capture: a validated server action writes to Supabase waitlist_subscribers (interests, preference, CTA attribution, consent version) under the existing insert-only RLS policy, with duplicate handling, a honeypot and the five early-access analytics events.
-- [x] **4.1 — SEO and analytics:** Fixed the slug-page double brand-suffix title bug; added canonical and OpenGraph url/siteName to the root layout; shipped sitemap.xml and robots.txt routes; embedded Organization/WebSite JSON-LD globally and FAQPage JSON-LD on /faq; introduced a typed event taxonomy (cta_clicked, cocktail_story_milestone, returning_visitor) wired through a TrackedLink component, header and marketing-page CTAs, scroll milestones and a privacy-conscious visitor flag; extended footer internal links.
-- [x] **5.1 — Final validation:** Crawled all 12 routes plus every internal href (200s, clean 404s, query-param safe), fixed missing /icon.svg and /apple-icon.png, enabled the Next image optimizer (hero PNG now served resized, ~180KB vs 639KB raw), verified progressive enhancement (no-JS form POST), reduced-motion dual paths, landmarks/aria wiring and page weight (22-47KB HTML).
+### Luna executor model swap - 2026-09-17
 
-## Current checkpoint
+The retired `nvidia/minimaxai/minimax-m3` model could not start, blocking the Luna executor. With explicit owner authorization, the single `model:` line in `.opencode/agents/luna-implementer.md` was replaced with `openrouter/stealth/union-alpha` (registered via the 2026-09-17 OpenRouter configuration below); no other agent content, permissions, credentials or configuration files were changed. `git diff --check` passed and the scoped diff confirmed the exact one-line replacement; `opencode models openrouter` confirmed `openrouter/stealth/union-alpha` remains registered. Because OpenCode loads configuration at startup, that running session kept the old Luna model until restart. This checkpoint changed Luna only: Terra (not Terraform) and all other agents were unchanged by the model swap. Website polish is tracked separately above. Configuration-only change; no build required.
 
-**Phase 1 is complete.** All checkpoints 0.1-5.1 shipped: narrative, routes, early-access capture on Supabase, SEO/analytics, and final validation. Next decisions: legal review of copy, analytics dashboard review after real traffic, and Phase 2 scoping (app.mywebsite.in).
+### OpenCode OpenRouter model connection - 2026-09-17
+
+Added `stealth/union-alpha` to the project OpenCode provider configuration so it appears as `openrouter/stealth/union-alpha` in the model picker and can accept image attachments. The existing OpenRouter credential remains in OpenCode auth storage; no API key was added to the repository. `opencode models openrouter` listed the model, the credential store reported OpenRouter authentication, and `opencode run --model openrouter/stealth/union-alpha` returned the expected `ROUTED` response.
+
+## Reset checkpoint — 2026-09-10
+
+The previous EkQuarter creative frontend and its supporting content, routes, assets, sitemap, theme configuration, and flowchart were removed. The root app now contains a neutral, accessible AllCheers placeholder with no forms, animation, analytics, external fonts, or design commitments.
+
+`app/early-access/actions.ts` remains byte-identical and disconnected so its validation, consent, and Supabase insert-only behavior are available for a future rebuild. The isolated recovery archive is `.recovery/before-allcheers-reset-20260910-001516.zip`; it is excluded from active source and design references.
+
+## Future work
+
+### Party Planner Supabase activation checkpoint - 2026-09-17
+
+Connected Supabase tools restored access to the existing EkQuarter project (`ojptrukzildmkilwponx`); no credentials were exposed or edited. Initial database operations timed out while the paused project resumed, then succeeded. The reviewed additive `party_plans` migration was applied verbatim and recorded as `20260917033539`; verification confirmed the table with row level security enabled, exactly four owner-scoped authenticated policies (`auth.uid() = user_id`), an active `updated_at` trigger, and no `anon` grants. Security advisors returned only three pre-existing WARN findings (the `quiz_throttle_count` SECURITY DEFINER function and disabled leaked-password protection); none originate from `party_plans`. Existing tables, waitlist data and all prior migrations are unchanged; no user-data writes were performed.
+
+The full local check suite re-passed: `node scripts/party-planner-check.cjs`, `node scripts/party-planner-backend-check.cjs`, `node scripts/early-access-check.cjs`, production build, standalone TypeScript and whitespace checks. A stale generated `.next/types/validator.ts` referencing the removed pre-reset `app/api/chat` route caused a transient standalone-TypeScript failure; the fresh production build regenerated the validator cleanly and standalone TypeScript passed with no manual edits and no source changes. Existing pnpm dependency-drift/ignored-override warnings remain. Graphify code-only refresh passed (208 nodes, 342 edges).
+
+Remaining owner steps before durable saves are live: enable/configure phone OTP and its SMS provider in the existing project's Auth settings, then perform one owner-operated login and save/reopen on the connected deployment. No real SMS was sent and no live user data was written. No homepage launch link, commit or deployment.
+
+Workflow exception: Terra and Luna executor models were unavailable during this checkpoint, so the director performed the bounded documentation edits directly. A separate sol-reviewer independently verified the live database state and passed the checkpoint.
+
+### Party Planner local implementation and review - 2026-09-15
+
+Implemented `/party-planner` with regional eligibility, four steps, 507 supplied catalogue products, strict manual quantities/INR validation, category search, preserved selections, whole-basket swap previews, pack-size quantity review, minimum-price shortfalls, canonical server review and labelled over-budget lists. Native print/share/copy work before sign-in. Mobile OTP/server cookies and owner-scoped snapshot CRUD are implemented with idempotent new-save retries and stale-update detection. Existing homepage/backend/data/environment/dependencies are preserved; no homepage launch link, migration, SMS, commit or deployment.
+
+Workflow exception disclosed to the owner: Luna's first UI delivery failed review; the same executor hit its usage limit on repair cycle 1. After the owner said continue, Astra completed the bounded UI repairs. Backend repair stayed with its original Luna executor. Astra performed source/production-browser review; no separate agent reviewed Astra's repairs.
+
+Final production build, standalone TypeScript, focused model/backend checks, existing mocked early-access regression and whitespace checks passed after all refinements. Production browser checks passed at 1440/768/390/320px, including no overflow, decimal budgets, search retention, swap arithmetic, pack-size guard, canonical final list, aborted-request recovery and copy fallback. The final build's minimum-price shortfall, quantity-review button, planner title and 320px product flow were rechecked successfully. Isolated mock-upstream production checks passed OTP, save/open, edit/reprice, reload, delete and signout with no live SMS/data writes. Printed saved snapshot is a single-page PDF with correct numbers and no application controls. Artifacts are in `output/playwright/allcheers-planner/`.
+
+Final Graphify refresh passed (208 nodes, 342 edges). All 12 protected file hashes and the workbook hash match the implementation baseline. Homepage, planner and robots HTTP checks returned 200; the initial planner HTML does not expose catalogue products before eligibility. Existing dependency-drift/ignored-override warnings and missing favicon remain. The mock-upstream server was stopped; the production preview is available at `http://127.0.0.1:3100/party-planner`. The live Supabase hostname still returns ENOTFOUND on recheck; activation steps and verification limits are recorded in `docs/allcheers-party-planner-implementation.md`. This is local implementation evidence, not a public-launch or live persistence completion claim.
+
+### Party Planner calculation and database-rule checkpoint - 2026-09-14
+
+Luna implemented the isolated calculation core and focused assertion check. Core checks and existing mocked early-access regression passed; initial standalone TypeScript passed before UI integration. Root reviewed the arithmetic contract and requested the exact list exclusions/price wording. UI/auth work remains in progress.
+
+The additive party_plans migration passed execution against a new isolated PostgreSQL 17 cluster under `tmp/planner/`, bound only to localhost port 55434. Root's `tmp/planner/rls-check.sql` verified owner access, cross-user read/update/delete isolation, rejection of forged-owner insert, anonymous denial and stale timestamp rejection. This is local migration/RLS evidence, not live Supabase verification. Preservation hashes confirm all 12 baseline marketing/backend/config/environment files unchanged. No Supabase migration or SMS sent. Integrated build/browser verification remains pending.
+
+### Party Planner implementation scope and catalogue checkpoint - 2026-09-14
+
+Owner authorized implementation and explicitly chose host-entered quantities (no serving recommendation), mobile OTP saves, and regional eligibility confirmation. Scope, minimal catalogue audit and staged acceptance are in `docs/allcheers-party-planner-implementation.md`. The read-only workbook audit confirms 507 unique Jaipur products across ten categories with positive numeric prices/sizes; current prices, stock, price dates and content rights remain unverified. A minimal JSON projection excludes descriptions, ratings and images, preserving the source workbook.
+
+Two Luna executors own disjoint core/UI and authentication/persistence files; root owns documentation, catalogue and review. Marketing and existing early-access surfaces are frozen. Supabase auth settings could not be read because the configured hostname returned ENOTFOUND; live phone-provider/database setup remains unverified. Implementation is in progress, not complete. No migration applied, SMS sent, commit or deployment.
+
+### Party Planner competitor-informed plan review - 2026-09-14
+
+At the owner's request, reviewed public LivCheers planner/product pages, Omni's Party Drink Calculator and Cocktailhire's planner. Sources, observed strengths, research limits and proposed AllCheers improvements are recorded in `docs/allcheers-party-planner-competitor-review.md`. The in-app browser was unavailable, so later LivCheers interactions were not verified; Total Wine was excluded after access/form-load failures.
+
+Revised `docs/allcheers-party-planner-plan.md` with budget/swap previews, category-local search, quantity explanations, guest-first export, native print output and acceptance criteria. Changed the recommendation from blocking all over-budget saves to allowing fully priced plans with explicit shortfalls. These remain proposals; quantity, eligibility, catalogue and account decisions are unresolved. Documentation only: marketing, backend, data, dependencies and assets untouched; no implementation, commit or deployment. Whitespace verification passed; build/UI checks and code-graph refresh are not applicable to this research checkpoint.
+
+### Functional Party Planner planning checkpoint - 2026-09-14
+
+Reviewed AGENTS.md, this progress log, the AllCheers brief, current marketing homepage, preserved early-access action and retained handbook renders (including full-size page 7). The original handbook PDF is missing from its recorded path; the plan distinguishes direct page-render review from the brief's prior full-document review. No fresh catalogue audit was performed.
+
+Proposed MVP scope, the four-step journey, measurable acceptance criteria, unresolved launch decisions and staged delivery are recorded in `docs/allcheers-party-planner-plan.md`. Quantity/allocation rules, eligibility, catalogue trust and authentication/persistence remain explicit launch decisions. One editable pack per category remains an internal-prototype allowance only. The proposal preserves the marketing site, existing backend/data and source materials; future additive backend work requires separate approval. No implementation, commit or deployment. Documentation-only whitespace verification passed; build and UI runtime checks are not applicable, and no code-graph refresh is needed for this planning-only checkpoint.
+
+### Party hero and motion refinement - 2026-09-14
+
+At the owner's request, replaced the seated social hero with a new imagined Jaipur-inspired night party: dancing adults, raised drinks and disco lighting. Built-in ImageGen created `public/images/allcheers-party-hero-v2.png`; the original remains preserved. The generation prompt and provenance are in `docs/allcheers-assets.md`.
+
+Luna implemented the bounded page/CSS change; Astra reviewed source and desktop/mobile production screenshots. Added a 500ms staggered hero-copy entrance, one 4-second image settle, subtle drink-image hover zoom and button lift, entirely in CSS. All animation and transitions are gated by `prefers-reduced-motion: no-preference`; reduced-motion content stays fully visible and static. No dependencies, form/backend changes or new functionality.
+
+Production build, standalone TypeScript and whitespace checks passed. Production browser checks confirmed the new hero loads, no overflow at 390/320px, finite single-run animations, and all animated targets static and opaque under reduced motion. Desktop/mobile crops passed visual review; screenshots are `output/playwright/allcheers-phase1/party-v2-desktop.png` and `party-v2-mobile.png`. Existing pnpm drift/override warnings and missing favicon remain. Graphify code-only refresh passed. The test server was stopped; no commit or deployment.
+
+### Phase 1 implementation and verification - 2026-09-14
+
+Implemented the approved marketing direction as responsive HTML/CSS: contrasted cream header, party hero, equal drink cards, a four-step planner and generic list, Jaipur launch band, early access, FAQ, responsible-use and privacy information. Finder/planner remain honest future-feature explanations; non-alcoholic catalogue coverage is explicitly still in development. The signup uses the byte-identical existing action, explicit Jaipur selection and consent, accessible feedback, retained values on validation/network errors and a disabled pending button. The automatic React form reset is prevented so checkbox selections survive a failed submission. There are no new dependencies, app backend, analytics, account flows or live catalogue claims. Search indexing remains disabled.
+
+Luna delivered the first implementation/build. Astra's browser review rejected its layout and form recovery; the same executor was sent the repair contract but hit its usage limit. After telling the owner, Astra took over the bounded repairs rather than silently substituting another worker. Final source and visual review passed. This workflow exception is recorded explicitly; there was no separate reviewer agent for Astra's repairs.
+
+Final production build (`pnpm_config_verify_deps_before_run=warn corepack.cmd pnpm build`), separate `node node_modules/typescript/bin/tsc --noEmit`, and `node scripts/early-access-check.cjs` passed. The runnable check mocks fetch and verifies validation, consent, honeypot, insert-only payload, 201 success, 409 duplicate, server error and network failure without using real credentials or making network requests. Existing pnpm dependency-drift and ignored-override warnings remain.
+
+Production Playwright review passed at 1440, 768, 390 and 320px with no horizontal overflow or broken section anchors. Images loaded through Next's responsive image endpoint. Keyboard skip link/focus, mobile menu and FAQ were exercised. Browser checks verified required email/Jaipur/consent, server validation retaining every field, aborted-network recovery retaining every field, pending disabled state, honeypot success and mocked duplicate feedback. No live Supabase insertion was performed. Homepage/robots/new hero returned 200; retired early-access route and old hero returned 404. No application page errors were seen on clean load. The pre-existing missing favicon returns 404; viewport switching can produce an unused-image-preload warning, and the deliberate network-abort test logs an expected request error.
+
+Final screenshots: `output/playwright/allcheers-phase1/desktop-1440.png`, `mobile-390.png` and `mobile-320.png`. Graphify code-only refresh passed (108 nodes, 116 edges), as did `git diff --check`. The generated hero and stock provenance/prompt are recorded in `docs/allcheers-assets.md`. Pinterest references, product data, mockup originals, recovery archive and legacy material were preserved. Backend, package/lock/config, environment and recovery hashes match the turn-start baseline. No commit or deployment. The production test server was stopped after verification.
+
+### Phase 1 scope and asset checkpoint - 2026-09-14
+
+The owner approved implementation from `output/allcheers-v2-party/home-desktop.png` and `home-mobile-refined.png`. Scope is frozen to one responsive marketing homepage with honest finder/planner previews, a generic planning list, Jaipur launch context, FAQ/responsible-use/privacy information and an early-access form reusing the unchanged server action. Acceptance includes desktop/mobile composition, keyboard access, visible consent and Jaipur selection, recoverable form states, independent-store purchasing language, production build, standalone TypeScript and production browser smoke. No app backend, account flow, analytics or live catalogue is included.
+
+Astra inspected the instructions, brief, approved mockups, source and photo shortlist; Luna is the sole implementation/build executor. Built-in ImageGen produced a standalone imagined party hero (visually inspected); the three recommended stock photos were copied unchanged into `public/images/`. Asset provenance and the final generation prompt are in `docs/allcheers-assets.md`. Pinterest remains reference-only. Backend/config/environment/recovery hashes were captured for final preservation review. Implementation and verification are in progress; this is not a completion claim.
+
+### Workspace readiness cleanup - 2026-09-14
+
+Confirmed the old frontend source and public assets were already removed by the reset. Removed only the remaining empty `components/ui`, `components`, `lib`, `public/images`, and `public` directories, after resolving their workspace paths and checking emptiness. README now points to the approved desktop/mobile party mockups, Phase 1 brief and photo research. Backend, environment files, dependencies, recovery archive, product data, tool configuration and output references were preserved. Existing uncommitted reset changes were left intact.
+
+Verification passed: production build using Corepack/pnpm, standalone TypeScript, production HTTP smoke (homepage 200 with placeholder text; retired early-access route and hero asset 404), and Graphify code-only refresh (94 nodes, 90 edges). Build retains existing dependency-drift and ignored-override warnings. Root review confirmed the bounded cleanup and accurate README; whitespace check passed. The temporary production server was stopped. Ready for the marketing frontend implementation; final hero selection and Pinterest reuse clearance remain asset decisions. No commit or deployment.
+
+### Pinterest image review - 2026-09-13
+
+At the owner's request, researched Pinterest and visually inspected eight downloaded previews. `output/photo-shortlist/pinterest-references/index.html` ranks the spritz close-up and warm gold party detail highest, records two secondary styling references and four rejected images. Metadata preserves pin URLs; the gold detail links to Disco Cubes on Instagram and the terracotta campaign was traced to Moriah Sawtelle's original portfolio. No commercial reuse clearance was obtained; these are research previews, not production assets. The evening Jaipur party hero remains unresolved. All eight JPEGs decoded and gallery file references exist. No application/backend changes; build and runtime checks are not applicable to this research-only checkpoint.
+
+### Stock photo shortlist - 2026-09-13
+
+The owner accepted the mockup direction and requested reusable web-sourced photography. Six candidates were downloaded and visually reviewed in `output/photo-shortlist/`; `index.html` presents them, and `manifest.json`/`README.md` record sources, photographers, licenses and limitations. Recommended section photos: amber cocktail, berry mocktail and Jaipur/Jal Mahal. The party toast is an alternate; the posed group photo is rejected as final hero. A stock image matching the evening Jaipur party hero has not yet been selected. Pexels and Unsplash license pages were checked, without asserting unverified model releases or endorsement. All six JPEGs decoded successfully; documentation whitespace check passed. No application/backend changes or build required for this asset-shortlisting checkpoint.
+
+### Party visual direction checkpoint - 2026-09-11
+
+The owner authorized using `output/` mockups as references and requested stronger alcoholic/non-alcoholic party expression. Reviewed all eight earlier design PNGs and researched Jimmy's, Seedlip and Ghia; sources and qualitative design conclusions are recorded in `output/allcheers-v2-party/research-and-direction.md`. Built-in ImageGen produced `home-desktop.png` and the selected single-column `home-mobile-refined.png`; exact prompts are alongside them. The earlier `home-mobile.png` is an intermediate tablet-like layout, superseded by the refined mobile concept.
+
+Visual review confirmed prominent drinks, evening party context, equal cocktail/non-alcoholic imagery, early-access messaging and readable principal copy. Mobile was refined to stack drink cards and move the list below its steps. These are raster design proposals, not implemented or approved pages. Production design must use a consistently contrasted header and replace the desktop's illustrative ingredient list with the generic planning preview used on mobile; no verified ingredient catalogue is implied. Existing non-alcoholic catalogue gaps remain distinct from the inclusive marketing direction. Documentation/artifact checks passed; no application source, backend, credentials or dependencies changed, so no build/UI runtime checks were rerun.
+
+Phase 1 scope confirmed by the owner: build the public marketing website first. The handbook supplies context for the two future product journeys; functional app work and dedicated support remain later phases. `docs/allcheers-brief.md` now records this boundary and a focused homepage/early-access proposal. Fresh visual direction is the next planning step. This documentation-only checkpoint passed `git diff --check`; no source changes or build/UI checks were needed.
+
+Fresh planning starts in `docs/allcheers-brief.md`. On 2026-09-10, the full 12-page AllCheers Developer Handbook v1.0 supplied by the owner was reviewed, including visual inspection of its scope, planner and design tables. The brief now records the product purpose, Find My Drink and Plan My Party journeys, Jaipur launch, purchasing boundary, source design specifications, and proposed versus confirmed requirements with page references. Product purpose and visitor actions are resolved. The handbook describes a functional app and an earlier design approval; the current marketing-only scope and subsequent clean-reset instruction remain distinguished pending the next scope/design decision. Documentation only changed; no app or backend implementation was started. Whitespace verification passed; build and UI checks were not rerun for this documentation-only checkpoint.
+
+1. Approve the AllCheers product brief and public information architecture.
+2. Approve a visual direction and content before implementation.
+3. Rebuild the public page and any routes deliberately from that brief.
+4. Reconnect early access using the preserved validation, consent, and insert-only contract.
+5. Add SEO, analytics, and assets only when their requirements are explicit; app and support remain future phases.
+
+## Verification
+
+The reset checkpoint was verified on 2026-09-10: `pnpm_config_verify_deps_before_run=warn corepack.cmd pnpm build` exited 0 and produced `.next/BUILD_ID`; `node node_modules/typescript/bin/tsc --noEmit` exited 0; and `git diff --check` exited 0. The build reported only existing pnpm dependency/lockfile and ignored override warnings. Production/dev browser smoke and Graphify refresh are handled separately.
+
+Final Astra review passed. Production startup and HTTP checks passed: homepage 200 with neutral content and noindex, robots disallow, and 13 retired routes/assets returning 404. Browser review passed at 1440x900 in development and 320x568 in production; mobile had no horizontal overflow. Screenshots are in `output/playwright/`. The browser's automatic favicon request returns 404 because the old icon was removed; development logs the unchanged report-only CSP notices. No application runtime error was observed. Standalone TypeScript passed again after dev startup. Graphify code-only refresh passed (94 nodes, 90 edges).
+
+The backend action, package manifest, lockfile, and Next/PostCSS/TypeScript configs match the recovery archive. Credentials and Supabase were not modified or exercised. Product data (the workbook and 507 images) and unapproved mockups remain stored separately and are not design references. No commit, push, or deployment was performed.
+
+### Party Planner UX refinement - 2026-09-19
+
+Implemented Option B redesign: merged the "Categories" and "Choose drinks" steps into one browse-and-build step (3 steps total), added card-level quantity steppers, a single budget meter, issue chips replacing completeness prose, an undo toast for category removal, auto-deselect of empty categories at review, and increased catalogue page size to 24. Files changed: app/party-planner/planner.tsx and app/party-planner/planner.module.css.
+
+Verification: `node node_modules/typescript/bin/tsc --noEmit` passed, `corepack pnpm build` passed (with `pnpm_config_verify_deps_before_run=warn`), `git diff --check` clean aside from pre-existing line-ending warnings.
+
+### Party Planner step 2 modernization - 2026-09-19
+
+Rebuilt step 2 of `planner.tsx` + `planner.module.css` around a sticky command bar (`.controls`, top 8px, z-index 2): budget meter restructured to a single row (track bar + inline Budget/remaining-over/per-guest figures), a horizontally scrolling category strip (`.categoryStrip`) with three distinct tab states (unselected / selected / `.categoryTabSelected` / browsing `.categoryTabActive` - fixing the previously indistinguishable selected-inactive state) and inline from-prices, and a compact filter row (search with aria-label + "Filters (n)" dialog trigger with aria-haspopup/aria-expanded + inline clear) that stays visible while the grid scrolls. Brand, pack-size and within-budget facets moved behind a native Filters `<dialog>` (`.filterPanel`; Escape/x/Done close, trigger focus restore, live grid updates behind it). Shelf grid is 3 columns on desktop with compact cards (12px padding, 80px artwork, shortened Add label with full aria-label); 2 columns on mobile >=381px, 1 at <=380px. All Option B behavior preserved: toggleCategory select/activate/deselect-with-undo, undo toast, card steppers, review guard + empty-category auto-deselect, 24-page pagination. Only planner.tsx and planner.module.css changed; model/actions/session/catalogue, other steps and all flows untouched.
+
+Verification executed: `node node_modules/typescript/bin/tsc --noEmit` exit 0; `='warn'; corepack pnpm build` compiled successfully with /party-planner static (existing pnpm drift/override warnings only); production smoke `Invoke-WebRequest http://localhost:3123/party-planner` returned 200 with the shell rendering (step 2 markup is client-side only after the eligibility gate, by design); `git diff --check` clean apart from pre-existing line-ending warnings. Limits: no interactive browser pass in this checkpoint; scripts/*.cjs suites assert the older UI (already outdated after the Option B checkpoint) and were not run.
+
+### Party Planner one-page planner - 2026-09-19
+
+Phase 1 of the approved two-phase redesign. Wizard killed in planner.tsx: stepper nav, steps array, all "Step N of 3" eyebrows and the build-surface Back button removed; flow is now step 0 = eligibility gate, step 1 = build surface, step 2 = receipt rendered on the same page (Edit list returns to the surface). New guests-&-budget .basicsPanel dialog opened from the meter's "Edit" pill (inputs + presets moved verbatim, hints only when invalid), auto-opening exactly once on arrival with unset basics via a asicsPrompted flag that suppresses all later auto-prompts. Desktop sticky inventory aside deleted; replaced by a floating plum .cartPill (bottom-right, Your list � N items � ?subtotal, display:none <=900px) that is also the drag-drop zone and opens the .inventoryDrawer dialog restyled as a right-anchored slide-over (>=901px; mobile bottom sheet unchanged); drop handlers are shared by pill and dialog. Ten hand-authored per-category SVGs added under public/images/drinks/ with a categoryArt map + placeholder fallback, used on cards, inventory lines and receipt thumbnails. Product grid switched to uto-fill, minmax(210px, 1fr) with all breakpoint overrides removed. toggleCategory/removeCategory/undo-removal/showToast/reviewList, card steppers, filters dialog, OTP, print styles, affordability rule and all a11y patterns preserved; model/actions/session/catalogue untouched.
+
+Verification executed (Sol review + checks): standalone TypeScript exit 0; $env:pnpm_config_verify_deps_before_run='warn'; corepack pnpm build compiled successfully with /party-planner static; production smoke returned 200 for /party-planner and two spot-checked category SVGs; git diff --check clean apart from pre-existing line-ending warnings. Line-by-line diff review confirmed all move call-sites retargeted, conditional hint wiring, shared drop zones, art map fallback, and removed .stepper/.inventoryPanel CSS. Limits: no interactive browser pass; scripts/*.cjs suites assert the older UI and were not run.
+
+### Party Planner polish pass - 2026-09-19
+
+Phase 2 of the approved redesign, on top of the one-page structure. Copy diet: always-visible "1�1,000 whole packs" hint lines deleted from card steppers and inventory lines (aria-describedby cleaned); invalid values show short corrective text only. Inventory lines are now lean readouts (N packs � ?price = ?total / "Set the quantity on the card") with cards as the only editable steppers; the pack-size review gate focuses and scroll-into-views the card input. Naming unified to "Your list" across drawer, mobile bar, receipt, confirmation eyebrow and share title (model.ts/planText untouched). additionStatus renders empty by default with the live region and min-height retained. localStorage auto-draft added (llcheers_planner_draft): mount-only restore validates every field (digits guests <=1000, parseBudget budget, non-empty string categories, inventory item shape with positive finite size/price, string quantities, boolean needsReview) and discards + removes the key on failure; the persist effect is declared after restore and guarded by a hydrated STATE flag so the empty-default mount run can never wipe a stored draft; gate button reads "Continue your list" when a draft was restored; confirmed start-new clears via the persist path. Category chips and the Showing line now show honest ?min�?max ranges (single price when equal). Empty shelf shows "Start with a category:" with one-tap chips for the three largest categories. A "Set guests & budget" chip prepends the issue-chip row when basics are unset and opens the basics dialog. Receipt thumbnails sit inline beside a text column via flex rules.
+
+Verification executed (Sol review + checks): standalone TypeScript exit 0; Corepack production build compiled successfully with /party-planner static; production smoke returned 200 with the shell rendering; git diff --check clean apart from pre-existing line-ending warnings. Line-by-line diff review confirmed the hydration/persist ordering, lean-line readouts, range chips, quick-start chips, basics chip and receipt thumbnail restructure. Known minor cosmetic edge: an inventory line for a product genuinely absent from the catalogue can read "N packs � ?price = ?0.00" beside its own unavailable alert; no repair cycle opened for it. Limits: no interactive browser pass; scripts/*.cjs suites assert the older UI and were not run.

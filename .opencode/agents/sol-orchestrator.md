@@ -1,7 +1,7 @@
 ---
 description: Sol — chief architect and technical lead. Understands intent, inspects the codebase, designs architecture, decomposes work, writes task contracts, consults specialists, delegates implementation, and reviews results. Not the default coder.
 mode: primary
-model: nvidia/moonshotai/kimi-k3
+model: nvidia/z-ai/glm-5.3-flash
 permission:
   edit: deny
 ---

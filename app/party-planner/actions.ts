@@ -1,6 +1,6 @@
 'use server'
 
-import catalogue from './catalogue.json'
+import { readCatalogue } from './catalogue-server'
 import { calculatePlan, type Plan, type Product } from './model'
 import { authRequest, clearTokens, eligibilityAccepted, getSessionState, setEligibility, setTokens, verifiedSession, verifiedUser } from './session'
 
@@ -47,13 +47,15 @@ export async function confirmEligibility(accepted: boolean): Promise<{ ok: boole
 
 export async function getCatalogue(): Promise<Result<{ products: Product[] }>> {
   if (!(await eligibilityAccepted())) return { ok: false, error: 'Confirm eligibility to continue.' }
-  return { ok: true, products: catalogue as Product[] }
+  try { return { ok: true, products: await readCatalogue() } } catch { return { ok: false, error: generic } }
 }
 
 export async function validatePlan(input: unknown): Promise<Result<{ plan: Plan }>> {
   if (!(await eligibilityAccepted())) return { ok: false, error: 'Confirm eligibility to continue.' }
-  const result = calculatePlan(input, catalogue as Product[])
-  return result.ok ? result : { ok: false, error: result.error }
+  try {
+    const result = calculatePlan(input, await readCatalogue())
+    return result.ok ? result : { ok: false, error: result.error }
+  } catch { return { ok: false, error: generic } }
 }
 
 export async function sendOtp(phone: string): Promise<{ ok: boolean; error?: string }> {
@@ -106,7 +108,9 @@ export async function savePlan(input: unknown, id: string, expectedUpdatedAt?: s
   if (!(await eligibilityAccepted())) return { ok: false, error: 'Confirm eligibility to continue.' }
   if (!uuidPattern.test(id)) return { ok: false, error: 'Plan id is invalid.' }
   if (expectedUpdatedAt !== undefined && (typeof expectedUpdatedAt !== 'string' || Number.isNaN(Date.parse(expectedUpdatedAt)))) return { ok: false, error: 'Plan timestamp is invalid.' }
-  const calculated = calculatePlan(input, catalogue as Product[]); if (!calculated.ok) return calculated
+  let calculated: ReturnType<typeof calculatePlan>
+  try { calculated = calculatePlan(input, await readCatalogue()) } catch { return { ok: false, error: generic } }
+  if (!calculated.ok) return calculated
   const auth = await current(); if (!auth) return unauthorized()
   const query = `id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(auth.userId)}${expectedUpdatedAt ? `&updated_at=eq.${encodeURIComponent(expectedUpdatedAt)}` : ''}`
   try {

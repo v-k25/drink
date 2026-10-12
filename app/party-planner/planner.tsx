@@ -21,7 +21,7 @@ const confirmationCopy = {
 
 function Receipt({ plan }: { plan: Plan }) {
   return <div className={styles.receipt}>
-    <p className={styles.eyebrow}>AllCheers / Jaipur</p><h2>Your list</h2>
+    <p className={styles.eyebrow}>Socifer / Jaipur</p><h2>Your list</h2>
     <p>{plan.guests} guests · Original budget {formatMoney(plan.budgetPaise)}</p>
     <p className={plan.remainingPaise < 0 ? styles.overBudget : styles.goodBudget}>{plan.remainingPaise < 0 ? `Over budget by ${formatMoney(-plan.remainingPaise)}` : `${formatMoney(plan.remainingPaise)} remaining`}</p>
     {plan.lines.map(line => <div className={styles.receiptLine} key={line.id}>
@@ -86,6 +86,8 @@ export default function Planner() {
   const basicsTrigger = useRef<HTMLElement | null>(null)
   const basicsPrompted = useRef(false)
   const basicsHeading = useRef<HTMLHeadingElement>(null)
+  const shelfRef = useRef<HTMLElement>(null)
+  const categoryDisclosure = useRef<HTMLDetailsElement>(null)
   const [toast, setToast] = useState<{ message: string; restore: () => void } | null>(null)
   const toastTimer = useRef<number | null>(null)
 
@@ -183,7 +185,7 @@ export default function Planner() {
   function openFilters() { filterDialog.current?.showModal(); setFilterDialogOpen(true); filterHeading.current?.focus() }
   function closeFilters() { filterDialog.current?.close(); setFilterDialogOpen(false); filterTrigger.current?.focus() }
   function openBasics() { basicsDialog.current?.showModal(); setBasicsOpen(true); basicsHeading.current?.focus() }
-  function closeBasics() { basicsDialog.current?.close(); setBasicsOpen(false); basicsTrigger.current?.focus() }
+  function closeBasics() { basicsDialog.current?.close(); setBasicsOpen(false); if (basicsTrigger.current?.isConnected && basicsTrigger.current.getClientRects().length) basicsTrigger.current.focus(); else heading.current?.focus() }
   const input = (): PlannerInput => ({ guests: Number(guests), budgetPaise: budgetPaise ?? 0, categories, lines: inventory.map(item => ({ productId: item.id, quantity: Number(quantities[item.id]) })) })
   const exported = viewed?.snapshot ?? plan
 
@@ -223,8 +225,17 @@ export default function Planner() {
   function toggleCategory(category: string) {
     if (pending.current) return
     if (!categories.includes(category)) { setCategories(current => [...current, category]); setActiveCategory(category) }
-    else if (browsing !== category) setActiveCategory(category)
-    else removeCategory(category)
+    else setActiveCategory(category)
+  }
+  function focusIssue(category?: string) {
+    if (category) setActiveCategory(category)
+    if (drawerOpen) closeInventory()
+    window.setTimeout(() => {
+      const shelf = shelfRef.current
+      if (!shelf) return
+      shelf.focus({ preventScroll: true })
+      shelf.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
+    }, 0)
   }
   function addProduct(id: string) {
     if (pending.current || !eligible) return
@@ -241,7 +252,7 @@ export default function Planner() {
     const budgetNote = budgetPaise === null ? '' : over ? ` ${formatMoney(after - budgetPaise)} over budget.` : ` ${formatMoney(budgetPaise - after)} left of budget.`
     setAnnouncement(`${product.name}: added 1 pack. Now ${next} ${next === 1 ? 'pack' : 'packs'} in inventory.${budgetNote}`)
   }
-  function closeInventory() { inventoryDialog.current?.close(); setDrawerOpen(false); inventoryTrigger.current?.focus() }
+  function closeInventory() { inventoryDialog.current?.close(); setDrawerOpen(false); if (inventoryTrigger.current?.isConnected && inventoryTrigger.current.getClientRects().length) inventoryTrigger.current.focus(); else heading.current?.focus() }
   function dropZoneOver(event: DragEvent<HTMLElement>) { event.preventDefault(); const valid = !pending.current && !!draggedId.current && !!productFor(draggedId.current) && event.dataTransfer.types.includes(dragType); setDragOver(valid); event.dataTransfer.dropEffect = valid ? 'copy' : 'none' }
   function dropZoneLeave(event: DragEvent<HTMLElement>) { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragOver(false) }
   function dropZoneDrop(event: DragEvent<HTMLElement>) { event.preventDefault(); event.stopPropagation(); const id = event.dataTransfer.getData(dragType); if (!pending.current && id === draggedId.current && productFor(id)) addProduct(id); draggedId.current = null; setDragOver(false) }
@@ -326,7 +337,7 @@ export default function Planner() {
   }
   async function shareList(target: Plan) {
     if (!navigator.share) return copyList(target)
-    try { await navigator.share({ title: 'My AllCheers list', text: planText(target) }) }
+    try { await navigator.share({ title: 'My Socifer list', text: planText(target) }) }
     catch (error) { if (!(error instanceof DOMException && error.name === 'AbortError')) await copyList(target) }
   }
   function exportButtons(target: Plan) {
@@ -335,34 +346,51 @@ export default function Planner() {
 
   function inventoryContents(prefix: string) {
     return <fieldset className={styles.panel} disabled={busy}>
-      <p className={styles.inventoryCount}>{inventory.length} {inventory.length === 1 ? 'item' : 'items'} · {packs} {packs === 1 ? 'pack' : 'packs'}</p>
-      {!inventory.length && <p className={styles.emptySlot}>Your list is empty. Add a drink from the shelf, or drag a card onto the pill on desktop.</p>}
-      <div className={styles.inventoryLines}>{inventory.map(item => {
+      <p className={styles.inventoryCount}>{guests || '—'} guests · {inventory.length} {inventory.length === 1 ? 'item' : 'items'} · {packs} {packs === 1 ? 'pack' : 'packs'}</p>
+      {!inventory.length && <p className={styles.emptySlot}>Your plan is empty. Add a drink from the catalogue{prefix === 'desktop' ? ' or drag a product here' : ''}.</p>}
+      <div className={styles.inventoryLines} role="region" aria-label="Selected items" tabIndex={0}>{inventory.map(item => {
         const current = productFor(item.id), quantityValid = validCount(quantities[item.id] || '')
+        const token = encodeURIComponent(item.id)
         return <div className={styles.inventoryLine} key={item.id} data-inventory-id={item.id}>
-          <div className={styles.inventoryIdentity}><img src={artFor(item.category)} alt="" width={48} height={64} /><div><strong>{item.name}</strong><small>{item.category} · {current?.sizeMl ?? item.sizeMl} ml · {formatMoney(current?.pricePaise ?? item.pricePaise)} per pack</small></div></div>
+          <div className={styles.inventoryIdentity}><div><strong>{item.name}</strong><small>{item.category} · {current?.sizeMl ?? item.sizeMl} ml · {formatMoney(current?.pricePaise ?? item.pricePaise)} per pack</small></div></div>
           {!current && <p role="alert" className={styles.overBudget}>Saved product unavailable. Remove this item before review.</p>}
-          <p className={styles.quantityReadout}>{quantityValid ? `${quantities[item.id]} ${Number(quantities[item.id]) === 1 ? 'pack' : 'packs'} × ${formatMoney(current?.pricePaise ?? item.pricePaise)} = ${formatMoney(lineCost(item.id))}` : 'Set the quantity on the card'}</p>
-          {current && needsReview[item.id] && <div className={styles.notice}><p>Pack size changed. Check your quantity before continuing.</p><button className={styles.secondary} disabled={!quantityValid} onClick={() => { const card = quantityInputs.current[`card-quantity-${encodeURIComponent(item.id)}`]; card?.scrollIntoView({ block: 'center' }); card?.focus(); setNeedsReview(values => ({ ...values, [item.id]: false })) }}>I have reviewed my quantity</button></div>}
+          <div className={styles.planQuantity}>
+            <label htmlFor={`plan-quantity-${prefix}-${token}`}>{item.name} pack quantity</label>
+            <span className={styles.quantityControls}>
+              <button aria-label={`Decrease ${item.name} packs`} disabled={!quantityValid || Number(quantities[item.id]) <= 1} onClick={() => setQuantities(values => ({ ...values, [item.id]: String(Number(values[item.id]) - 1) }))}>−</button>
+              <input id={`plan-quantity-${prefix}-${token}`} inputMode="numeric" value={quantities[item.id] || ''} aria-invalid={!quantityValid} aria-describedby={`plan-quantity-status-${prefix}-${token}`} onChange={event => setQuantities(values => ({ ...values, [item.id]: event.target.value }))} />
+              <button aria-label={`Increase ${item.name} packs`} disabled={!quantityValid || Number(quantities[item.id]) >= 1000} onClick={() => addProduct(item.id)}>+</button>
+            </span>
+          </div>
+          <p id={`plan-quantity-status-${prefix}-${token}`} className={styles.quantityReadout}>{quantityValid ? `Line total: ${formatMoney(lineCost(item.id))}` : 'Enter a whole number from 1 to 1,000.'}</p>
+          {current && needsReview[item.id] && <div className={styles.notice}><p>Pack size changed. Check your quantity before continuing.</p><button className={styles.secondary} disabled={!quantityValid} onClick={event => { event.currentTarget.closest('[data-inventory-id]')?.querySelector<HTMLInputElement>('input[id^="plan-quantity-"]')?.focus(); setNeedsReview(values => ({ ...values, [item.id]: false })) }}>I have reviewed my quantity</button></div>}
           <button className={styles.linkButton} aria-label={`Remove ${item.name}`} onClick={() => removeItem(item.id)}>Remove</button>
         </div>
       })}</div>
       <div className={styles.inventorySummary}><strong>{subtotalLabel} {formatMoney(subtotal)}</strong><small>Budget {formatMoney(budgetPaise ?? 0)} · {subtotal > (budgetPaise ?? 0) ? `${formatMoney(subtotal - (budgetPaise ?? 0))} over budget` : `${formatMoney((budgetPaise ?? 0) - subtotal)} left of budget`}</small>
-        {(!inventory.length || issueCategories.length > 0 || !basicsValid) && <div className={styles.issueChips} aria-label="List issues">{!basicsValid && <button className={styles.filter} onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}>Set guests & budget</button>}{!inventory.length ? <button className={styles.filter} onClick={() => categories[0] && setActiveCategory(categories[0])}>Add at least one drink</button> : issueCategories.map(category => <button key={category} className={styles.filter} onClick={() => setActiveCategory(category)}>{category} — {inventory.some(item => item.category === category) ? 'check quantities' : 'add at least one item'}</button>)}</div>}
+        {(!inventory.length || issueCategories.length > 0 || !basicsValid) && <div className={styles.issueChips} aria-label="List issues">{!basicsValid && <button className={styles.filter} onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}>Set guests & budget</button>}{!inventory.length ? <button className={styles.filter} onClick={() => focusIssue(categories[0])}>Add at least one drink</button> : issueCategories.map(category => <button key={category} className={styles.filter} onClick={() => focusIssue(category)}>{category} — {inventory.some(item => item.category === category) ? 'check quantities' : 'add at least one item'}</button>)}</div>}
         <button className={styles.primary} disabled={!reviewReady || busy} onClick={reviewList}>{busy ? 'Checking…' : 'Review list'}</button></div>
     </fieldset>
+  }
+
+  function categoryNavigation(label: string) {
+    return <nav className={styles.categoryIndex} aria-label={label}>{allCategories.map(category => {
+      const categoryProductsAll = products.filter(item => item.category === category)
+      const selected = categories.includes(category)
+      return <span className={styles.categoryChoice} key={category}><button className={`${styles.categoryTab} ${browsing === category ? styles.categoryTabActive : selected ? styles.categoryTabSelected : ''}`.trim()} aria-pressed={selected} aria-current={browsing === category || undefined} onClick={event => { toggleCategory(category); if (categoryDisclosure.current?.contains(event.currentTarget)) { categoryDisclosure.current.open = false; categoryDisclosure.current.querySelector('summary')?.focus() } }}><span>{category}</span><small>{categoryProductsAll.length} drinks{selected ? ' · In list' : ''}</small></button>{selected && <button className={styles.categoryRemove} aria-label={`Remove ${category} category`} onClick={() => removeCategory(category)}>×</button>}</span>
+    })}</nav>
   }
 
   return <>
     <main className={styles.shell} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); draggedId.current = null; setDragOver(false) }}>
       <a href="#planner-content" className="skip-link">Skip to planner</a>
-      <header className={styles.header}><Link href="/" className={styles.logo}>AllCheers</Link><div className={styles.headerActions}><span>Jaipur</span><button disabled={!products.length || busy} className={styles.linkButton} onClick={openAccount}>Saved plans</button></div></header>
+      <header className={styles.header}><Link href="/" className={styles.logo}>Socifer</Link><div className={styles.headerActions}><span>Jaipur</span><button disabled={!products.length || busy} className={styles.linkButton} onClick={openAccount}>Saved plans</button></div></header>
       <div className={styles.intro}><h1>Party Planner</h1></div>
       <section className={styles.card} id="planner-content">
         {message && <p className={styles.notice} role="status">{message}</p>}
         <fieldset className={styles.panel} disabled={busy}>
           {step === 0 && <>
-            <p className={styles.eyebrow}>Before we begin</p><h2 ref={heading} tabIndex={-1}>One quick check.</h2><p>Please confirm your eligibility before viewing alcoholic products.</p>
+            <div className={styles.gateLayout}><div><p className={styles.eyebrow}>Before we begin</p><h2 ref={heading} tabIndex={-1}>One quick check.</h2><p>Please confirm your eligibility before viewing alcoholic products.</p>
             <label className={styles.check}><input type="checkbox" checked={eligible} onChange={event => setEligible(event.target.checked)} />I meet the legal drinking-age requirements where I live</label>
             <div className={styles.actions}>
               <button className={styles.primary} disabled={!eligible} onClick={() => void run(async () => {
@@ -372,23 +400,16 @@ export default function Planner() {
                 if (!result.ok) { setMessage(result.error); return }
                 setProducts(result.products); move(1)
               })}>{busy ? 'Loading…' : draftRestored ? 'Continue your list' : 'Continue to planner'}</button><Link href="/" className={styles.secondary}>No thanks, take me home</Link>
-            </div>
+            </div></div><div className={styles.gateVisual}><img src="/images/nightlife/cocktail.jpg" alt="" /><p className={styles.photoCredit}>Illustrative stock photo · <a href="https://www.pexels.com/photo/glass-of-red-cocktail-on-a-wooden-table-in-a-darkly-lit-bar-17541202/">Thu Huynh / Pexels</a></p></div></div>
           </>}
           {step === 1 && <>
-            <h2 ref={heading} tabIndex={-1}>Build your list.</h2><p>Choose your categories and add drinks in one place. Each add chooses 1 pack, not a serving recommendation.</p>
-            <details className={styles.explanation}><summary>How are quantities chosen?</summary><p>You control every quantity. We multiply packs by their listed unit price; we don’t estimate how much anyone will drink. Changing guest count does not change your quantities.</p></details>
+            <h2 ref={heading} tabIndex={-1} className={styles.compactHeading}>Build your list.</h2>
+            <details className={styles.explanation}><summary>How are quantities chosen?</summary><p>Choose categories and add drinks. Each add chooses 1 pack, not a serving recommendation. You control every quantity. We multiply packs by their listed unit price; we don’t estimate how much anyone will drink. Changing guest count does not change your quantities.</p></details>
             <div className={styles.controls}>
-              {budgetPaise !== null && <div className={styles.meter} aria-label="Budget meter">
-                <div className={styles.meterTrack}><div className={remaining !== null && remaining < 0 ? styles.meterFillOver : styles.meterFill} style={{ width: `${budgetPaise > 0 ? Math.min(100, (subtotal / budgetPaise) * 100) : 0}%` }} /></div>
-                <p className={styles.meterRow}><strong>Budget {formatMoney(budgetPaise)}</strong>{remainingLabel && <span className={remaining !== null && remaining < 0 ? styles.overBudget : styles.goodBudget}>{remainingLabel}</span>}{perGuest && <span>{perGuest} per guest</span>}<button className={styles.meterEdit} aria-label="Edit guests and budget" onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}>Edit</button></p>
-              </div>}
-              <div className={styles.categoryStrip} aria-label="Categories">{allCategories.map(category => {
-                const categoryProductsAll = products.filter(item => item.category === category)
-                const selected = categories.includes(category)
-                const min = categoryProductsAll.length ? Math.min(...categoryProductsAll.map(item => item.pricePaise)) : 0
-                const max = categoryProductsAll.length ? Math.max(...categoryProductsAll.map(item => item.pricePaise)) : 0
-                return <button key={category} className={`${styles.categoryTab} ${browsing === category ? styles.categoryTabActive : selected ? styles.categoryTabSelected : ''}`.trim()} aria-pressed={selected} onClick={() => toggleCategory(category)}>{category} <small>{categoryProductsAll.length} drinks{categoryProductsAll.length ? ` · ${min === max ? formatMoney(min) : `${formatMoney(min)}–${formatMoney(max)}`}` : ''}</small></button>
-              })}</div>
+              <div className={styles.meter} aria-label="Budget meter">
+                <div className={styles.meterTrack}><div className={remaining !== null && remaining < 0 ? styles.meterFillOver : styles.meterFill} style={{ width: `${budgetPaise && budgetPaise > 0 ? Math.min(100, (subtotal / budgetPaise) * 100) : 0}%` }} /></div>
+                <p className={styles.meterRow}><strong>Guests: {guests || 'Set'}</strong><strong>Budget: {budgetPaise === null ? 'Set' : formatMoney(budgetPaise)}</strong>{remainingLabel && <span className={remaining !== null && remaining < 0 ? styles.overBudget : styles.goodBudget}>{remainingLabel}</span>}{perGuest && <span>{perGuest} per guest</span>}<button className={styles.meterEdit} aria-label="Edit guests and budget" onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}>Edit</button></p>
+              </div>
               {browsing && <div className={styles.filterBar}>
                 <input className={styles.search} aria-label={`Search ${browsing}`} placeholder={`Search ${browsing}`} value={queries[browsing] || ''} onChange={event => { setQueries(current => ({ ...current, [browsing]: event.target.value })); setLimits(current => ({ ...current, [browsing]: 24 })) }} />
                 <button ref={filterTrigger} className={styles.filterTrigger} aria-haspopup="dialog" aria-expanded={filterDialogOpen} onClick={openFilters}>Filters{filterCount > 0 ? ` (${filterCount})` : ''}</button>
@@ -397,21 +418,34 @@ export default function Planner() {
             </div>
             <p className={styles.additionStatus} role="status" aria-live="polite">{announcement || ''}</p>
             <div className={styles.inventoryLayout}>
-              <section className={styles.shelf} aria-label={browsing ? `${browsing} selection` : 'Drink shelf'}>
-                {!browsing && <div><p className={styles.hint}>Start with a category:</p><div className={styles.facetChips}>{[...new Set(products.map(product => product.category))].map(category => ({ category, count: products.filter(product => product.category === category).length })).sort((a, b) => b.count - a.count).slice(0, 3).map(({ category }) => <button key={category} className={styles.filter} onClick={() => toggleCategory(category)}>{category}</button>)}</div></div>}
+              <div className={styles.categoryRail}>{categoryNavigation('Categories')}<details ref={categoryDisclosure} className={styles.allCategories}><summary>All categories ({allCategories.length}) · Browsing {browsing || 'none'}</summary>{categoryNavigation('All categories')}</details></div>
+              <section ref={shelfRef} tabIndex={-1} className={styles.shelf} aria-label={browsing ? `${browsing} selection` : 'Drink shelf'}>
+                {!browsing && <p className={styles.hint}>Select a category from the index to browse its drinks.</p>}
                 {browsing && <>
                 <p className={styles.hint} role="status" aria-live="polite" aria-atomic="true">Showing {matches.length} of {categoryProducts.length} {categoryProducts.length === 1 ? 'drink' : 'drinks'}{(() => { if (!categoryProducts.length) return ''; const min = Math.min(...categoryProducts.map(product => product.pricePaise)); const max = Math.max(...categoryProducts.map(product => product.pricePaise)); return ` · ${min === max ? formatMoney(min) : `${formatMoney(min)}–${formatMoney(max)}`} · illustrative artwork` })()}</p>
+                {filtersActive && <div className={styles.activeFilters}>
+                  <span className={styles.activeFiltersLabel}>Active filters</span>
+                  {queries[browsing] && <button className={styles.filterChip} aria-label="Remove search filter" onClick={() => setQueries(current => ({ ...current, [browsing]: '' }))}><span className={styles.filterChipLabel}>{queries[browsing]}</span><span aria-hidden="true">×</span></button>}
+                  {selectedBrands.map(brand => <button key={brand} className={styles.filterChip} aria-label={`Remove ${brand} filter`} onClick={() => setBrands(current => ({ ...current, [browsing]: (current[browsing] || []).filter(value => value !== brand) }))}><span className={styles.filterChipLabel}>{brand}</span><span aria-hidden="true">×</span></button>)}
+                  {selectedSizes.map(size => <button key={size} className={styles.filterChip} aria-label={`Remove ${size} ml filter`} onClick={() => setSizes(current => ({ ...current, [browsing]: (current[browsing] || []).filter(value => value !== size) }))}><span className={styles.filterChipLabel}>{size} ml</span><span aria-hidden="true">×</span></button>)}
+                  {withinOn && <button className={styles.filterChip} aria-label="Remove within-budget filter" onClick={() => setWithin(current => ({ ...current, [browsing]: false }))}><span className={styles.filterChipLabel}>Within budget</span><span aria-hidden="true">×</span></button>}
+                  <button className={styles.linkButton} onClick={resetFilters}>Clear all filters</button>
+                </div>}
                 {!matches.length && <div className={styles.emptySlot}><p>No matching drinks</p><button className={styles.secondary} onClick={resetFilters}>Reset filters</button></div>}
-                <div className={styles.productGrid}>{matches.slice(0, limit).map(product => {
+                <ul className={styles.menuList}>{matches.slice(0, limit).map(product => {
                   const fits = fitsBudget(product)
                   const inInventory = inventory.some(item => item.id === product.id)
                   const cardQuantityValid = validCount(quantities[product.id] || '')
                   const cardToken = encodeURIComponent(product.id)
-                  return <article key={product.id} data-product-id={product.id} className={`${inInventory ? styles.productSelected : styles.product} ${fits ? '' : styles.productOver}`} draggable={!busy} onDragStart={event => { if (pending.current || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) { event.preventDefault(); return } draggedId.current = product.id; event.dataTransfer.setData(dragType, product.id); event.dataTransfer.effectAllowed = 'copy' }} onDragEnd={() => { draggedId.current = null; setDragOver(false) }}>
-                  <img src={artFor(product.category)} alt="" width={100} height={112} draggable={false} />
-                  <strong>{product.name}</strong><span>{product.sizeMl} ml · {formatMoney(product.pricePaise)}</span>
-                  <small className={styles.dragHint}>Drag to inventory or add below</small>
-                                                            {!fits && <b className={styles.overBudget}>{formatMoney(product.pricePaise - remainingExcluding(product))} over remaining budget</b>}
+                  return <li key={product.id} data-product-id={product.id} className={`${inInventory ? styles.menuItemSelected : styles.menuItem} ${fits ? '' : styles.menuItemOver}`.trim()} draggable={!busy} onDragStart={event => { if (pending.current || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) { event.preventDefault(); return } draggedId.current = product.id; event.dataTransfer.setData(dragType, product.id); event.dataTransfer.effectAllowed = 'copy' }} onDragEnd={() => { draggedId.current = null; setDragOver(false) }}>
+                  <span className={styles.menuArt}><img src={artFor(product.category)} alt="" width={44} height={49} draggable={false} /></span>
+                  <div className={styles.menuIdentity}>
+                    <strong>{product.name}</strong>
+                    <small>{product.sizeMl} ml · <b className={styles.menuPrice}>{formatMoney(product.pricePaise)}</b></small>
+                    <small className={styles.dragHint}>Drag to plan or add below</small>
+                    {!fits && <b className={styles.overBudget}>{formatMoney(product.pricePaise - remainingExcluding(product))} over remaining budget</b>}
+                  </div>
+                  <div className={styles.menuActions}>
                   {inInventory ? <div className={styles.cardStepper}>
                     <label htmlFor={`card-quantity-${cardToken}`}>{product.name} pack quantity</label>
                     <div className={styles.quantityControls}>
@@ -421,16 +455,18 @@ export default function Planner() {
                     </div>
                     <p id={`card-quantity-status-${cardToken}`} className={styles.quantityMessage}>{cardQuantityValid ? `Line total: ${formatMoney(lineCost(product.id))}` : 'Enter a whole number from 1 to 1,000.'}</p>
                   </div> : <>
-                    <button className={styles.primary} disabled={!fits} aria-label={`Add ${product.name} to inventory`} onClick={() => addProduct(product.id)}>Add <small>+1 pack</small></button>
+                    <button className={styles.primary} disabled={!fits} aria-label={`Add ${product.name} to inventory`} onClick={() => addProduct(product.id)}>Add</button>
                     {!fits && <button className={styles.secondary} aria-label={`Add ${product.name} anyway (over budget)`} onClick={() => addProduct(product.id)}>Add anyway (over budget)</button>}
                   </>}
-                </article>})}</div>
+                  </div>
+                </li>})}</ul>
                 {matches.length > limit && <button className={styles.secondary} onClick={() => setLimits(current => ({ ...current, [browsing]: limit + 24 }))}>Show more {browsing} ({matches.length - limit} more)</button>}
                 </>}
               </section>
+              <aside className={`${styles.planPanel} ${dragOver ? styles.validDrop : ''}`} aria-label="Your selected plan" onDragOver={dropZoneOver} onDragLeave={dropZoneLeave} onDrop={dropZoneDrop}><h3>Your plan</h3>{inventoryContents('desktop')}<p className={styles.disclaimer}>{estimateNote}</p></aside>
             </div>
             <p className={styles.disclaimer}>{estimateNote} Price verification date: unknown. Not included: mixers, food, water, ice and supplies.</p>
-            <div className={styles.mobileBar}><div><strong>{subtotalLabel} {formatMoney(subtotal)}</strong><small>{mobileStatus}</small></div><button className={styles.secondary} onClick={event => { inventoryTrigger.current = event.currentTarget; setDrawerOpen(true); inventoryDialog.current?.showModal() }}>Your list ({inventory.length} {inventory.length === 1 ? 'item' : 'items'})</button><button className={styles.primary} disabled={!reviewReady || busy} onClick={reviewList}>Review list</button></div>
+            <div className={styles.mobileBar}><div><strong>{inventory.length} {inventory.length === 1 ? 'item' : 'items'} · {formatMoney(subtotal)}</strong><small>{remainingLabel ? `${remainingLabel} · ${mobileStatus}` : mobileStatus}</small></div><button ref={inventoryTrigger} className={styles.primary} aria-haspopup="dialog" aria-expanded={drawerOpen} onClick={() => { setDrawerOpen(true); inventoryDialog.current?.showModal(); inventoryDialog.current?.querySelector('h2')?.focus() }}>View plan</button></div>
           </>}
           {step === 2 && plan && <>
             <h2 ref={heading} tabIndex={-1}>Ready for the shops.</h2>
@@ -442,8 +478,8 @@ export default function Planner() {
         </fieldset>
         {busy && <p role="status" className={styles.hint}>Working… Your choices are retained.</p>}
       </section>
-      <dialog ref={inventoryDialog} className={`${styles.modal} ${styles.inventoryDrawer} ${dragOver ? styles.validDrop : ''}`.trim()} aria-label="Your list" onCancel={event => { event.preventDefault(); closeInventory() }} onDragOver={dropZoneOver} onDragLeave={dropZoneLeave} onDrop={dropZoneDrop}>
-        <button className={styles.close} onClick={closeInventory} aria-label="Close list">×</button><h2>Your list</h2>
+      <dialog ref={inventoryDialog} className={`${styles.modal} ${styles.inventoryDrawer} ${dragOver ? styles.validDrop : ''}`.trim()} aria-labelledby="inventory-title" onCancel={event => { event.preventDefault(); closeInventory() }} onDragOver={dropZoneOver} onDragLeave={dropZoneLeave} onDrop={dropZoneDrop}>
+        <button className={styles.close} onClick={closeInventory} aria-label="Close plan">×</button><h2 id="inventory-title" tabIndex={-1}>Your plan</h2>
         <p role="status">{announcement}</p>{drawerOpen && inventoryContents('drawer')}
       </dialog>
       <dialog ref={basicsDialog} className={`${styles.modal} ${styles.basicsPanel}`} aria-labelledby="basics-title" onCancel={event => { event.preventDefault(); closeBasics() }}>
@@ -489,7 +525,7 @@ export default function Planner() {
       </dialog>
       <dialog ref={confirmationDialog} className={`${styles.modal} ${styles.confirmation}`} aria-labelledby="confirmation-title" aria-describedby="confirmation-description" onCancel={event => { event.preventDefault(); cancelConfirmation() }}>
         {confirmation && <>
-          <p className={styles.eyebrow}>AllCheers / Your list</p>
+          <p className={styles.eyebrow}>Socifer / Your list</p>
           <h2 id="confirmation-title">{confirmationCopy[confirmation.kind].title}</h2>
           <p id="confirmation-description">{confirmationCopy[confirmation.kind].description}</p>
           <div className={styles.actions}>
@@ -508,7 +544,6 @@ export default function Planner() {
         </>}
         <div className={styles.actions}><button className={styles.secondary} onClick={resetFilters}>Clear all filters</button><button className={styles.primary} onClick={closeFilters}>Done</button></div>
       </dialog>
-      {step === 1 && <button className={`${styles.cartPill} ${dragOver ? styles.validDrop : ''}`.trim()} aria-label={!inventory.length ? 'Your list · 0 items' : `Your list · ${inventory.length} ${inventory.length === 1 ? 'item' : 'items'} · ${formatMoney(subtotal)}`} onClick={event => { inventoryTrigger.current = event.currentTarget; setDrawerOpen(true); inventoryDialog.current?.showModal() }} onDragOver={dropZoneOver} onDragLeave={dropZoneLeave} onDrop={dropZoneDrop}>{!inventory.length ? 'Your list · 0 items' : `Your list · ${inventory.length} ${inventory.length === 1 ? 'item' : 'items'} · ${formatMoney(subtotal)}`}</button>}
       {toast && <div className={styles.toast} role="status"><span>{toast.message}</span><button className={styles.toastAction} onClick={() => toast.restore()}>Undo</button></div>}
     </main>
     <div className={styles.printOnly}>{exported && <Receipt plan={exported} />}</div>

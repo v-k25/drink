@@ -56,4 +56,8 @@ for (const bad of [
   ...[0, 1001, 1.5, '2', NaN].map(quantity => ({ ...multi, lines: [{ productId: 'gin', quantity }, ...multi.lines.slice(1)] })),
 ]) assert.equal(calculatePlan(bad, multiCatalogue).ok, false)
 assert.equal(calculatePlan({ ...multi, lines: [{ productId: 'gin', quantity: 1000 }, ...multi.lines.slice(1)] }, multiCatalogue).ok, true)
+const eighteenCatalogue = Array.from({ length: 18 }, (_, index) => ({ id: `category-${index}`, category: `category-${index}`, name: `Category ${index}`, brand: 'AllCheers', sizeMl: 750, pricePaise: 10000 }))
+const eighteenInput = { guests: 1, budgetPaise: 500000, categories: eighteenCatalogue.map((product) => product.category), lines: eighteenCatalogue.map((product) => ({ productId: product.id, quantity: 1 })) }
+assert.equal(calculatePlan(eighteenInput, eighteenCatalogue).ok, true, 'all 18 categories are accepted')
+assert.equal(calculatePlan({ ...eighteenInput, categories: [...eighteenInput.categories, 'category-18'] }, [...eighteenCatalogue, { ...eighteenCatalogue[0], id: 'category-18', category: 'category-18' }]).ok, false, 'more than 18 categories are rejected')
 console.log('PASS: multi-product categories, mixed lines, duplicates/empty-category/bounds rejection, legacy shape, trusted prices, safe arithmetic and exports.')

@@ -12,7 +12,7 @@ const nunitoSans = localFont({
   adjustFontFallback: 'Arial',
 })
 
-export const metadata: Metadata = { title: 'AllCheers — Good Times Start Here', description: 'Find your drink and plan your party. Coming first to Jaipur.', robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: 'Socifer — Good Times Start Here', description: 'Find your drink and plan your party. Coming first to Jaipur.', robots: { index: false, follow: false } }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

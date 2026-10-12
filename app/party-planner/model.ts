@@ -30,7 +30,7 @@ export type PlanResult = { ok: true; plan: Plan } | { ok: false; error: string }
 const MAX_GUESTS = 1000
 const MAX_QUANTITY = 1000
 const MAX_BUDGET_PAISE = 100_000_000
-const MAX_CATEGORIES = 10
+const MAX_CATEGORIES = 18
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value)
 const isSafeInteger = (value: unknown): value is number => typeof value === 'number' && Number.isSafeInteger(value)

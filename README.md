@@ -1,6 +1,6 @@
-# AllCheers
+# Socifer
 
-This repository contains the AllCheers Phase 1 marketing website, built with Next.js 16 App Router. The homepage explains the upcoming Find My Drink and Party Planner journeys, Jaipur launch and early access. The functional product remains a later phase.
+This repository contains the Socifer website, built with Next.js 16 App Router. It includes the Find My Drink and Party Planner guest experiences, Jaipur context and early access.
 
 Approved visual references are `output/allcheers-v2-party/home-desktop.png` and `output/allcheers-v2-party/home-mobile-refined.png`. Marketing scope is in `docs/allcheers-brief.md`. Reusable photo candidates are listed in `output/photo-shortlist/index.html`; `output/photo-shortlist/pinterest-references/index.html` is Pinterest research only and has no reuse clearance.
 

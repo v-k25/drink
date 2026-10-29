@@ -2,17 +2,17 @@ import 'server-only'
 
 import type { Product } from './model'
 
-const EXPECTED_COUNT = 1311
+// Sanity bounds, not exact counts: rows and categories may change without breaking the Planner.
+const MIN_COUNT = 100
+const MAX_COUNT = 5000
+const MAX_CATEGORIES = 40
 const PAGE_SIZE = 1000
+const REVALIDATE_SECONDS = 3600
+export const CATALOGUE_TAG = 'planner-catalogue'
 const GENERIC_ERROR = 'Unable to load the Jaipur catalogue.'
 const TABLE_PATH = '/rest/v1/planner_products'
 const SELECT = 'id,category,name,brand,size_ml,price_paise'
 const EXPECTED_ORIGIN = 'https://ojptrukzildmkilwponx.supabase.co'
-const EXPECTED_CATEGORY_COUNTS = new Map([
-  ['Beers', 107], ['Blended Scotch', 51], ['Brandy', 22], ['Champagne', 10], ['Gin', 84], ['Liqueurs', 38],
-  ['Made in India Whisky', 228], ['Ready to Drink', 23], ['Red Wine', 168], ['Rose Wine', 27], ['Rum', 92],
-  ['Sake', 7], ['Single Malts', 88], ['Sparkling Wine', 39], ['Tequila', 47], ['Vodka', 152], ['White Wine', 92], ['World Whisky', 36],
-])
 
 type DatabaseProduct = {
   id: unknown
@@ -44,7 +44,7 @@ function contentRange(value: string, start: number, count: number): { total: num
   const match = /^(\d+)-(\d+)\/(\d+)$/.exec(value)
   if (!match) throw new Error(GENERIC_ERROR)
   const first = Number(match[1]); const last = Number(match[2]); const total = Number(match[3])
-  if (!Number.isSafeInteger(total) || total !== EXPECTED_COUNT || first !== start || last - first + 1 !== count) throw new Error(GENERIC_ERROR)
+  if (!Number.isSafeInteger(total) || total < MIN_COUNT || total > MAX_COUNT || first !== start || last - first + 1 !== count) throw new Error(GENERIC_ERROR)
   return { total, next: last + 1 }
 }
 
@@ -61,13 +61,13 @@ export async function readCatalogue(): Promise<Product[]> {
     const { url, secret } = settings()
     const products: Product[] = []
     const ids = new Set<string>()
-    const categoryCounts = new Map<string, number>()
+    const categories = new Set<string>()
     let start = 0
     let total: number | null = null
     let previousId = ''
-    while (products.length < EXPECTED_COUNT) {
+    while (total === null || products.length < total) {
       const response = await fetch(`${url}${TABLE_PATH}?select=${SELECT}&order=id.asc`, {
-        cache: 'no-store',
+        next: { revalidate: REVALIDATE_SECONDS, tags: [CATALOGUE_TAG] },
         headers: { apikey: secret, Prefer: 'count=exact', Range: `${start}-${start + PAGE_SIZE - 1}` },
         redirect: 'error',
         signal: AbortSignal.timeout(10000),
@@ -82,14 +82,12 @@ export async function readCatalogue(): Promise<Product[]> {
         const parsed = product(row)
         if (ids.has(parsed.id) || (previousId && parsed.id <= previousId)) throw new Error(GENERIC_ERROR)
         ids.add(parsed.id); products.push(parsed); previousId = parsed.id
-        categoryCounts.set(parsed.category, (categoryCounts.get(parsed.category) ?? 0) + 1)
+        categories.add(parsed.category)
       }
-      if (products.length > EXPECTED_COUNT) throw new Error(GENERIC_ERROR)
+      if (products.length > total) throw new Error(GENERIC_ERROR)
       start = range.next
     }
-    if (products.length !== EXPECTED_COUNT || ids.size !== EXPECTED_COUNT || total !== EXPECTED_COUNT
-      || categoryCounts.size !== EXPECTED_CATEGORY_COUNTS.size
-      || [...EXPECTED_CATEGORY_COUNTS].some(([category, count]) => categoryCounts.get(category) !== count)) throw new Error(GENERIC_ERROR)
+    if (products.length !== total || ids.size !== total || categories.size < 1 || categories.size > MAX_CATEGORIES) throw new Error(GENERIC_ERROR)
     return products
   } catch {
     throw new Error(GENERIC_ERROR)

@@ -49,6 +49,8 @@ export function parseBudget(value: string): number | null {
   return Number.isSafeInteger(amount) && amount > 0 && amount <= MAX_BUDGET_PAISE ? amount : null
 }
 
+export const PRICE_LABEL = 'Listed price in Jaipur, checked 3 Oct 2026'
+
 export function formatMoney(paise: number): string {
   return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(paise / 100)
 }
@@ -94,5 +96,5 @@ export function calculatePlan(input: unknown, catalogue: Product[]): PlanResult 
 export function planText(plan: Plan): string {
   const lines = plan.lines.map((line) => `${line.name} (${line.brand}, ${line.sizeMl} ml) — ${line.quantity} × ${formatMoney(line.pricePaise)} = ${formatMoney(line.subtotalPaise)}`).join('\n')
   const balance = plan.remainingPaise < 0 ? `Shortfall: ${formatMoney(-plan.remainingPaise)}` : `Remaining: ${formatMoney(plan.remainingPaise)}`
-  return `Jaipur party plan for ${plan.guests} guests\nBudget: ${formatMoney(plan.budgetPaise)}\n${lines}\nTotal estimate: ${formatMoney(plan.totalPaise)}\n${balance}\nEstimated from our Jaipur catalogue. Store prices and availability may differ. Buy independently from stores; price date unknown. Not included: mixers, food, water, ice and supplies. Host-entered quantities are not a serving recommendation.`
+  return `Jaipur party plan for ${plan.guests} guests\nBudget: ${formatMoney(plan.budgetPaise)}\n${lines}\nTotal estimate: ${formatMoney(plan.totalPaise)}\nCost per guest: ${formatMoney(Math.round(plan.totalPaise / plan.guests))}\n${balance}\nEstimated from our Jaipur catalogue. ${PRICE_LABEL}. Store prices and availability may differ; buy independently from stores. Not included: mixers, food, water, ice and supplies. Quantities are an estimate; check them before you buy.`
 }

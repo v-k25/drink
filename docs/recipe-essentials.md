@@ -16,8 +16,9 @@ size. Source instructions are
 used only for narrowly extracted evidence and are never copied into public
 preparation. The builder now emits `strength`, `sweetness`, `has_caffeine`, and
 `allergens` as explicit `null` values, preventing database defaults from being
-mistaken for facts. Apply `scripts/recipe-catalogue/essentials-schema.sql`
-separately after review of the additive DDL.
+mistaken for facts. The essentials columns now live in
+`supabase/migrations/20260802_drinks_baseline.sql` (the former
+`essentials-schema.sql` was removed in B9 Step 2).
 
 | Field group | Current use | Deferred or review-only |
 | --- | --- | --- |

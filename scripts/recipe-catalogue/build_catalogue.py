@@ -47,7 +47,7 @@ DEFAULT_INPUTS = (
 )
 DEFAULT_OUTDIR = REPO_ROOT / "tmp" / "recipe-catalogue" / "run-1"
 BATCH_SIZE = 500
-MIGRATION = "20260923_drink_provenance"
+MIGRATION = "20260802_drinks_baseline"
 
 # Column list for the generated INSERT statements. Requires the provenance
 # migration to be applied first; `method` is classification-only and is not

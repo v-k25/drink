@@ -1,5 +1,7 @@
 # AllCheers recipe platform plan
 
+> **Superseded in part (2026-10-13).** Community (save, like, review, comment), phone sign-in and the community database objects were retired and removed from the app and the remote database. Recipes and the `drinks` table stay (owner decision 2026-10-12). Read the community sections below as history. See `docs/implementation-progress.md` (B8 close-out).
+
 ## Current delivery status — 2026-09-28
 
 The owner requested completion of Phases 0–3. These phases are now implemented
@@ -24,15 +26,16 @@ count is imposed. A later change to these choices can be planned independently.
 
 The missing drinks and saved-drinks schema baselines were reconstructed from
 live metadata in `scripts/recipe-catalogue/base-schema.sql` and
-`saved-base-schema.sql`. `check_local_schema.py` replays the recipe schema plus
-behavioral RLS assertions against the isolated local PostgreSQL port 55437 in a
-rolled-back transaction. These are reset/test baselines, not a claim that the
-historically incomplete Supabase migration directory supports a full app reset.
+`saved-base-schema.sql`, and `check_local_schema.py` replayed them with
+behavioral RLS assertions against a local PostgreSQL. **Superseded (B9 Step 2,
+2026-10-13):** those files, the community/saved tables and the local replay were
+removed; `supabase/migrations/20260802_drinks_baseline.sql` is the drinks
+baseline (see `supabase/README.md`).
 
 Verification: `corepack pnpm build`, standalone TypeScript, whitespace checks,
 `node scripts/recipe-browse-check.cjs` (live reads),
 `node scripts/recipe-community-check.cjs` (real actions with mocked REST/auth),
-`python scripts/recipe-catalogue/check_local_schema.py`, and
+`python scripts/recipe-catalogue/check_local_schema.py` (since removed), and
 `node scripts/recipe-platform-browser-smoke.cjs` (production browser with mock
 upstream) passed. Browser widths: 320, 390, 1440px; no overflow or page errors.
 OTP delivery and authenticated cloud writes were mocked, not sent to real users.
@@ -99,7 +102,7 @@ state, not remote truth.
   (`saved_drinks.note`); there is no separate owner/curator note column and none is proposed.
   `public.drinks.id` is **text**, so any social table's `drink_id` is a text foreign key, not
   uuid. Both base migrations — `public.drinks` and `public.saved_drinks` — are **absent
-  locally** (local `supabase/migrations` holds only `party_plans` and `drink_provenance`): the
+  locally** (historical: when written, `supabase/migrations` held only `party_plans` and `drink_provenance`; now superseded by the B9 baselines): the
   `drinks` base migration is a Phase 1 local-reset/test precondition and the `saved_drinks` one
   is reconstructed and verified before Phase 2, both additively with owner approval, so local
   environments match remote.

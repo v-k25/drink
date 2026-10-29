@@ -1,5 +1,0 @@
--- Run in Studio as a review checklist; this script intentionally performs no writes.
-select table_schema, table_name, grantee, column_name, privilege_type from information_schema.column_privileges where table_name in ('saved_drinks','drink_likes','drink_reviews','drink_comments') and grantee in ('anon','authenticated') order by table_schema,table_name,grantee,column_name,privilege_type;
-select relname, relrowsecurity from pg_class where relname in ('saved_drinks','drink_likes','drink_reviews','drink_comments') order by relname;
-select table_schema, table_name, grantee, privilege_type from information_schema.role_table_grants where table_name in ('saved_drinks','drink_likes','drink_reviews','drink_comments','drink_reviews_public','drink_comments_public','drink_social_stats') and grantee in ('anon','authenticated') order by table_schema,table_name,grantee,privilege_type;
-select schemaname, tablename, policyname, roles, cmd, qual, with_check from pg_policies where tablename in ('saved_drinks','drink_likes','drink_reviews','drink_comments') order by tablename,policyname;

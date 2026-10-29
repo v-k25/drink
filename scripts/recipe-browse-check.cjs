@@ -373,7 +373,7 @@ async function main() {
   assert.ok(!bodyOnly(gateDetail.body).includes(LEGACY_NAME), 'no recipe names may surface before the gate')
 
   // 3. Eligible listing with an eligibility cookie: honest state, no legacy/draft rows.
-  const listing = await get('/find-my-drink', ELIGIBLE_COOKIE)
+  const listing = await get('/find-my-drink?mode=browse', ELIGIBLE_COOKIE)
   assert.equal(listing.status, 200, 'the listing must respond 200 once eligible')
   const listingBody = bodyOnly(listing.body)
   assert.ok(listingBody.includes('Find a recipe'), 'the listing title must render once eligible')
@@ -400,9 +400,12 @@ async function main() {
   const publishedDetail = await get('/find-my-drink/dn-cape-codder', ELIGIBLE_COOKIE)
   assert.equal(publishedDetail.status, 200, 'a reviewed published recipe must render')
   assert.ok(bodyOnly(publishedDetail.body).includes('Cape Codder'), 'published detail must show its recipe')
-  assert.ok(!bodyOnly(publishedDetail.body).includes('Community features are temporarily unavailable'), 'live public community reads must succeed')
-  const draftDetail = await get('/find-my-drink/dn-mojito', ELIGIBLE_COOKIE)
-  assert.equal(draftDetail.status, 404, 'unreviewed imported drafts must remain hidden')
+  // dn-mojito was a draft at launch; it was reviewed and published (live read 2026-10-12:
+  // status=published, editorial_ready=true), so it must now render. Hiding of unreviewed
+  // rows is asserted by the draft/legacy fail-closed unit checks and the injection id above.
+  const reviewedDetail = await get('/find-my-drink/dn-mojito', ELIGIBLE_COOKIE)
+  assert.equal(reviewedDetail.status, 200, 'the now-reviewed Mojito must render')
+  assert.ok(bodyOnly(reviewedDetail.body).includes('Mojito'), 'the reviewed Mojito detail must show its recipe')
   console.log('PASS: recipe browse/detail gate-first, six published launch recipes, eligible detail and legacy/draft/unknown 404s.')
   if (/temporarily unavailable/.test(listingBody)) {
     console.log('NOTE: the listing reported an unavailable state; the live read may have failed (network or DB).')

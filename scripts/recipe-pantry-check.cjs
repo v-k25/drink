@@ -44,7 +44,8 @@ const unknownIdentity = structuredClone(cape); unknownIdentity.ingredientDetails
 assert.equal(reviewedPantry(unknownIdentity), null, 'unknown changed identity loses approval')
 const brokenEquipment = structuredClone(audit); brokenEquipment.find(item => item.recipeId === cape.id).equipment = []
 assert.equal(reviewedPantry(cape, brokenEquipment), null, 'no equipment review fails closed')
-for (const id of ['dn-daiquiri','dn-paloma','mm-watermelon-strawberry-mocktail','mm-grapefruit-martino-mocktail']) assert.equal(reviewedPantry(row(id)), null, 'unknown or ambiguous requirements excluded')
+for (const id of ['dn-daiquiri','dn-paloma','mm-blood-orange-mocktail','mm-vodka-mocktail']) assert.equal(reviewedPantry(row(id)), null, 'unknown or ambiguous requirements excluded')
+for (const id of ['mm-watermelon-strawberry-mocktail','mm-grapefruit-martino-mocktail']) assert.ok(reviewedPantry(row(id)), 'new manually reviewed mocktail requirements')
 assert.equal(reviewedPantry({ ...cape, id: 'unknown-recipe' }), null)
 assert.equal(pantryMatches(rows, new Set()).exact.length, 0)
 const vocabulary = pantryVocabulary(rows)

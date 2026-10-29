@@ -77,8 +77,27 @@ const pagedResponse = (all) => async (url, init) => {
   await expectFailure(async () => response([{ ...all[0] }, { ...all[0] }], 0, 1311))
   await expectFailure(async () => response(all.slice(0, 500), 0, 1310))
   await expectFailure(async () => response(all.slice(0, 500), 0, 1311, 500))
-  await expectFailure(pagedResponse([{ ...all[0], category: 'Gin' }, ...all.slice(1)]))
+  assert.equal(calls[0].init.cache, undefined)
+  assert.deepEqual(calls[0].init.next, { revalidate: 3600, tags: ['planner-catalogue'] })
+
+  // Resilience: row and category changes within sanity bounds still load.
+  const expectLoad = async (rows) => { global.fetch = pagedResponse(rows); assert.equal((await readCatalogue()).length, rows.length) }
+  await expectLoad([{ ...all[0], category: 'Gin' }, ...all.slice(1)])
+  await expectLoad(all.slice(0, 1200))
+  await expectLoad(all.filter((row) => row.category !== 'Sake'))
+  await expectLoad([...all, { ...all[0], id: 'z99-0000', category: 'Non-alcoholic' }])
+  await expectLoad([...all, ...all.slice(0, 700).map((row, index) => ({ ...row, id: `q${String(index).padStart(4, '0')}` }))].sort((a, b) => a.id.localeCompare(b.id)))
+
+  // Still fails closed on implausible size, too many categories, unordered ids and inconsistent totals.
+  await expectFailure(pagedResponse(all.slice(0, 99)))
+  await expectFailure(pagedResponse(all.slice(0, 100).map((row, index) => ({ ...row, category: `Category ${index}` }))))
+  await expectFailure(pagedResponse([all[1], all[0], ...all.slice(2)]))
+  await expectFailure(pagedResponse([{ ...all[0], price_paise: 0 }, ...all.slice(1)]))
+  await expectFailure(async (url, init) => {
+    const [start, end] = String(init.headers.Range).split('-').map(Number)
+    return response(all.slice(start, end + 1), start, start === 0 ? all.length : all.length + 1)
+  })
   await expectFailure(async () => response([{ ...all[0], city: 'Jaipur' }], 0, 1311))
   await expectFailure(async () => { throw new Error('offline') })
-  console.log('PASS: server-only secret guard, origin and apikey-only transport, exact 1,311-row/18-category integrity, and safe failures.')
+  console.log('PASS: server-only secret guard, origin and apikey-only transport, fetch revalidation tag, row/category resilience within sanity bounds, shape integrity, and safe failures.')
 })().catch((error) => { console.error(error); process.exitCode = 1 })

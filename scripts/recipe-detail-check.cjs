@@ -33,7 +33,7 @@ async function main() {
       await page.setViewportSize({ width, height: 900 })
       const response = await page.goto('http://127.0.0.1:3139/find-my-drink/dn-cape-codder')
       assert.equal(response.status(), 200)
-      await page.getByRole('button', { name: 'Step mode', exact: true }).waitFor()
+      await page.getByRole('button', { name: 'Start making', exact: true }).waitFor()
       const body = await page.locator('body').innerText()
       // Metric-first checklist: converted lines lead with the metric quantity
       // and do not repeat the source-unit amount; the wedge stays verbatim; the
@@ -47,9 +47,16 @@ async function main() {
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `overflow at ${width}`)
       await page.getByRole('checkbox').first().check()
       await page.getByRole('status').filter({ hasText: '1 of 3 ingredients gathered' }).waitFor()
-      await page.getByRole('button', { name: 'Step mode', exact: true }).click()
+      await page.getByRole('button', { name: 'Start making', exact: true }).click()
       await page.getByText('Step 1 of 3', { exact: true }).waitFor()
       await page.getByRole('button', { name: 'Next', exact: true }).click()
+      await page.getByText('Step 2 of 3', { exact: true }).waitFor()
+      await page.keyboard.press('Escape')
+      await page.getByRole('dialog').waitFor({ state: 'hidden' })
+      assert.equal(await page.evaluate(() => document.activeElement?.id), 'start-making', 'Escape must return focus to Start making')
+      await page.getByRole('button', { name: 'Start making', exact: true }).click()
+      await page.getByText('Step 1 of 3', { exact: true }).waitFor()
+      await page.keyboard.press('ArrowRight')
       await page.getByText('Step 2 of 3', { exact: true }).waitFor()
       await page.screenshot({ path: `output/playwright/recipe-detail/detail-${width}.png`, fullPage: true, animations: 'disabled' })
     }

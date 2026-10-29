@@ -27,6 +27,7 @@ async function main() {
       }
       for (const img of await page.locator('main img').all()) {
         await img.scrollIntoViewIfNeeded()
+        await img.evaluate(el => el.complete && el.naturalWidth ? undefined : new Promise(resolve => el.addEventListener('load', resolve, { once: true })))
         await img.evaluate(el => el.decode())
         assert.ok(await img.evaluate(el => el.naturalWidth > 0))
       }

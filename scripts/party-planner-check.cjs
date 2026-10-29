@@ -38,8 +38,9 @@ for (const bad of ['0', '10.001', '1e3', '+10', '1,000', ' 10', '10 ']) assert.e
 const text = planText(result.plan)
 assert.match(text, /Jaipur/)
 assert.match(text, /Shortfall: ₹800\.00/)
-assert.match(text, /price date unknown/i)
-assert.match(text, /not a serving recommendation/i)
+assert.match(text, /Listed price in Jaipur, checked 3 Oct 2026/)
+assert.match(text, /Cost per guest: ₹290.00/)
+assert.match(text, /Quantities are an estimate/)
 const sibling = { ...catalogue[0], id: 'gin-2', name: 'Second Gin', pricePaise: 125000 }
 const multiCatalogue = [...catalogue, sibling]
 const multi = { ...input, lines: [...input.lines, { productId: sibling.id, quantity: 3 }] }

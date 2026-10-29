@@ -1,5 +1,121 @@
 # Implementation progress
 
+### Housekeeping: stale Planner scripts refreshed, B7/B9 re-verified, 2026-10-29
+
+Test-only edits (scripts/): `planner-ux-production-check` (removed "Original shopping estimate" assertion; forces clipboard fallback by clearing `navigator.share`), `planner-redesign-check`, `design-polish-check`, `brewlist-tools-style-check`, `planner-tool-shell-check` (new "Set your party" stage, "Choose drinks myself"/"Suggest my list"/"Generate list", "Drinks budget (INR)", "Save changes"/"Cancel", "Search all drinks", `aria-current` categories, per-item Remove + Undo, "More options" disclosure, start-new returns to setup). All pass. NOT refreshed: `planner-inventory-check` (still asserts multi-category pressed state, per-category search, budget presets, "Remove <category>"); needs a rewrite or retirement (owner decision).
+
+Run: build, tsc, git diff --check, node --check, plus early-access, party-planner(+suggest, backend, catalogue-server, retry), home-design, brewlist-home, planner-ux, recipe guided/pantry/metric/detail/discovery/browse (live read-only) and browser suites all passed. Environment note: Playwright wants chromium build 1234 (not installed) and is absent from node_modules; runs used the codex cached Playwright module and chromium-1243 via env vars/a scratch preload (no repo or dependency change).
+
+B9: read-only SELECTs on the live project (no row reads) match `20260801_waitlist_subscribers_baseline.sql` and `20260801000001_profiles_baseline.sql`: columns/defaults, 7+2 CHECKs, FK, `waitlist_email_unique`, RLS, policies, grants (waitlist anon/auth INSERT only; profiles authenticated SELECT/INSERT/UPDATE), functions and triggers. No drift. B7 acceptance reviewed: met except where noted in the hand-off.
+
+### B12 checkpoint 5 — production verification run, 2026-10-29 (closed)
+
+Terminal works again. Ran: `corepack pnpm build` (pnpm absent from PATH; `pnpm_config_verify_deps_before_run=warn`) passed; `node node_modules/typescript/bin/tsc --noEmit` zero errors; `git diff --check` exit 0 (CRLF warnings only). In-process suites passed: recipe-guided-check, recipe-pantry-check, recipe-metric-check (live section fell back to retained evidence: fetch failed), party-planner-backend-check, party-planner-catalogue-server-check, early-access-check. recipe-browse-check unit section passed; its live section failed because the Supabase host does not resolve from this machine (ENOTFOUND).
+
+scripts/recipe-guided-browser-check.cjs (production server, fixture catalogue, 360/390/768/1024/1440, short heights, 200% text, dialog focus, mixed bases, random exhaustion, storage denial, no-JS browse) passed on the second run. Repair 1 of 2: its no-JS grapefruit assertion wrongly required the word on every card, though only "A few good choices" cards show a match label; it now checks names against fixture name/ingredient matches. No product change. recipe-detail-check passed. Screenshots in output/playwright/finder-guided reviewed (390, 1440, 200% short): layout, tokens and dialog as intended; fixture photos are blocked offline.
+
+Live-catalogue suites: the Supabase project was initially unreachable (local DNS failure for the host, then HTTP 521 / "database possibly not accessible"; project restored by the owner re-authenticating). With the project back (and a process-scoped scratch DNS preload via 1.1.1.1 because the local resolver does not resolve the host; no system change) recipe-browse-check (unit + live, six published launch recipes), recipe-discovery-check, recipe-pantry-browser-check and recipe-metric-check (live read-only, 50 rows / 187 ingredient lines) all PASSED. Repair 2 of 2 (test-only): their legacy browse URLs now carry mode=browse. All checkpoint 5 checks have now run and passed; checkpoint 5 is closed. Graphify refreshed (1059 nodes, 1965 edges). No commit, dependency, backend or data changes.
+
+### Pegpedia P2 — acquisition and import preparation complete, 2026-10-15
+
+The requested GPT-6 Luna medium worker used Scrapling MCP to collect 145 category pages and a preserved Whiskey boundary probe, reconciling 13,951 unique source IDs across nine categories. Prepared deterministic candidate/report artifacts and a concrete server-only/RLS supplemental-table SQL proposal. Existing 1,311 Jaipur products remain unchanged. Matching: 413 unique exact links, 193 ambiguous records, 13,342 unmatched candidates and 3 conflicts; 81 possible source-duplicate groups require review. All candidates are pending_review. Bottle ABV exists for 767 records (5.5%), including only 18 exact catalogue overlaps. No product-specific price requests or remote writes.
+
+Verified: current preparer in-process self-check (18 cases); repeated fresh runs with identical payload hash 813b29136ffa48a7c4d8dbbf54235ac9e41001d441870555f379a84a9e6a0d92; all 145 page hashes; original crawl manifest preserved; schema/payload alignment. Parent independently verified every candidate ID and source name/size/ABV, unique exact links, valid provenance dates and payload hash. Unvalidated standalone Python crawler was removed; actual acquisition is documented in scripts/pegpedia/acquisition-reproduction.md. See docs/pegpedia-import-report.md, docs/pegpedia-import-plan.md and output/pegpedia/preparation-verification.json.
+
+P3 database application is pending explicit owner approval for public.pegpedia_catalogue per AGENTS.md. No schema or row mutations, commit or deployment. Required pnpm build failed before process creation (helper_unknown_error); build, exact standalone TypeScript, git diff --check and Graphify remain unrun. No UI changed.
+
+
+### Pegpedia P1 — source and import plan, 2026-10-14
+
+Owner requested public catalogue acquisition with Scrapling and a GPT-6 Luna medium implementation worker. Added docs/pegpedia-import-plan.md after read-only source/API and live-schema inspection. Source advertises 13,951 products; target has 1,311 Jaipur products and a 5,000-row loader ceiling. Nationwide prices and bottle ABV cannot become Jaipur prices or recipe ABV. Plan requires exact deduplication, factual provenance, review of category defects, supplemental-storage schema approval and additive-only verified imports. No remote writes. Documentation and API contract snapshot saved; implementation and verification follow in P2.
+
+
+### B12 planning follow-up — strength filtering deferred, 2026-10-14
+
+Added a priority follow-up to docs/find-my-drink-guided-plan.md so alcoholic strength filtering is implemented when reviewed data is available. Recorded the live-read finding (ABV absent for all 35 published cocktails and 15 mocktails), required data and readiness trigger, combined base/strength matching, unknown-data and mixed-mode behavior, and release acceptance checks. Current MVP ABV exclusion remains scoped to the MVP. Documentation only; no application or database changes. Edited text read back and checked for trailing whitespace; build, TypeScript, production smoke, git diff --check and Graphify were not run for this documentation update (terminal startup remains blocked).
+
+
+### B12 guided discovery checkpoint 4 — UI implemented, 2026-10-14
+
+Added the compact entry, two-stage type/taste journey, independent mixed sections, optional base/method/search/audited ingredient refinements, desktop Apply/Cancel panel and complete native mobile/tablet dialog. Current Tool Night tokens and Nunito Sans are reused; controls wrap, primary actions are at least 48px, focus and reduced-motion rules are explicit. Recipe cards show reviewed tastes/exact base distinctions and known recorded servings/time. Ingredient state uses the existing separate session key, with visible missing quantities and audit/quantity caveats. Guided answers and selected random recipe IDs use bounded local return URLs; browser Back retains taste answers and restored pantry ranking scrolls to the recipe anchor. Surprise me draws one reviewed type-only recipe, tracks current-pool history, provides Start again and honest zero/single states. Existing browse query URLs and server-rendered no-JavaScript browse remain usable through explicit mode=browse. No Planner, waitlist action, query loader, detail/making/metric, dependency, environment or remote data writes.
+
+Updated affected browse/pantry regression entry/return expectations and added scripts/recipe-guided-browser-check.cjs, a fixture-only production journey at 360/390/768/1024/1440, short desktop/mobile heights and 200% root text, including dialog/focus, mixed bases, quantities, detail return, random exhaustion, storage denial, malformed publication and no-JavaScript browse. The harness syntax passed; it has not run.
+
+### B12 guided discovery checkpoint 3 — matching and state verified in-process, 2026-10-14
+
+Implemented pure discovery ranking and coverage, signed claim invalidation, exact primary-base/subtype filtering, approved-occasion scoring support (no approved occasion records/UI), bounded preference parsing/serialization and a backwards-compatible one-item option on the existing random helper. Score is 10 per reviewed taste plus 2 per approved occasion; ties use featured/name/ID. Pantry groups precede score and explicit ingredient-only mode admits exact audited matches. Mixed partitions are ranked independently; alcoholic base never filters mocktails.
+
+Passed via Node in-process execution: recipe-guided-check.cjs (50 signed reviews, all 15 mocktail decisions, 11 supported non-alcoholic paths, 25 pantry audits; ranking, stale claims, exact forms, required garnish/ice, measured missing items, base distinctions, mixed preferences, query bounds/roundtrips and zero/one/several random pools); existing recipe-pantry-check.cjs; existing recipe-browse-check.cjs unit section over real queries with mocked fetches; existing recipe-metric-check.cjs unit section (89 cases/invariants, live read section intentionally omitted); existing Planner backend/catalogue-server suites in isolated contexts with mocked fetch/cookies/environment; early-access-check.cjs using installed FormData and its own mock. No live writes or waitlist submissions.
+
+### B12 checkpoint 5 — verification incomplete / environment blocked, 2026-10-14
+
+Final active-agent source review repaired browser Back taste retention, repeated active random-type ID clearing, source base/subtype display, and pantry-ranked detail-return anchors. Final focused guided/pantry assertions pass. Full-project TypeScript through ts.createProgram/getPreEmitDiagnostics with noEmit and incremental disabled reports zero diagnostics; script syntax and a source trailing-whitespace scan across the 22 touched files pass. These are in-process evidence, not claims that the required CLI commands ran.
+
+The standard terminal launcher again failed before starting corepack pnpm build: CreateProcess helper_unknown_error, setup refresh had errors. No alternative shell or dependency workaround was used. Still unrun: pnpm/Corepack production build; exact node node_modules/typescript/bin/tsc --noEmit command; git diff --check; production guided/browse/discovery/detail/pantry-browser/style regressions and screenshot review; production smoke at the required widths/short heights/200% text; Graphify refresh. The implementation is not release-verified and checkpoint 5 remains open. No commit or deployment. An earlier Node edit was rejected because automatic approval review reached its usage limit; it did not execute. After the user continued, the edit succeeded through the same tool.
+
+
+### B12 guided discovery checkpoint 1 — 2026-10-14
+
+Owner request advances B12 for implementation now. Added docs/find-my-drink-guided-plan.md with scope, interfaces and acceptance criteria; updated roadmap precedence and stale AGENTS recipe-retirement/tool-palette statements. Recipes remain on drinks, taste leads, mixed sections stay independent, Surprise me is type-only; occasion wording awaits owner approval and stays hidden. No backend work authorized or needed.
+
+Terminal failed before process creation (helper_unknown_error: setup refresh had errors). No command checks have run; file inspection uses Node. Required build, standalone TypeScript, whitespace, browser/CLI regressions and Graphify remain blocked in this environment.
+
+### Party Planner budget summary compacted — 2026-10-14
+
+Reduced the Your plan budget block padding, spacing, figures, labels and meter size. The guest line now uses concise per-guest wording while retaining the full budget detail for screen readers. Removed the original shopping estimate sentence from the selected-plan panel; the separate final review estimate remains available. No calculation or persistence behavior changed. Build and browser checks were not run for this small presentation-only follow-up.
+
+### Party Planner pinned review action — 2026-10-14
+
+Fixed the Your plan continue action in app/party-planner/planner.module.css. Removed the desktop selected-list 300px minimum that could push the footer beyond the clipped panel, and retained a viewport-height sticky panel on short desktop screens. The selected items scroll in the available space while the Review list action stays at the bottom. Short mobile dialogs retain their sticky summary. No planner state or backend behavior changed.
+
+Verification passed: Corepack pnpm production build (existing drift/override warnings), standalone TypeScript, git diff --check (existing line-ending warning), and isolated production browser fixture with the full planner journey. Additional assertions confirmed the desktop Review list button remained within the viewport at heights 844, 620, and 500px; the 500px screenshot was inspected. The repository test script remains unchanged; the temporary companion fixture was used. Graphify code-only refresh passed: 957 nodes and 1,733 edges. No commit or deployment.
+
+### Party Planner visual refinement — 2026-10-14
+
+Applied the requested follow-up in the original working copy at C:/Users/vritr/OneDrive/Desktop/test, preserving its pre-existing changes. Centered the suggestion panel, aligned its inputs, moved the whole-number hint into the input placeholder, and kept concise target feedback with an expandable explanation. Planner navigation and secondary actions now use rounded controls without persistent underlines. Desktop selected cards have a 112px minimum height and consistent padding; content-sized grid rows prevent single cards stretching and longer lists scroll without compressing controls. Long names and validation messages can increase card height to avoid clipping. No state, calculation, backend, dependency or environment changes.
+
+Passed: production build with existing pnpm drift/override warnings; standalone node node_modules/typescript/bin/tsc --noEmit; party-planner-suggest-check.cjs; party-planner-check.cjs; git diff --check (existing line-ending warnings); and a temporary companion of planner-ux-production-check.cjs using cached Chromium. The companion passed the existing journey at 360/390/768/1024/1280/1440px plus centered-panel/input alignment at 768/1024/1440px, collapsed helper disclosure, scroll access to each card above the review action, unchanged single-card height after removal of other cards, and non-underlined suggestion action. Source diff and desktop/mobile screenshots reviewed. Graphify refreshed to 957 nodes/1,733 edges.
+
+Verification limits: the original regression script remains unchanged; its former assertion that three rows all fit without scrolling conflicts with the newly requested stable card sizing. Automatic approval review rejected modifying that script because it interpreted the two-file implementation scope as a restriction. The temporary companion tests scroll reachability instead and disables native browser share to test clipboard fallback deterministically. Initial browser attempts failed for a missing default Chromium executable, native-share fixture mismatch, and the obsolete three-row assertion; the final companion passed. No physical-device or cross-browser checks, commit or deployment.
+
+### Party Planner UX checkpoint 5: final verification and review — 2026-10-14
+
+The current Party Planner journey is implemented and the Astra read-only final review found no outstanding source or interaction findings. Final checks passed after the last repairs: `corepack pnpm build` (with `pnpm_config_verify_deps_before_run=warn`), standalone `tsc --noEmit`, `git diff --check`, `party-planner-suggest-check.cjs`, `party-planner-check.cjs`, `party-planner-backend-check.cjs`, and `party-planner-catalogue-server-check.cjs`. The production browser fixture harness passed setup validation, explicit suggestion arithmetic and settings, draft restoration, search and category access, editing, Cancel/Undo, guest-change notice, export fallbacks, focus and responsive layout at 360/390/768/1024/1280/1440px. The separate failure fixture passed catalogue Retry and focus at 390/1280px. Earlier read-only live catalogue verification passed 1,311 rows/18 categories; the interactive browser checks used fixtures, not the live catalogue. Graphify refreshed to 957 nodes/1,733 edges.
+
+Remaining verification limitation: older layout scripts (`planner-inventory-check.cjs`, `planner-redesign-check.cjs`, `planner-tool-shell-check.cjs`, plus Planner sections of `design-polish-check.cjs` and `brewlist-tools-style-check.cjs`) assert the removed inline setup card or immediate builder. They fail against this approved journey and have not been migrated. The new production browser harness covers the current UX, but those historical regression suites are not green. Physical devices and browser zoom were not tested. No commit or deployment was made; pre-existing working-tree changes were preserved.
+
+### Party Planner UX checkpoint 1: interaction contract — 2026-10-13
+
+Owner approved direct, unselected servings per drinking guest and equal target servings across explicitly selected eligible categories. `docs/party-planner-ux-plan.md` records both rules. Current Planner source, suggestion engine, responsive CSS, draft persistence and caller checks were inspected. No implementation or verification claim is made for later checkpoints yet. The legacy Luna and Terra model IDs are unavailable in this session; no substitute executor was used. The available `gpt-6-astra` model was requested for the final read-only review.
+
+### Party Planner UX checkpoint 2: setup and browsing — 2026-10-13
+
+Added a standalone required guests/budget setup before any addable catalogue. Removed budget presets. Manual and suggestion actions now branch after valid setup with inline validation and focus on the first invalid input. Desktop categories wrap; below 1024px a complete dialog picker shows every category. Browsing does not change selected lines. Search works across the loaded catalogue, shows result categories and uses a separate filter scope so old category filters do not hide global results. A fixture production browser check exercised setup validation, all fixture category labels, browse-only navigation, search outside the active category and no horizontal overflow at 360, 390, 768, 1024, 1280 and 1440px. These are fixture results, not live UI catalogue verification.
+
+### Party Planner UX checkpoint 3: suggestion and draft state — 2026-10-13
+
+Replaced duration/mix weights with explicitly entered servings per drinking guest and selected eligible categories. `suggest.ts` splits target servings equally, rounds up to whole packs, preserves deterministic product and budget fitting, and reports an impossible budget without removing a selected category. The result separates target from pack coverage. Persisted new preferences, estimate basis and guest notice in the existing draft key; compatible older drafts retain selected items and require setup if incomplete. Guest edits leave quantities unchanged with a visible notice; editing suggestion requires replacement confirmation, Cancel and Undo restores the prior list and assumptions. `party-planner-suggest-check.cjs` passed explicit-category arithmetic, rounding, determinism, exclusions, limits and budget conflict; fixture production browser passed settings reload, legacy incomplete-draft restoration, Cancel, Undo and guest edit/Cancel.
+
+### Party Planner UX checkpoint 4: receipt, recovery and browser check — 2026-10-13
+
+Receipt and panel now distinguish Budget per guest from Estimated cost per guest. Mobile receipt has Share list, Edit list and a More options disclosure for copy, print and starting over. Catalogue failure after eligibility routes to the same unavailable/Retry state. Mobile Undo moved into the open plan dialog after a browser assertion found the previous toast was blocked by the dialog top layer. Fixture production browser checks passed manual quantity validation, removal/Undo, denied-clipboard manual-copy fallback, print dispatch, failed catalogue Retry/focus, and no page errors. Screenshot review at 390, 768 and 1280px showed the setup-free builder, category picker and compact receipt actions without visible clipping. A 200% root-font check passed at 390px; physical browser zoom and real devices were not tested. Read-only `party-planner-live-catalogue-check.cjs` separately passed against the 1,311-row/18-category live catalogue; it does not establish live production UI availability. Old Planner layout harnesses still target the removed setup card and currently fail; this remains verification work for checkpoint 5.
+
+Desktop panel refinement after checkpoint 4: a three-category fixture suggestion at 1280×844 initially put the third row behind the review area. Compact row spacing and shorter estimate copy moved all three complete rows above it (row bottoms 486.5, 607.7 and 709.3px; review area starts 713.4px). The browser assertion checks the review area boundary. The same browser check covers category-picker focus return and Cancel/Undo restoration of earlier suggestion inputs. Final focused model, suggestion, backend and catalogue-server checks, build, standalone TypeScript and diff check passed before the final reviewer pass.
+
+### Socifer B2: hero image sourced and graded — 2026-10-12
+
+D12 decided: the owner prefers free stock and picked candidate A from a 3-image shortlist (`output/hero-candidates.png`): Pexels 1190298, "Purple Fireworks Effect" by Wendy Wei, 3300×2200, Pexels licence. It was graded toward the palette (darker shadows, violet bias) with sharp from an out-of-repo script (`C:\Users\vritr\Backups\scripts\hero.cjs`). Exported to `public/images/nightlife/hero-night-desktop.{avif,webp}` (2400×1600; 141 KB and 171 KB) and `hero-night-mobile.{avif,webp}` (1200×1800 portrait crop; 102 KB and 123 KB). All variants are under 200 KB. Credit recorded in `docs/nightlife-image-credits.md`. Headline-band contrast was measured on the 99th-percentile brightest pixel against `--bone`. B3 must apply at least a 55% `--night` overlay across the headline band, which gives at least 6.1:1 on both crops (40% gives 4.2–4.3:1 and fails). Not yet wired into the page: integration, Lighthouse and LCP checks belong to B3. Also completed the pending B0 item: with owner approval, added `read_only=true` to the Supabase MCP URLs in `opencode.jsonc` and `.opencode/opencode.json`.
+
+### Socifer B1: Planner catalogue resilience and caching — 2026-10-12
+
+Following `docs/socifer-product-plan.md`, `app/party-planner/catalogue-server.ts` no longer demands exactly 1,311 rows with fixed per-category counts. Instead it applies sanity bounds: 100–5,000 rows, 1–40 categories, and the reported total must be consistent across pages. It still fails closed on bad shape, duplicate or unordered ids, non-positive size or price, an unexpected origin, or a missing secret. Catalogue fetches now use `next: { revalidate: 3600, tags: ['planner-catalogue'] }` (exported as `CATALOGUE_TAG`) instead of `no-store`. `scripts/party-planner-catalogue-server-check.cjs` gained resilience fixtures (changed category, 1,200 rows, removed category, new category, 2,011 rows) and fail-closed fixtures (99 rows, 100 categories, unordered ids, zero price, total changing between pages). `scripts/party-planner-backend-check.cjs` used to simulate an unavailable catalogue by dropping one row, which is now valid. It now uses a malformed row.
+
+Verification actually passed: `corepack pnpm build` with `pnpm_config_verify_deps_before_run=warn` (existing ignored-override and lockfile drift warnings), `node node_modules/typescript/bin/tsc --noEmit`, `git diff --check` (line-ending warnings only), `party-planner-check.cjs`, `party-planner-backend-check.cjs`, `party-planner-catalogue-server-check.cjs`, and `brewlist-tools-style-check.cjs`. The style check needs `NODE_PATH` pointing at a cached npx Playwright because Playwright is not a project dependency. Graphify refreshed: 954 nodes, 1,818 edges. Not run: `party-planner-live-catalogue-check.cjs` (it reads live data). Known limit for B7: `model.ts` still caps a plan at 18 selected categories.
+
+### Socifer B0: work protected, AGENTS.md updated — 2026-10-12
+
+Created an off-repo backup at `C:\Users\vritr\Backups\socifer-pre-B1-2026-10-12.zip` (excluding node_modules, .next, graphify-out, .git and `.env*`). Committed the accumulated work as `770e692` on branch `socifer/b0-baseline`. Both migration files are committed but not applied. `.opencode/` is left uncommitted. `output/`, `tmp/`, `.playwright-mcp/`, `__pycache__/` and the EkQuarter source files are now gitignored. Copied the approved v2 plan to `docs/socifer-product-plan.md`. Updated AGENTS.md: the layout, backend and design sections now describe Socifer instead of the neutral placeholder. Still pending owner permission: adding `read_only=true` to the Supabase MCP URLs in `opencode.jsonc` and `.opencode/opencode.json`. The edit was blocked by the tool permission classifier.
+
 ### Socifer public brand rename checkpoint — 2026-10-12
 
 Changed the current user-facing platform name from Brewlist to Socifer across homepage and tool wordmarks, accessible labels, early-access consent/success copy, FAQ, Planner sharing title, current page metadata and README. Replaced the B monogram in `app/icon.svg` with an S in the same style and regenerated `public/favicon.ico` from it at 16/32/48/64px using the already installed sharp package. Existing route paths, backend actions, cookies, storage keys, catalogue provenance, fixture identifiers, historical documents and script/env names retain their values for compatibility. All prior uncommitted work was preserved; no dependency, credential or backend change was made.
@@ -1571,3 +1687,390 @@ Responsive repair verification: after fresh production build, `scripts/home-desi
 Final responsive cleanup verification: formatted and consolidated homepage CSS, removed the hero overflow mask, retained min-width guards, and rebuilt. `node scripts/home-design-check.cjs` with the existing Playwright environment passed all five widths plus keyboard skip link, product routes, zero page errors, reduced-motion checks, and no external requests/form writes. Preview remains on localhost:3125.
 
 Director final review passed: source and rendered desktop/tablet/mobile screenshots reviewed, including 320px. The original 1024px overflow was caught by the new regression check and corrected before acceptance. Production build and standalone TypeScript passed after final CSS cleanup; the director also ran the mocked early-access regression successfully and refreshed Graphify (360 nodes, 634 edges). Signup action/form, global styles and product UI hashes match the session baseline. Evidence: `output/playwright/home-redesign/home-{1440,1024,768,390,320}.png`. Scope is the marketing homepage; existing finder/planner flows were preserved, with route smoke checks rather than a full product regression. Chromium only; no live signup, commit or deployment. Existing pnpm drift/override warnings remain.
+
+### Owner decisions D3 + D4 — 2026-10-12
+
+Owner approved D4 (new insert-only `public.table_requests` table + consent `table-request-v2`) and D3 (set Phase 0 exit targets before launch; working targets are the plan's example, ≥ 30 requests/week and ≥ 3 venues willing to use a dashboard, plus 5–10 user/venue interviews, until the owner states other numbers). D2 (hero CTA: "Request a table" vs waitlist only) is still open. Drafted `supabase/migrations/20261012_table_requests.sql` for owner review; it has **not** been applied, and no database, app or dependency changes were made.
+D2 decided 2026-10-12: Phase 0 hero CTA stays **waitlist only** (no partner clubs yet). "Book tickets" (working title) is a Phase 1 TODO in the plan.
+D4 reversed 2026-10-12 (owner): the waitlist is only for launch updates, so no extra fields and no migration in Phase 0. The draft `table_requests` migration was deleted unapplied; B4 is deferred. No database changes were made.
+
+### "For venues" contact band — 2026-10-12
+
+Added a "Run a club in Jaipur? Partner with us" band (`#for-venues`) to `app/page.tsx` after the booking section, with a mailto button to `partners@socifer.com` and a footer "For venues" link; styles in `app/home.module.css`. The WhatsApp button only appears once the `PARTNER_WHATSAPP` placeholder constant is filled in (it is empty for now). No backend or database changes. Verified: standalone TypeScript passed, Corepack `pnpm build` passed, production smoke (`next start`) returned 200 with the band, mailto link and footer anchor present and no WhatsApp link. No visual or browser screenshot review yet.
+Hero lead copy changed (2026-10-12) from the booking-flow promise to "We're not taking bookings yet. Join the launch list and we'll tell you as soon as they open." TypeScript, build and production smoke passed (new copy present, old copy gone).
+"How booking will work" reworded (2026-10-12) to the Phase 1 ticket flow: Pick a night → Choose tickets → Pay → Get your pass, labelled "Coming soon" with "details may change". TypeScript, build and production smoke passed.
+
+### Owner decision D6 + B3 scope — 2026-10-12
+
+D6 approved: neon magenta `#FF3EA5` replaces burnt red `#b73720`; dark landing, light tool surfaces; to be reviewed visually after B3. B3 (booking-first landing redesign) is to be done in one go, in a fresh session, using the new hero files already in `public/images/nightlife/hero-night-*`. D2 stays waitlist-only (no "Request a table"); B4 is deferred.
+
+### B3 booking-first landing redesign ("Jaipur After Dark") — 2026-10-12
+
+Rebuilt `app/page.tsx` + `app/home.module.css` per plan sections 0–10 and 4a: sticky dark header (How it works · For venues · Plan a party · Find a drink + "Get launch updates"), full-bleed hero with the new graded `hero-night-*` photo via `<picture>` (portrait AVIF/WebP ≤700px, desktop AVIF/WebP above; fetchPriority high), script eyebrow "Jaipur, after dark", H1 "BOOK THE NIGHT.", honest "not taking bookings yet" lead and waitlist-only CTA (D2), why-Socifer value props in future tense, "How booking will work" (Phase 1 ticket flow, "details may change"), existing For venues band (`partners@socifer.com`), decorative `aria-hidden` "Jaipur nights" divider, Party Planner / Find My Drink cards (copy kept truthful: Find My Drink still browses recipes until B6), waitlist panel beside its explanation (EarlyAccessForm unchanged, restyled by CSS only), expanded FAQ (who confirms, pricing TBD, age/responsible use), privacy, footer with responsible-use line and the new Wendy Wei/Pexels credit. Upcoming nights (section 6) and venue photos/names stay hidden: no real data or signed venues. D6 tokens applied (`--night #0E0B10`, `--neon #FF3EA5`, etc.); tool pages keep their light surface and are unchanged. New: `app/mobile-menu.tsx` (client; closes on link tap/Esc, returns focus), self-hosted Damion script face (Latin subset, 19 KB woff2, OFL in `app/fonts/OFL-Damion.txt`) wired in `app/layout.tsx` (D14). One test fix: `scripts/home-design-check.cjs` now waits for lazy images to load before decoding. No backend, action, database, dependency or lockfile changes; `club-crowd.jpg`/`cocktail.jpg` still used by the tool cards.
+
+Verification executed: `node node_modules/typescript/bin/tsc --noEmit` exit 0; `corepack pnpm build` compiled (/ static); `node scripts/home-design-check.cjs` passed at 1440/1024/768/390/320 plus skip link, product routes and zero page errors (no external requests, no form writes). Custom check at 360/390/768/1024/1440/1920: no horizontal overflow, no interactive element under 44px. Contrast (computed): bone 17.3:1, mist 9.2:1, neon 6.0:1 on `--night`; night text on neon buttons 6.0:1; danger 7.1, success 11.1; input border 5.8:1. Hero text measured against the brightest background pixel under each element at every width: H1 ≥13:1, lead ≥13:1, secondary button ≥14:1, script eyebrow ≥4.66:1 (large text). Screenshots: `output/playwright/b3-landing/landing-{360,390,768,1024,1440,1920}.png`.
+
+Not done / for owner: no Lighthouse run (plan asks for mobile ≥90, LCP ≤2.5s on mid-range Android over 4G); visual review of D6 magenta still pending; owner approval of the hero image was recorded under B2; `brewlist-home-check.cjs` not extended (it asserts the older design). Tool pages still use the older plum/berry tokens in `globals.css`, so a shared-token pass is a separate checkpoint. No commit.
+
+Glow pass (2026-10-12): stronger static neon text-shadow on the hero script eyebrow, H1 and the "Jaipur nights" divider (magenta core, violet outer halo); removed `overflow: hidden` from the divider so the glow is not clipped. Still removed under `prefers-reduced-motion: reduce`. TypeScript and build passed; `home-design-check.cjs` passed; no overflow at 360-1920. Screenshots: `output/playwright/b3-landing/glow-*.png`.
+
+Glow fix (2026-10-12): removed the reduced-motion rule that switched the glow off. The glow is static (no animation or flicker), and users with Windows animations off were seeing no glow. Computed text-shadow verified under both reduced-motion settings. TypeScript and build passed.
+
+### B3 verification and completion — 2026-10-12
+
+Lighthouse mobile (default simulated throttling, production `next start -p 3125`, 3 runs): Performance 95/95/96, LCP 2.8–2.9 s, CLS 0–0.002, TBT 40–80 ms. Lighthouse navigation mode does not report INP; event timing under 4x CPU throttle showed interactions (menu, anchor, form input) at ≤40 ms. Baseline before fixes was Performance 86, LCP 4.1 s. With applied (devtools) throttling LCP was 2.2 s. **LCP target (≤ 2.5 s) is still missed under the default simulated profile** by ~0.3–0.4 s; observed LCP is ~0.4 s locally. Remaining simulated delay is render-blocking CSS and JS under 4x CPU; no further cheap fix found. Performance ≥ 90, CLS < 0.1 and the INP proxy meet targets.
+
+Fixes made: (1) Nunito Sans now served from a Latin-only, wght-axis woff2 subset (`app/fonts/NunitoSans-latin.woff2`, 27 KB, was a 266 KB font file; original TTF and OFL kept); (2) hero mobile image served as an 800×1200 derivative (`hero-night-mobile-800.avif/.webp`, 47/67 KB; 1200px originals kept unused). Hero text contrast re-measured with the glow on (brightest pixel under each element, text hidden but shadows kept): the script eyebrow failed (neon text on its own neon glow, 1.4–1.8:1), so its text colour is now `#FFE3F2` with a softer inner glow; it now measures 4.8–6.0:1. H1 ≥ 5.0:1, lead ≥ 13:1, buttons ≥ 6.0:1 at 360/390/768/1024/1440/1920. Note for the owner: the eyebrow is now pale pink with a magenta glow rather than solid magenta (relevant to D6 review). Screenshots retaken in `output/playwright/b3-landing/landing-*.png`.
+
+Checks run: `tsc --noEmit` exit 0; `corepack pnpm build` compiled; `home-design-check.cjs` all PASS; `git diff --check` no whitespace errors (CRLF warnings only). D6 stays "approved, pending owner's visual review". B3 marked complete apart from the LCP note above.
+
+B4 deferred to Phase 1 (re-scoped with B11).
+
+### B3 LCP follow-up — 2026-10-12
+
+Tried to bring simulated mobile LCP (2.8–2.9 s) under 2.5 s without changing the design. Measured and reverted (no gain): `experimental.inlineCss`, a 640px hero image (27 KB), a modern `.browserslistrc`, a data-URI blur-up background, extra hero preload links (Next already emits them). Findings: CPU slowdown does not matter (LCP identical at 1x); blocking all JS drops simulated LCP to 1.7 s, so the cost is the ~145 KB of framework JS and ~15 requests contending on Lighthouse's simulated 1.6 Mbps / 150 ms link, and `next start` locally serves HTTP/1.1 (6 connections) whereas Vercel serves HTTP/2. Real local LCP is ~0.4 s and Chrome-applied throttling gives 2.2 s. No code kept from this pass. Final state unchanged from the previous entry: Performance 95, LCP 2.9 s, CLS 0, TBT 60 ms; tsc, build, `home-design-check.cjs` and hero contrast (0 failures) re-run and passing. **Open: re-measure LCP on the Vercel staging deploy (HTTP/2, CDN) in B5; if still > 2.5 s, the remaining lever is cutting framework JS on `/` (e.g. a lighter form/menu or deferring hydration), which is a design-level change.**
+
+### B5 Vercel staging deploy, LCP re-measure, planner save removed — 2026-10-12
+
+**Staging deploy.** Linked the working tree to the existing Vercel project `vritraroe25-6598s-projects/drink` (Vercel CLI 63.1.2, installed globally; no package changes) and deployed previews with `vercel deploy --yes`. Added `.vercelignore` so `.env*`, `.opencode/`, `.fallow/`, `output/`, `tmp/`, `graphify-out/` and the product spreadsheet/images are not uploaded. Latest preview: `https://drink-hy50n7h4h-vritraroe25-6598s-projects.vercel.app` (behind Vercel Deployment Protection; automated access uses `vercel curl` or the `x-vercel-trusted-oidc-idp-token` header with the short-lived dev OIDC token). Env vars needed: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SECRET_KEY` (server-only, catalogue). They exist on Vercel but are scoped to **Production only**, so `/party-planner` cannot load the catalogue on previews until the owner also enables them for Preview. Note: `vercel link` appended a `VERCEL_OIDC_TOKEN` line to `.env.local`; it was removed again, existing keys untouched.
+
+**Lighthouse mobile on staging (HTTP/2, default simulated throttling).** Before any change (5 runs): Performance 99/89/90/91/87, LCP 2.0/3.3/3.3/3.2/3.3 s, FCP 1.4–1.6 s, CLS 0, TBT 40–80 ms. All resources finish by ~0.6 s; on warm runs LCP is ~0.3 s TTFB + ~0.3 s load + ~1.8 s element render delay. The observed (unthrottled) first paint lands at ~2.4 s, right after the ~185 ms evaluation of the React/Next runtime chunk, so Lantern ties LCP to framework JS. Experiments, measured and reverted: removing `decoding="async"` from the hero (LCP 2.4/3.1/3.0/3.1/3.2 s, no gain); WebP instead of AVIF for the mobile hero (2.8/3.1/3.2/3.3 s, no gain). **LCP target (≤ 2.5 s) still missed on staging (median ~3.2 s simulated); Performance ≥ 90 met on most runs; CLS and TBT meet targets.** The remaining cost is the App Router runtime itself (React DOM ~73 KB), which ships even with no client components, so trimming `/` alone will not remove it. Proposed next step (not implemented): measure field LCP from real devices on production (e.g. Vercel Speed Insights, which needs owner approval for a new dependency) before any design-level change; options beyond that are a static, non-hydrated landing page or moving `/` off the App Router runtime, both are architecture changes.
+
+**Party Planner save (owner decision).** The owner did not want account save, and no SMS provider is configured. Removed the OTP sign-in, Saved plans dialog and Save plan button from `app/party-planner/planner.tsx`. The list is kept on the device (existing localStorage auto-draft) and exported via Print/PDF, Copy and Share. Confirmation copy updated ("This clears your current list on this device"). No Supabase writes, migrations or data changes. `party_plans` table and migration untouched. Not done: removing the now-unused `listPlans`/`savePlan`/`deletePlan`/`getSession` server actions from `app/party-planner/actions.ts` (the edit was blocked by the local permission classifier). `sendOtp`/`verifyOtp`/`signOut` and `session.ts` must stay while Find My Drink uses them. `scripts/party-planner-backend-check.cjs` still asserts the old save flow (already outdated).
+
+Checks run: `tsc --noEmit` exit 0; `corepack pnpm build` (verify-deps=warn) compiled, all routes generated; `git diff --check` no whitespace errors (CRLF warnings only); production smoke `next start -p 3131`: `/` 200, `/party-planner` 200, no "Saved plans"/"Send SMS code" in the HTML; preview `/` and `/party-planner` 200 via `vercel curl`. Not run: interactive browser pass of the planner on staging (catalogue needs the Preview env vars).
+
+### B5 follow-up: dead save code removed, staging planner pass — 2026-10-12
+
+Owner enabled the three Supabase env vars for Preview and Development, and approved removing the unused save code. `app/party-planner/actions.ts` now keeps only `confirmEligibility`, `getCatalogue`, `validatePlan` and the OTP trio (`sendOtp`/`verifyOtp`/`signOut`, still used by Find My Drink). Removed: `listPlans`, `savePlan`, `deletePlan`, `getSession`, `SavedPlan`, and their `party_plans` REST helpers. No code references the `party_plans` table any more. The table and migration are left in place; dropping them would be new backend work that needs approval.
+
+Staging preview `https://drink-it1h4r64v-vritraroe25-6598s-projects.vercel.app`: scripted Playwright pass at 1280×900 (via the dev OIDC header): eligibility → catalogue loaded from Supabase (18 categories) → guests/budget → add product → Review list → receipt with Print/Copy/Share, no Save/Saved plans controls → reload offers "Continue your list" (device draft restored), 0 page errors. Not tested: mobile-width interactive pass.
+
+Checks run: `tsc --noEmit` exit 0; `corepack pnpm build` compiled, `/party-planner` static; `git diff --check` clean (CRLF warnings only). B5 is complete apart from the LCP note above, which is still open (simulated LCP ~3.2 s on staging; field measurement proposed).
+
+### B5 follow-up: drop `party_plans` (owner-approved) — 2026-10-12
+
+Owner approved dropping `party_plans`. Read-only REST count on the live project showed 0 rows. Added `supabase/migrations/20261012_drop_party_plans.sql`: it aborts if any rows exist, then drops the table (policies and trigger go with it) and `party_plans_set_updated_at()`. **Pending: the owner runs it in the Supabase SQL editor.** No database credentials are available locally, and the REST API cannot run DDL. After it runs, confirm with `select to_regclass('public.party_plans');` (expect null).
+
+### B5 follow-up: backend check trimmed — 2026-10-12
+
+`scripts/party-planner-backend-check.cjs` was trimmed instead of deleted: the save/list/delete, conflict-retry, tamper and ownership-filter sections are gone, along with the `user_id`/`updated_at` source assertions. It still covers the eligibility gate (no catalogue read before consent), paginated `planner_products` reads, server-side price recalculation, unknown-product rejection, a malformed catalogue row failing closed, and OTP validation, cookie flags and offline failure (OTP is still used by Find My Drink). `node scripts/party-planner-backend-check.cjs` PASS; `git diff --check` clean.
+
+### B6 Find My Drink rebuilt on `planner_products` — 2026-10-12
+
+Rebuilt `app/find-my-drink/` per plan section 4c. The page is a server component that reads the catalogue only through the existing `readCatalogue()` in `app/party-planner/catalogue-server.ts`; there is no second reader and no new table. All state lives in URL parameters (`category`, `q`, `max`, `size`, `sort`, `all`), so results are shareable and filters work without JavaScript. Features: category chips with counts (from the catalogue), name/brand search, budget-per-bottle presets (₹500/1,000/2,000/5,000), sizes taken from the chosen category, sort by best value (price per 750 ml, the default), lowest price or name, a "3 picks" strip (cheapest, best value, premium within budget) and a capped list (48, then "Show all N"). Every card shows name, brand, size, listed price, price per 750 ml and **Add to plan**. Prices carry the D5 label "Listed price in Jaipur, checked 3 Oct 2026". Empty state: loosen budget, size or search, plus the 3 nearest prices. Catalogue down: "Retry". The age gate (`allcheers_eligible` cookie) is kept. New files: `finder.ts` (pure filter/sort logic) and `components/add-to-plan.tsx` (client). `finder.module.css` was cut down to the finder rules; light tool surface, Nunito Sans.
+
+Add to plan writes to the Planner's device draft (`localStorage` `allcheers_planner_draft`). It appends the product and its category, sets 1 pack or adds a pack (max 1,000), and makes that category active. The Planner's draft check now accepts empty guests/budget so a draft started from Find My Drink isn't thrown away. The inventory summary now says "Budget not set" instead of showing "₹0.00 … over budget".
+
+Retired: recipe detail `/[id]`, `/saved`, step/making mode, pantry, metric conversion, recipe queries and community (save, like, review, comment), plus phone OTP UI. `sendOtp`, `verifyOtp` and `signOut` were removed from `app/party-planner/actions.ts`. `session.ts` now only holds `eligibilityAccepted`/`setEligibility`, with no token cookies or auth helpers. No `drinks` table reference remains in `app/`. Landing copy updated: the Find My Drink card and the guest FAQ no longer mention recipes or accounts. `scripts/party-planner-backend-check.cjs` dropped its OTP assertions and now checks that no sign-in actions or token helpers remain. Added `scripts/find-my-drink-check.cjs`.
+
+No Supabase writes, migrations, data, package, lockfile or env changes. The `drinks` table itself stays until B8 (owner approval).
+
+Verification run: `node node_modules/typescript/bin/tsc --noEmit` exit 0 (after the build regenerated `.next/types`); `corepack pnpm build` with `pnpm_config_verify_deps_before_run=warn` compiled (`/find-my-drink` dynamic, `/[id]` and `/saved` gone); `git diff --check` exit 0 (CRLF warnings only); `party-planner-backend-check`, `party-planner-catalogue-server-check` and `party-planner-check` passed. Production smoke (`next start`, real env, read-only catalogue GETs): `/`, `/party-planner`, `/find-my-drink` 200, `/find-my-drink/saved` 404; gate shown without the cookie; with it, `?category=Gin&max=2000` renders 3 picks and the D5 label, and `max=1` renders the empty state with nearest prices. Browser pass `scripts/find-my-drink-check.cjs` at 390 and 1280: gate → Gin → ₹2,000, every price ≤ budget, no horizontal overflow, all main targets ≥44px, Add to plan twice → draft holds 2 packs, Planner shows "Continue your list" and the added product; zero page errors. `home-design-check.cjs` still passes. Screenshots: `output/playwright/b6-find-my-drink/`.
+
+Not done / open: no Vercel preview (the CLI isn't installed on this machine). The old recipe/community harnesses (`recipe-*.cjs`, `brewlist-tools-style-check.cjs`, the `/find-my-drink/saved` route in `brewlist-home-check.cjs`) test retired code and will fail; retire or rewrite them. The browser pass reads the live catalogue rather than a mocked fixture. Add to plan needs JavaScript (localStorage). No automated contrast run beyond the existing tokens (muted `#625f59` and berry `#b73720` on `#fffdfa` are both above 4.5:1). Graphify not refreshed. No commit.
+
+### B6 reversed — Find My Drink stays a recipe browser — 2026-10-12
+
+Owner decision: the 50 cocktail/mocktail recipes in `drinks` are Socifer's to use. Find My Drink is meant to be the recipe browser (browse by mood/type, suggestions, recipe pages with method), not a bottle finder. The plan (`socifer-product-plan.md` item 2, B6, B8) is annotated: the bottle finder and the `drinks` removal are cancelled.
+
+Done: restored `app/find-my-drink/` from commit `770e692` (browse, discovery picks, pantry, recipe detail, step mode, metric conversion). The bottle-finder files from the earlier B6 entry (`finder.ts`, `add-to-plan.tsx`, `scripts/find-my-drink-check.cjs`) were deleted. Community and sign-in stay retired: removed `actions.ts`, `community.ts`, `components/auth.tsx`, `components/community.tsx`, `/saved` and the "Saved recipes" header link, and detached community from the detail page. `party-planner/actions.ts`/`session.ts` stay without OTP or token helpers. The Planner draft fix and "Budget not set" summary from the earlier entry are kept. Landing card copy is back to "Browse recipes"; the guest FAQ keeps "no account needed, plan kept on this device".
+
+Incident: during the restore `git checkout HEAD -- app/page.tsx` overwrote the uncommitted B3 landing. It was recovered exactly from the Turbopack source map of the previous build (`.next/server/chunks/ssr/*.js.map` sourcesContent), then the two Find My Drink card strings were set back to the recipe wording.
+
+Verification run: `corepack pnpm build` compiled (`/find-my-drink`, `/find-my-drink/[id]`); `tsc --noEmit` exit 0; `git diff --check` exit 0; `party-planner-backend-check` passed. Production smoke (live read-only): `/` 200 with "Book the night" and "Browse recipes"; `/find-my-drink` lists 50 matching recipes with no "Saved recipes" link; `/find-my-drink/dn-cape-codder` renders Ingredients, Make it and Start making; `/find-my-drink/saved` 404 with the age cookie.
+
+Open: no browser/screenshot pass of the restored recipe pages in this round. `recipe-community-check.cjs`, `recipe-platform-*` and the `/saved` parts of `brewlist-*` harnesses test retired community/sign-in code. Whether the recipe `sourceName`/`sourceUrl` attribution shown on detail pages should stay now that the recipes are owned content. Mood-based browsing and a "smart suggester" beyond the existing discovery picks are not built. No commit.
+
+### Phase 1 backlog + script cleanup — 2026-10-12
+
+Plan: added **B12, Find My Drink mood browsing + smart suggester (Phase 1)** to the backlog in `docs/socifer-product-plan.md`. It depends on owner-approved mood tags for the 50 recipes.
+
+Scripts: removed test code for retired features (phone OTP sign-in, saved/liked/reviewed/commented recipes, Planner saved plans).
+- Deleted, because they only tested retired features: `scripts/recipe-community-check.cjs`, `scripts/recipe-platform-actions-check.cjs`, `scripts/recipe-platform-browser-smoke.cjs`.
+- Trimmed:
+  - `brewlist-home-check.cjs`: dropped the `/find-my-drink/saved` route.
+  - `brewlist-tools-style-check.cjs`: dropped the saved/community mock endpoints, the saved-page and auth steps, the Community heading and Save-recipe assertions.
+  - `recipe-browse-check.cjs`: dropped the community-unavailable assertion.
+  - `design-polish-check.cjs`: dropped the save/open/edit/delete saved-plan flow.
+  - `planner-inventory-check.cjs`: dropped the `--saved-edges` mode and the save-plan flow; the footer check now uses "Copy list".
+  - `fixtures/design-polish/mock-supabase.cjs`: dropped auth and `party_plans` mocks; every upstream call is refused.
+  - `fixtures/design-polish/mock-upstream.cjs`: dropped the delete-failure simulation.
+- Earlier this session: `party-planner-backend-check.cjs`, which now asserts that no sign-in actions remain.
+
+Verification run: `node --check` passes on every `scripts/*.cjs` and fixture. A grep finds no remaining OTP, token-cookie, saved-plan, saved-recipe or community references in `scripts/*.cjs`. Python import scripts and `scripts/recipe-catalogue/*.sql` (DB history and DDL) were left alone.
+
+Script run results after cleanup (all executed 2026-10-12):
+- Pass: `party-planner-check`, `party-planner-backend-check`, `party-planner-catalogue-server-check`, `early-access-check`, `recipe-detail-check`, `recipe-metric-check` (incl. live read-only 50 rows), `recipe-pantry-check`, `recipe-pantry-browser-check`.
+- Fail on stale expectations, not on the removed features:
+  - `recipe-browse-check`: live assertion "unreviewed imported drafts must remain hidden". Needs a data/contract look.
+  - `recipe-discovery-check`: waits for "Refine your matches"; the UI says "Refine matches".
+  - `brewlist-tools-style-check`: finder/detail steps now pass; it fails at the old landing heading "Club bookings in Jaipur.".
+  - `design-polish-check`: old `.hero-actions` landing.
+  - `planner-inventory-check`: old planner h1 size.
+  - `brewlist-home-check`: needs an externally started server on :3192 and asserts the pre-B3 landing.
+- These need a separate refresh against the B3 landing and the current Planner.
+
+### Test script refresh against B3 landing and one-page Planner — 2026-10-12
+
+Scope: `scripts/` and `scripts/fixtures/design-polish/` only. No `app/`, package, lockfile, env, `.opencode/`, `.fallow/` or git changes. No Supabase writes; the only live access is the existing read-only checks.
+
+- `recipe-discovery-check`: "Refine matches" wording. At 800px and below the filters now open from a "Filters" button into a dialog, so the 44px target check opens it there and checks the inline aside above that. The result-count status lookup is scoped to the results. The no-JS grapefruit search now expects every result to match instead of exactly one, because the 50-recipe catalogue has two grapefruit mocktails.
+- `recipe-browse-check`: investigated before changing. A read-only anon GET shows `dn-mojito` is `published`, `editorial_ready=true`, `allcheers_original_from_facts`, and no row in `drinks` is non-published or unreviewed. So the app is correct: Mojito was a draft at launch and has since been reviewed. The assertion now expects the reviewed Mojito to render (200). Hiding of drafts and legacy rows is still asserted by the fail-closed unit checks, the legacy `negroni` 404 and the injection-id 404.
+- `brewlist-tools-style-check`: landing heading is now H1 "Book the night.".
+- `design-polish-check` and fixtures: landing assertions use the B3 hero ("Get launch updates" to `#early-access`, "How it works" to `#how-it-works`, no booking CTA, two tool cards). The Planner flow follows the one-page layout (nav link, Guests & budget dialog, category index, "Build your list.", review, copy/share/print, Start new plan). `favicon.ico` must have at least 3 sizes (it now has 4). `mock-supabase.cjs` now sets the expected Supabase origin plus an `sb_secret_` key and serves `planner_products` from `app/party-planner/catalogue.json` with `Content-Range` paging, refusing everything else. `mock-upstream.cjs` audits against that origin.
+- `planner-inventory-check`: rewritten for the one-page Planner. The legacy `--baseline` mode (old swap UI) was dropped. Equivalents:
+  - the filter facets now live in the Filters dialog;
+  - the category checkbox and confirm flow is now "Remove <category> category" with a toast and Undo;
+  - the mobile drawer is "View plan";
+  - the drop zone is the "Your selected plan" aside;
+  - the shelf page size is 24;
+  - the budget split is derived from the loaded catalogue.
+- `brewlist-home-check`: kept, not deleted. It covers what `home-design-check` does not: hero containment including 200% text, 44px targets, local nightlife imagery, keyboard menu (now below 1024px, five links, Escape returns focus) and FAQ. It now starts its own production server on :3192 unless `BREWLIST_HOME_ORIGIN` is set, and writes screenshots to `output/playwright/brewlist-home`.
+
+Verification (all executed 2026-10-12 after `corepack pnpm build`): every `scripts/*.cjs` check passes except `planner-redesign-check` (see open items). `tsc --noEmit` exit 0; `git diff --check` exit 0 (CRLF warnings only); `node --check` passes on every script and fixture. `extract-taste-tags.cjs` is a workbook extractor, not a check, and was not run.
+
+Follow-up (same day): `planner-redesign-check.cjs` refreshed (the `Increase` locator is scoped to the shelf card; the removed cart pill and "Your list" drawer steps are replaced by the desktop aside; the mobile bar uses "View plan" / "Close plan"; the shelf-focus assertion now waits for the deferred focus). It passes. `planner-inventory-check.cjs` passed 4 of 4 consecutive runs with the 500ms settle before the touch-flow tap, so the one-off "Target crashed" is treated as an unreproduced headless-Chromium flake.
+
+### B9 partial: baseline DDL for waitlist and profiles — 2026-10-12
+
+Scope: `supabase/` only, plus this log. No `app/`, package, lockfile, env or git changes. No Supabase writes.
+
+Remote access: no Supabase MCP and no database connection string are available in this repo or session. The only read path was one GET of the PostgREST OpenAPI root (`/rest/v1/`), which returns column metadata only. No table rows were read.
+
+- Added `supabase/migrations/20260801_waitlist_subscribers_baseline.sql` and `20260801_profiles_baseline.sql`. They hold the table definitions verified from the OpenAPI schema (columns, types, defaults, NOT NULL, comments), idempotent (`if not exists`), marked "do not re-run blindly".
+- Not verifiable over REST, so left commented out as `[documented, UNVERIFIED]`: RLS flag, policies, grants, the `waitlist_email_unique` index, CHECK constraints, the `profiles` FK to `auth.users`, the `handle_new_user` function and trigger.
+- Added `supabase/introspection/b9_readonly_introspection.sql` (SELECT only). Run it in Studio, then fill the commented sections in from the output.
+- Findings: the remote OpenAPI still lists `party_plans`, so either the `20261012_drop_party_plans` migration has not been applied or the schema cache is stale. Also a `quiz_submissions` table (and `quiz_throttle_count` function) has no repo DDL; it is outside this task's named tables.
+
+B9 is NOT complete: "repo matches remote" is unproven until the introspection output is in.
+
+### B9 completed: waitlist and profiles DDL read back from remote — 2026-10-13
+
+Read-only SELECTs through the Supabase MCP (no writes). Supersedes the "partial" entry above.
+
+- `20260801_waitlist_subscribers_baseline.sql` and `20260801_profiles_baseline.sql` now contain the full remote definitions: columns (including `interests default '{}'`), 7 CHECKs on waitlist and 2 on profiles, `waitlist_email_unique`, RLS, policies (`waitlist_insert` INSERT with check true; `profiles_own_select/insert/update`), `profiles_id_fkey` to `auth.users`, `set_updated_at` and `handle_new_user` functions, and the `profiles_set_updated_at` and `on_auth_user_created` triggers. All idempotent.
+- Early-access contract holds: RLS on, only INSERT policy on `waitlist_subscribers`, so no anon reads. Payload fields match the CHECKs (source, interests, preference, cta_source <= 40 chars, consent_version <= 40).
+- Findings, not fixed:
+  - Remote `anon` and `authenticated` hold full table grants (arwdDxtm) on both tables; only RLS blocks them. Revoking is a backend change needing approval.
+  - `20261012_drop_party_plans` is NOT applied: `party_plans` still exists (RLS on, 0 rows) and is absent from remote migration history. Applying it is B8-adjacent and needs owner go-ahead.
+  - Remote migration versions differ from repo files (e.g. `party_plans` is 20260917033539 remotely, `20260914_party_plans.sql` here). Remote also has migrations with no repo file: core tables, rls/auth bootstrap, seed drinks, revoke rpc exposure, quiz throttle fix, community, recipe essentials/quality gate, planner_products set. `quiz_submissions` and `quiz_throttle_count` still have no repo DDL.
+- Not run against any database: the baseline SQL was not executed anywhere, only written from the readback.
+
+### B9 Step 1: clean migration set and remote inventory — 2026-10-13
+
+Scope: `supabase/` and this log. Remote access was SELECT-only through the Supabase MCP (no `apply_migration`, no DDL/DML, no rows read from `waitlist_subscribers` or `profiles`). No `app/`, package, lockfile, env, `.opencode/` or `.fallow/` changes. Nothing deleted, nothing staged or committed.
+
+- Added `20260802_drinks_baseline.sql` (full `drinks` structure, publication-gate policy, trigger, select-only grants) and `20260803_planner_products_baseline.sql` (table, RLS with no policies, service_role INSERT/SELECT only). Structure only: the 9,462 `drinks` rows and 1,311 `planner_products` rows are not copied.
+- Added `supabase/README.md` with the remote-version -> repo mapping (all 21 remote migrations). Comment-only edit to the profiles baseline header (no longer calls profiles the community FK target).
+- Remote inventory: KEEP `waitlist_subscribers`, `profiles` (+ `handle_new_user`, `set_updated_at`, `on_auth_user_created`), `drinks`, `planner_products`. REMOVE `party_plans` (+ function), `saved_drinks`, `drink_likes`, `drink_reviews`, `drink_comments`, three public views, `private` schema (4 tables, 10 functions), `quiz_submissions` + `quiz_throttle_count`. Row counts: all removal candidates 0 rows except `quiz_submissions` (6).
+- Findings: no edge functions; advisor flags `quiz_throttle_count` as anon/authenticated-executable SECURITY DEFINER (goes away with removal) and leaked-password protection off (Auth setting). `waitlist_subscribers` and `profiles` still grant anon/authenticated full table rights, RLS only. `drinks` holds 9,400 drafts and 12 legacy published-but-not-ready rows hidden by RLS.
+- Step 2 lists (remote drops, grant tightening, repo file removals) await owner approval.
+
+### B9 Step 2: remote clean-up applied — 2026-10-13
+
+Scope: remote `public`/`private` clean-up approved by the owner on 2026-10-13, plus `supabase/`, `docs/` and one label in `scripts/recipe-catalogue/build_catalogue.py`. No `app/`, `.env*`, `.opencode/` or `.fallow/` changes; nothing staged or committed. `pnpm build` skipped (no `app/` change).
+
+**How it was applied.** The Supabase MCP `apply_migration` call returned `cancelled` four times (also after adding an allow rule), and the owner declined routing destructive DDL through `execute_sql`. The owner therefore ran the DDL in Studio, one step at a time, and each step was read back with SELECT-only queries from here. Consequence: **none of these changes has a `supabase_migrations.schema_migrations` entry** (history is still the 21 old rows). The repo baselines are the record.
+
+Applied remotely (no CASCADE anywhere):
+1. `quiz_submissions` and `quiz_throttle_count(text)` dropped (no export, 6 rows discarded as approved).
+2. Views `drink_comments_public`, `drink_reviews_public`, `drink_social_stats` dropped.
+3. `drink_comments`, `drink_likes`, `drink_reviews`, `saved_drinks` dropped (0 rows each).
+4. `private` schema: 4 tables, 10 functions and the schema dropped (0 rows).
+5. `party_plans` and `party_plans_set_updated_at()` dropped (0 rows).
+6. `drinks`: deleted the 9,412 rows where `(status = 'published' and editorial_ready) is not true`. Pre-check: 50 keep, 9,412 delete, 0 kept rows referencing a hidden row via `zero_proof_alt_id`.
+7. Grants: `waitlist_subscribers` anon and authenticated INSERT only; `profiles` authenticated SELECT/INSERT/UPDATE only (anon none); `service_role` unchanged on both.
+
+Verified after (SELECT only): `public` holds only `drinks`, `planner_products`, `profiles`, `waitlist_subscribers` and functions `handle_new_user`, `rls_auto_enable`, `set_updated_at`; no foreign keys into `drinks` except its own `zero_proof_alt_id`, no dangling values. Counts: 50 `drinks` (0 not publishable), 1,311 `planner_products`, 4 `waitlist_subscribers` (counts only; no rows read from `waitlist_subscribers` or `profiles`). RLS on for all four tables; policies unchanged (`drinks_public_read`, `waitlist_insert`, three `profiles_own_*`). Security advisor: the `quiz_throttle_count` SECURITY DEFINER warnings are gone; remaining: INFO `planner_products` has RLS and no policy (intended, service role only) and WARN leaked-password protection off (Auth dashboard setting, not SQL).
+
+Repo:
+- Deleted: `20260914_party_plans.sql`, `20261012_drop_party_plans.sql`, `20260923_drink_provenance.sql`, `20260927_drinks_publication_gate.sql`; `scripts/recipe-catalogue/` `community-schema.sql`, `community-rls-check.sql`, `saved-base-schema.sql`, `platform-rls-smoke.sql`, `local-bootstrap.sql`, `base-schema.sql`, `essentials-schema.sql`, `recipe-quality-gate.sql`, `check_local_schema.py` (deleted rather than trimmed; it only replayed the removed SQL).
+- Moved `supabase/introspection/b9_readonly_introspection.sql` to `docs/`.
+- Renamed `20260801_profiles_baseline.sql` to `20260801000001_profiles_baseline.sql` (unique CLI version).
+- Added the final grants to the waitlist and profiles baselines; updated `supabase/README.md` mapping.
+- Fixed doc references in `docs/recipe-essentials.md`, `docs/allcheers-recipe-platform-plan.md`, `docs/socifer-product-plan.md`; `build_catalogue.py` `MIGRATION` label now `20260802_drinks_baseline`. Older entries in this log still name the deleted files; left as history.
+
+Checks run: `node scripts/early-access-check.cjs` PASS; `node node_modules/typescript/bin/tsc --noEmit` exit 0; `git diff --check` exit 0 (only LF/CRLF warnings).
+
+Unexpected / open:
+- The `20260801000001` rename target and the grant matrix were inferred from a truncated instruction and confirmed by the owner.
+- Remote `waitlist_subscribers.source` CHECK still allows `'quiz'` (harmless; left as is).
+- The baseline SQL files were not executed anywhere; the remote was changed by hand-run DDL that matches them.
+- Leaked-password protection (Auth setting) is still off.
+
+### B8 close-out: app and test cleanup after community and sign-in retirement — 2026-10-13
+
+Scope: app CSS, scripts, docs. No `.env*`, package, lockfile, `.opencode/`, `.fallow/`, `app/early-access/actions.ts` or remote-database changes. Nothing staged or committed. Recipes and the `drinks` table stay (owner, 2026-10-12).
+
+**Found (Grep, Graphify, a CSS-class usage scan and `tsc --noUnusedLocals`).** No code references to community, saved, OTP, `party_plans` or quiz remain in `app/`: `session.ts` only holds the eligibility cookie, `actions.ts` only `confirmEligibility`, `getCatalogue` and `validatePlan`. Env: `.env.example` and `.env.local` hold only `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SECRET_KEY` (names only checked); all three are still used. The Graphify graph was stale and still listed deleted files; it is refreshed now (847 nodes).
+
+**Deleted (provably unused: no JSX or code reference):**
+- `app/find-my-drink/finder.module.css`: `.authBox`, `.communityForm`, `.community*` (stats, actions, controller), `.commentType`, `.review*`, `.savedGrid`, `.savedPage`, `.savedRemoveStatus`, `.authPrompt` and their media-query overrides (23 lines). The `.makingBar` comment no longer says "community".
+- `app/party-planner/planner.module.css`: `.savedRow` (3 rules plus the mobile override).
+
+**Left, and why:**
+- Unused CSS classes that are not from the retired features (not removed; separate cleanup): `finder.module.css` `.browseCard`, `.stripRow`, `.rail`, `.railRow`, `.provenance`, `.provenanceList`, `.moreFilters`; `planner.module.css` `.categoryTitle`, `.categoryBlock`, `.selectedItem`, `.selectedDetails`, `.selectionLabel`, `.stepToolbar`, `.cartPill`, `.taskNote`.
+- `tsc --noUnusedLocals` flags three unrelated leftovers: `metric.ts:299` unused `index`, `catalogue-server.ts:17` unused type `DatabaseProduct`, `planner.tsx:72` unused `basicsOpen`. Not touched.
+- Old docs that mention community or OTP are history (`docs/allcheers-*`, `brewlist-*`, `find-my-drink-ux-direction.md`, `jaipur-supabase-move-plan.md`, `planner-inventory.md`, older entries in this log). Only `allcheers-recipe-platform-plan.md` got a "superseded in part" note at the top.
+- `remote waitlist_subscribers.source` CHECK still allows `'quiz'` (harmless, already noted in B9).
+
+**Plan:** `docs/socifer-product-plan.md` section 4d is retitled "Retiring community objects safely". A note says "retire `drinks`" is cancelled and which steps no longer apply (struck through as history). Added the migration-history caveat: B9 Step 2 drops were run by hand, `schema_migrations` still has the 21 old entries, history has not been repaired. Options noted: a documented `supabase migration repair`, or leave the 21 old entries as-is. Both need owner approval.
+
+**Script run** (production build, `PLAYWRIGHT_MODULE` and `PLAYWRIGHT_CHROMIUM_EXECUTABLE` set for browser checks; `home-design-check` needs a server on :3125, started and stopped by me):
+
+| Script | Result | Action |
+|---|---|---|
+| party-planner-check | pass | none |
+| party-planner-backend-check | pass | none |
+| party-planner-catalogue-server-check | pass | none |
+| party-planner-live-catalogue-check | pass (read-only) | none |
+| early-access-check | pass | none |
+| recipe-detail-check | pass | none |
+| recipe-metric-check | pass (incl. live read-only 50 rows) | none |
+| recipe-pantry-check | pass | none |
+| recipe-pantry-browser-check | pass | none |
+| recipe-browse-check | pass | none |
+| recipe-discovery-check | pass | none |
+| brewlist-home-check | pass | none |
+| brewlist-tools-style-check | pass | none |
+| home-design-check | pass (with :3125 server) | none |
+| design-polish-check | pass | none |
+| planner-inventory-check | pass | none |
+| planner-redesign-check | pass | none |
+| planner-ux-check | pass | none |
+| recipe-platform-* | no longer exist | deleted 2026-10-12 (retired features) |
+| recipe-community-check | no longer exists | deleted 2026-10-12 |
+| extract-taste-tags | not run (workbook extractor, not a check) | none |
+
+First attempt of `recipe-detail`, `recipe-pantry-browser` and `recipe-discovery` failed only because `PLAYWRIGHT_MODULE` was unset; they pass with it. No script failed because it tests retired code.
+
+**Browser pass** (`node sc...` in the brief was cut off and no such script exists, so I used a throwaway Playwright script outside the repo; screenshots in `output/playwright/b8-closeout/`). Find My Drink at 390 and 1280px: age gate, list (20 cards of 50), Gin filter (6 cards, `?type=gin`; filter dialog at 390), recipe detail (Negroni: Ingredients, Make it), Step mode (Step 1 of 3, then Step 2 of 3). No horizontal overflow, no save/sign-in/community UI, zero page errors. Nothing broken by the cleanup. Cosmetic, not caused by it: at 390 the step-mode buttons ("View all steps", "Keep screen awake") render as large circles.
+
+**Verification:** `tsc --noEmit` exit 0; `corepack pnpm build` (verify-deps warn) compiled, routes `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/[id]`; production smoke on `next start` (read-only live catalogue): `/`, `/party-planner`, `/find-my-drink` 200; with the age cookie 50 matching recipes, `/find-my-drink/dn-cape-codder` 200 with Ingredients, Make it and Start making, `/find-my-drink/saved` 404 (without the cookie it renders the age gate, 200, because `[id]` is gated first); `git diff --check` exit 0 (CRLF warnings only); `early-access-check` pass.
+
+**Uncommitted state:** nothing has been committed since the B0 snapshot `770e692`; `git status` shows 78 entries (76 at the start of this pass). Suggested commit split (not done):
+1. Landing page: `app/page.tsx`, `app/home.module.css`, `app/layout.tsx`, `app/mobile-menu.tsx`, `app/fonts/`, `public/images/nightlife/hero-*`, `docs/nightlife-image-credits.md`, `next.config.mjs`.
+2. Planner: `app/party-planner/*` (save and OTP removed, draft fix, catalogue resilience).
+3. Find My Drink: `app/find-my-drink/*` (community, sign-in and saved removed; CSS trimmed).
+4. Supabase DDL and history: `supabase/`, `docs/b9_readonly_introspection.sql`, `scripts/recipe-catalogue/` SQL and `check_local_schema.py` deletions plus the `build_catalogue.py` label, `docs/recipe-essentials.md`.
+5. Scripts and fixtures: `scripts/*.cjs`, `scripts/fixtures/`, including deletions of `recipe-community-check`, `recipe-platform-*`.
+6. Docs: `docs/socifer-product-plan.md`, `docs/implementation-progress.md`, `docs/allcheers-recipe-platform-plan.md`.
+7. Tooling config (review separately, likely not for the product history): `AGENTS.md`, `.opencode/`, `opencode.jsonc`, `.mcp.json`, `.vercelignore`.
+
+Not started: B7, B10, B11, B12.
+
+### B7 Planner polish and starting list — 2026-10-13
+
+Owner decisions this checkpoint: D7 confirmed (optional deterministic starting list, labelled as an estimate). Servings rule approved. Category shares follow the categories that exist in the database. New category art approved. A redesign of Party Planner and Find My Drink with a shared, city-neutral palette ("dark night + warm gold", no magenta/pink; the pink accent is the Jaipur landing only) is a separate checkpoint after B7 and is not started.
+
+Scope: `app/party-planner/` (`suggest.ts` new, `planner.tsx`, `model.ts`, `planner.module.css`), four SVGs in `public/images/drinks/`, `scripts/party-planner-suggest-check.cjs` (new), `party-planner-check.cjs` and `planner-redesign-check.cjs` updated. No backend, package, lockfile or env changes. Nothing staged or committed.
+
+**Starting list contract** (`app/party-planner/suggest.ts`, pure: no Date, no randomness, no I/O):
+- Inputs: guests (1–1,000), budget, party length 2/4/6 hours, non-drinking guests (at least one drinker), mix Balanced / Beer & wine / Spirits-led.
+- Servings: drinkers × (hours + 1). Serving: beer 330 ml, wine 150 ml, spirits 60 ml, ready-to-drink 275 ml.
+- Categories are grouped by name from the live catalogue (beer, wine incl. champagne/sparkling, spirits, ready to drink). Liqueurs, sake and unrecognised categories are never suggested. Group weights: Balanced beer 30 / wine 20 / spirits 45 / RTD 5; Beer & wine 55 / 40 / 0 / 5; Spirits-led 15 / 0 / 80 / 5. Within a group the largest categories by eligible product count are used (beer 1, wine 2, spirits 4, RTD 1), weighted by that count; ties by name. Categories under one serving are dropped and the rest renormalised; if all drop, the top category takes all servings.
+- Pack sizes: beer 330–650 ml, wine 750 ml, spirits 375–1,000 ml, RTD any.
+- Pick: products sorted by price per 750 ml, then price, then id (best value); start at the median (mid-priced). Quantity = ceil(ml needed / pack size), 1–1,000. While over budget, the category with the largest subtotal moves one product cheaper. If even the cheapest picks are over budget, the list is returned with an over-budget note.
+- Output: label "Estimate. Edit anything.", drinkers, servings, lines, total, within-budget flag, per-guest cost, notes (mixers, soft drinks, water, ice and food not included).
+
+**UI:** "Optional: suggest a starting list" in the Guests & budget dialog (length, mix, non-drinking guests, "Suggest a starting list"). If a list exists, "Replace your list?" asks first; Cancel keeps it, Replace swaps it and a toast offers Undo. An "Estimate. Edit anything." note with servings and cost per guest stays above the list until "Start a new plan". "How are quantities chosen?" explains the rules.
+
+**Polish (plan 4b / G6):**
+- Category art is matched by name pattern, so all 18 live categories get art. New: `wine.svg`, `liqueur.svg`, `rtd.svg`, `bottle.svg` (fallback). Wine art uses burgundy on a neutral ground (no pink).
+- "Price verification date: unknown" replaced by the D5 label "Listed price in Jaipur, checked 3 Oct 2026" (`PRICE_LABEL` in `model.ts`) in the receipt, the Planner footnote and the copy/share text.
+- Cost per guest added to the receipt and the export text.
+- The age gate is skipped when the eligibility cookie is set: the Planner calls `getCatalogue()` on load (the server action checks the cookie) and shows "Loading planner…" meanwhile. `planner-redesign-check` now expects the gate to be skipped on reload.
+- Bug found by the browser pass and fixed: at mobile widths the "Build your list." heading became visible while focused and collapsed on the next tap, moving the content by 38 px, so the first tap after closing any dialog was lost (for example "Edit" did nothing). The heading now stays visually hidden when focused (`planner.module.css`). This predates B7.
+
+**Found, not changed:** `app/party-planner/catalogue.json` is stale (old category names such as "Beer"/"Whisky", 1,638 rows); the live catalogue has 18 different category names. The suggestion code works with both naming schemes. The pre-existing meter "per guest" is budget ÷ guests, while the estimate note shows list total ÷ guests.
+
+**Verification (all executed 2026-10-13):** `party-planner-suggest-check` (grouping, shape and label, servings arithmetic, reproducible and order-independent, group caps, exclusions, median best-value pick, single-product category and catalogue, budget fit and over-budget flag, 1 guest/2 h and 1,000 guests/6 h, mixes, invalid input) PASS; `party-planner-check`, `party-planner-backend-check`, `party-planner-catalogue-server-check`, `party-planner-live-catalogue-check`, `planner-redesign-check`, `planner-inventory-check`, `planner-ux-check`, `design-polish-check`, `brewlist-tools-style-check`, `brewlist-home-check`, `home-design-check`, `early-access-check` PASS; `tsc --noEmit` exit 0; `corepack pnpm build` compiled; `git diff --check` exit 0. Browser pass on `next start` with the live read-only catalogue at 390 and 1280 px: 25 guests, ₹30,000, 6 hours, 5 non-drinking → 8 lines, 140 servings, ₹29,985 (within budget); second suggestion asks before replacing; Cancel keeps the list, Replace swaps it, Undo restores it; reload with the cookie skips the gate; no overflow, no targets under 44 px, zero page errors. Smoke: `/`, `/party-planner`, `/find-my-drink` 200; new SVGs 200. Screenshots: `output/playwright/b7-starting-list/`.
+
+Not done: no Vercel preview. No real-device test. The tool-page redesign (city-neutral palette) is the next checkpoint and needs a design contract and mockups first.
+
+### Tool-page redesign: shared "Tool Night" palette for Party Planner and Find My Drink — 2026-10-13
+
+Owner decisions: the magenta/pink accent is the Jaipur landing only. The tools share one city-neutral dark palette with a warm gold accent, matching the landing's type, spacing, header and buttons. The design contract and mockups (`output/tool-redesign-mockups/`, `design-contract.md`) were approved before any code was written. Nothing staged or committed; no backend, package, lockfile, env, `.opencode/`, `.fallow/` or landing changes.
+
+**Tokens** (`app/tool-theme.module.css`, class `.toolTheme`; both tool `.shell`s pull it in with `composes`, so no markup changes). Contrast was measured against the real backgrounds:
+- Night `#0E0D10`, surface `#18171B`, raised `#232127`, line `#3A3740` (decorative only).
+- Text `#F3EEE6`: 16.78 on night / 15.45 on surface / 13.79 on raised. Muted `#B8B1A7`: 9.12 / 8.40 / 7.50.
+- Gold `#F2B544`: 10.58 / 9.74 / 8.70. Night text on gold: 10.58; hover `#FFC966` 12.73; pressed `#D99B2B` 8.00.
+- Control borders `#8A8490`: 5.34 / 4.91 / 4.39 (needs 3). Danger `#FF8A7A`: 8.46 / 7.79. Success `#5EDB9B`: 11.15 / 10.26. Selected ground `#2A2417` with a gold border.
+- Print (light, set by `@media print` inside the token class): ink `#1C1B18` 17.22, muted `#5C5850` 7.08, accent `#8A5A00` 5.93, all on white.
+- Landing tokens stay in `.home`; the tools never read landing or city tokens, so adding a city never touches the tools.
+
+**What changed:**
+- `planner.module.css` and `finder.module.css`: the old vars now map to the tool tokens. Hard-coded light colours were replaced.
+- Header 64px with an uppercase wordmark; page H1 uppercase, .06em; gold eyebrows.
+- 4px radius on controls, 8px on cards and dialogs.
+- Buttons: gold primary with dark text (hover, pressed, and a grey disabled state). Outline secondaries invert when active or pressed.
+- Focus: a 2px gold ring with a 2px offset everywhere.
+- Over budget and errors use danger text; within budget uses success text.
+- Long reading: description and method at 1.0625rem / 1.7, max 65ch. Step text clamp(1.375rem, 2.6vw, 1.75rem).
+- The step-mode bar buttons are now 48px wrapping buttons, which fixes the B8 "large circles" at 390. The "Ingredients ↓" jump link is 48px at 1rem.
+- Planner `.printOnly` receipt accent is `#8A5A00`; Find My Drink print hides header and controls.
+- 200% text: the Planner meter row and search bar now wrap; they overflowed at 390 before.
+- Drink SVGs unchanged: they are self-contained light tiles and don't clash.
+
+**Harness assertion updates (design-only, no behaviour or accessible names changed):**
+- `brewlist-tools-style-check`: primary is gold, or its disabled grey, instead of red.
+- `recipe-discovery-check`: card focus ring 2px instead of 3px, per the contract.
+- `planner-inventory-check` (also used by `planner-ux-check`): reads the H1 `textContent` instead of `innerText`, because the visual uppercase changes `innerText`; the DOM text is still "Party Planner".
+
+**Checks run (all on the final build, executed 2026-10-13):**
+- `tsc --noEmit` exit 0; `corepack pnpm build` (verify-deps warn) compiled.
+- PASS: party-planner-check, party-planner-backend-check, party-planner-catalogue-server-check, party-planner-live-catalogue-check (read-only), party-planner-suggest-check.
+- PASS: planner-inventory-check, planner-redesign-check, planner-ux-check.
+- PASS: recipe-browse-check, recipe-detail-check, recipe-discovery-check, recipe-metric-check, recipe-pantry-check, recipe-pantry-browser-check.
+- PASS: brewlist-home-check, brewlist-tools-style-check, design-polish-check, home-design-check (server on :3125), early-access-check.
+- Automated contrast audit (throwaway Playwright script outside the repo): Find My Drink list, detail and step mode; Planner dialog, build and receipt. Each at 390 and 1280, list, detail and build also at 200% text: 20 views, 2,027 text and control checks. Only finding: a false positive repeated in two views, the zero-size active category tab in the hidden 390 rail; its real colours are night on `#F3EEE6`, about 16:1. No overflow, zero page errors.
+- Smoke on `next start`: `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder`, `/images/drinks/wine.svg` all 200. `git diff --check` exit 0 (CRLF warnings only).
+- Landing unchanged: `app/home.module.css`, `app/page.tsx`, `app/layout.tsx` and `app/globals.css` were not edited (last modified 2026-10-12), and home-design-check and brewlist-home-check pass.
+- Screenshots in `output/playwright/tool-redesign/`: final views, 200% zoom, keyboard focus, print previews.
+
+**Open items:** no real-device or screen-reader pass. The body background outside the tool shell (overscroll) is still the global cream. In print at narrow widths the "More like this" grid is cramped (layout predates this checkpoint). Unused classes listed in B8 are still there. Not started: B10, B11, B12.
+
+## Tool-page redesign v2 (2026-10-13)
+
+Plan `docs/tool-redesign-v2-plan.md`, tracker `docs/tool-redesign-v2-tracker.md` (per-step evidence, harness edits and deviations are there). Rebuilt the layout, IA and components of the Party Planner and Find My Drink; behaviour, server actions, data layer, `suggest.ts`, the landing and all env/package/`.opencode/`/`.fallow/` files were not touched. Nothing staged or committed; no remote database changes.
+
+**References used:** the research tables in the plan (section 1: Difford's, Cocktail Builder, NYT Cooking/Samsung Food/Paprika step modes, Supercook/Barback pantry matching, Instacart/Blinkit/Zepto carts, Linear/Vercel Geist/Stripe colour systems, GOV.UK, Inclusive Components, WCAG 2.2). Several sources were blocked (403) and are marked [X]/[S] in the plan. After the owner's review the design direction changed to "modern, text-light, not derived from the old UI", so the shipped layout departs from plan sections 3 and 4 where noted below.
+
+**Owner decisions:** light paper receipt on screen (matches print); Planner catalogue-unavailable state with Try again; "Your plan" sheet opens after Suggest on mobile with focus on its heading. After reviewing the build: no big visible page titles (hidden h1 only, both tools); Planner desktop is two columns with category pills (no rail, no budget strip; budget is the hero of the plan panel); one filter toolbar; much less visible text (strings kept as sr-only where harnesses/screen readers need them); loading skeletons that mirror the real layout with no visible loading text.
+
+**Token changes** (`app/tool-theme.module.css`, only change to tokens): `--tool-sheet #1d1c21`, `--tool-danger-soft #33191a`, `--tool-paper #fbf8f2`, `--tool-paper-ink #1c1b18`, `--tool-paper-muted #5c5850`, `--tool-paper-accent #8a5a00`, `--tool-paper-danger #a30038`, `--tool-paper-line #8f897e`; print values equal the screen values except paper/sheet/danger-soft print as white.
+
+**What changed**
+- Planner (`planner.tsx`, `planner.module.css`): shared tool header with switcher (`aria-current`); gate card without photo; catalogue-unavailable state with Try again (UI only, re-calls `getCatalogue()`); inline "Plan your party" setup card (dialog kept for edits via "Edit guests and budget"); two-column build view, pill categories, one toolbar, product rows with ADD → stepper, plan panel with budget hero, mobile bottom bar and plan sheet; paper receipt shared with print; layout-matched skeleton.
+- Find My Drink (`app/find-my-drink/`): header, gate and states; search-first listing with segmented type control, filters (sheet below 800px, aside above), "Use what I have" panel (Ready to make / One ingredient away), picks row with Pick for me, photo-tile grid; recipe detail with hero, spec chips, checklist + numbered method, full-screen cook view (`<dialog>`), related rail, print; skeleton overlays on client navigations (new `cook-view.tsx`, `description.tsx`, `header.tsx`, `icons.tsx`, `pending-overlay.tsx`, `skeletons.tsx`, `start-button.tsx`).
+- Harnesses edited (each logged in the tracker): `planner-inventory-check`, `planner-redesign-check`, `design-polish-check`, `brewlist-tools-style-check` (inline setup card, category chips, plan-sheet budget edit, "Start making"/"Done"), `recipe-detail-check` (new Escape/focus-return assertions), `recipe-discovery-check` (rename). New `scripts/planner-tool-shell-check.cjs` (tool switcher, gate, setup, plan sheet auto-open on mobile only, receipt contrast, unavailable state + Try again).
+
+**Checks** (final build, all exit 0): `tsc --noEmit`; `corepack pnpm build` (verify-deps warn); party-planner-check/-backend/-catalogue-server/-live-catalogue (read-only)/-suggest; planner-inventory/-redesign/-ux/-tool-shell; design-polish; brewlist-home/-tools-style; early-access; recipe-browse/-detail/-discovery (3 consecutive runs)/-metric/-pantry/-pantry-browser; home-design (server :3125). S11 audit (throwaway Playwright, outside the repo): 498 checks, 0 FAIL after C3 — text contrast, 44px targets (56px step nav), no overflow incl. 200% root font, keyboard walkthroughs with 2px focus, reduced motion, print emulation, accessibility-tree snapshots, smoke of `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder`. Landing and keep-file hashes unchanged (`output/.landing-hashes-s0.txt`). Logs `output/tool-redesign-v2/logs/`, screenshots `output/tool-redesign-v2/{before,after,s2..s11,c1..c3}/`.
+
+**Open items**
+- Planner: desktop plan panel shows about 2–3 lines at 1280×844 (height capped so the drag harness passes at 1440×844); mobile/tablet budget is only in the bottom bar and plan sheet; icon-only controls ((i), trash, Edit); the mobile receipt actions row is tall (~236px); CSS is layered (C1/C2/C3 blocks over older rules) and a consolidation pass is advisable. During C3 an executor edit deleted ~223 CSS lines and was restored from the C1 backup; checks pass but the pre-incident file could not be diffed.
+- Find My Drink: pantry checklist is not categorised (`pantryVocabulary` has no category field); sticky ingredients not exercised on a long recipe; wake lock only tested headless; skeleton overlays appear on client navigations only (no skeleton on hard loads, filter chips or cross-tool links); streaming skeletons (`loading.tsx`/Suspense) were rejected because they broke `notFound()` 404s and no-JS rendering.
+- `#a30038` (dark crimson, danger on light/paper surfaces) is pink-adjacent; left unchanged for owner review.
+- Limits: no real screen reader; contrast audit covers text nodes only; 200% test is root font-size not browser zoom; headless Chromium only.
+- Not started: B10, B11, B12.
+
+
+### Party Planner hands-on UX review — 2026-10-13
+
+Review only, requested by owner; no application changes. Read current progress and roadmap; inspected planner.tsx, actions.ts and catalogue-server.ts. Used existing production build S-Xpga5U5eRTVIJB1yj8C (no app files newer than BUILD_ID) in Chromium at 1280x844 and 390x844. Initial local server on :3125 failed catalogue loading after eligibility with generic "Unable to complete that request." Root cause not established; not evidence of a deployed outage. Continued on :3126 with existing scripts/fixtures/design-polish/mock-upstream.cjs and its legacy catalogue fixture, so product names/prices/category distribution are not live-data findings.
+
+Exercised starting suggestion (20 guests, 5 non-drinkers, 4 hours, Rs 10000 -> 7 lines, 29 packs, Rs 9975 in fixture), guest/budget edits, mobile plan sheet, receipt, category-scoped search, filter dialog, category removal/Undo and reload. Confirmed: changing 20 to 40 guests preserves quantities without prominent warning; reload preserves list/guests/budget but resets non-drinkers to 0, length to 4 hours and mix to Balanced; budget-per-guest label "each" differs from receipt actual cost per guest. Desktop panel shows roughly 2 full lines before internal scrolling; mobile receipt action block occupies roughly 236px. Recommendations: clear stale-estimate notice and explicit regeneration, persist suggestion inputs, unambiguous cost labels, easier category/search navigation, compact receipt actions, and useful first-entry catalogue failure recovery. No horizontal overflow in inspected mobile state.
+
+No fresh build/TypeScript suite (review and log entry only), real-device/screen-reader check, live price verification, export dispatch, backend modification, commit or deployment. Local review servers stopped after review.
+
+
+### Party Planner setup and navigation UX plan — 2026-10-13
+
+Created docs/party-planner-ux-plan.md from the owner conversation and prior hands-on review. Proposed scope: standalone required guests/budget setup; remove budget presets; isolate suggestions with explicit category choices and disclosed quantities; wrapping desktop categories and mobile/tablet picker; browse-only category navigation; cross-category search; persistent settings and stale-estimate notices; compact plan/receipt actions; consistent catalogue retry. Direct servings input and equal category allocation are proposed replacement rules, not approved implementation decisions. Plan includes file boundaries, legacy draft compatibility, sequential checkpoints and responsive/accessibility/production acceptance checks. No feature implementation, backend/dependency changes, commit or deployment. Planning verification: git diff --check; fresh build/type/browser checks deferred to implementation because only documentation changed.
+
+
+### B12 guided discovery checkpoint 2 — editorial records, 2026-10-14
+
+Read-only SQL on the configured catalogue project returned 50 published editorial-ready recipes (35 cocktails, 15 mocktails). Reviewed ingredients and preparation for all 50; discovery-audit.json records six-vocabulary taste tags, rationale, exact primary base/additional alcohol, version/date and source signatures. No occasion records are approved. Reviewed all 15 mocktail preparation/pantry paths: 11 supported, four unresolved (blood orange, fig, quick cranberry, vodka mocktail) remain excluded from new recommendations. Piña Colada uses the explicitly optional-rum-free path; Paloma uses the recorded vinegar/maple path, with visible guidance. Added eight pantry audits to the existing 17, covering all 11 supported mocktails; unresolved alternatives stay disabled. Existing 17 source signatures matched the current read after SQL-to-REST serialization. Stored non-personal recipe fixtures for reproducible checks. No remote writes. Assertion harness follows in checkpoint 3; Graphify/CLI checks remain blocked by terminal startup.

@@ -61,10 +61,10 @@ export function safeResultsHref(value: string | undefined): string {
   } catch { return '/find-my-drink' }
 }
 
-export function pickRecipeIds(ids: string[], seen: ReadonlySet<string>, random = Math.random): string[] {
+export function pickRecipeIds(ids: string[], seen: ReadonlySet<string>, random = Math.random, count = 3): string[] {
   const available = ids.filter(id => !seen.has(id))
   const picked: string[] = []
-  while (picked.length < 3 && available.length) {
+  while (picked.length < count && available.length) {
     picked.push(available.splice(Math.floor(random() * available.length), 1)[0])
   }
   return picked

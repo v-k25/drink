@@ -4,7 +4,6 @@ import { eligibilityAccepted } from '../../party-planner/session'
 import Gate from '../gate'
 import Detail, { DetailUnavailable } from '../components/detail'
 import { loadRecipe, loadRelated } from '../queries'
-import { loadCommunity } from '../community'
 
 // Recipe ids are slug primary keys (verified: every id matches this charset);
 // anything else cannot be an eligible recipe and 404s before any read.
@@ -40,7 +39,6 @@ export default async function RecipePage({ params, searchParams }: { params: Pro
   if (outcome.state !== 'ok' || !outcome.data) notFound()
   const recipe = outcome.data
   const related = await loadRelated(recipe)
-  const community = await loadCommunity(recipe.id)
   const { from } = await searchParams
-  return <Detail returnTo={typeof from === 'string' ? from : undefined} recipe={recipe} related={related.state === 'ok' ? related.data : null} community={community} />
+  return <Detail returnTo={typeof from === 'string' ? from : undefined} recipe={recipe} related={related.state === 'ok' ? related.data : null} />
 }

@@ -1,10 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
 import RecipeCard from './recipe-card'
 import { pickRecipeIds } from '../recipe'
 import type { RecipeRow } from '../queries'
+import { ShuffleIcon } from './icons'
 import styles from '../finder.module.css'
 
 export default function Discovery({ pool, initial, pageRows, returnTo, query }: {
@@ -45,16 +45,15 @@ export default function Discovery({ pool, initial, pageRows, returnTo, query }: 
   return <div className={styles.discovery}>
     {choices.length > 0 && <section aria-labelledby="choices-title">
       <div className={styles.sectionHeading}>
-        <div><p className={styles.eyebrow}>A place to start</p><h2 id="choices-title">A few good choices</h2></div>
-        {ready && <button type="button" className={styles.filter} onClick={pick}>Pick for me</button>}
+        <h2 id="choices-title">A few good choices<span className={styles.srOnly}> — a place to start</span></h2>
+        {ready && <button type="button" className={styles.pickButton} onClick={pick}><ShuffleIcon />Pick for me</button>}
       </div>
-      <p className={styles.pickStatus} role="status">{message || 'Selected from your current matches. Check the recipe quantities and equipment.'}</p>
-      <div className={styles.choiceGrid}>{choices.map(row => <RecipeCard key={row.id} row={row} reason={reason(row)} returnTo={choiceReturn} />)}</div>
-      {browse.length > 0 && <Link href="#all-matches" className={styles.backLink}>Browse all matches ↓</Link>}
+      <p className={`${styles.pickStatus} ${styles.srOnly}`} role="status">{message || 'Selected from your current matches. Check the recipe quantities and equipment.'}</p>
+      <div className={styles.choiceGrid}>{choices.map(row => <RecipeCard key={row.id} row={row} reason={reason(row)} returnTo={choiceReturn} asHeading />)}</div>
     </section>}
     {browse.length > 0 && <section id="all-matches" aria-labelledby="all-title">
       <div className={styles.sectionHeading}><h2 id="all-title">Browse all matches</h2></div>
-      <div className={styles.productGrid}>{browse.map(row => <RecipeCard key={row.id} row={row} returnTo={returnTo} />)}</div>
+      <div className={styles.productGrid}>{browse.map(row => <RecipeCard key={row.id} row={row} returnTo={returnTo} asHeading />)}</div>
     </section>}
   </div>
 }

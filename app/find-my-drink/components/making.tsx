@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import CookView, { type CookClose } from './cook-view'
+import { START_MAKING_EVENT } from './start-button'
 import styles from '../finder.module.css'
 
 type WakeLockLike = { release: () => Promise<void>; addEventListener: (type: string, listener: () => void) => void }
@@ -13,22 +15,18 @@ type WakeLockNavigator = Navigator & { wakeLock?: { request: (type: 'screen') =>
 //   and a checked-progress line once mounted; the server-computed quantity note
 //   (approximate metric conversions; shown when any line converted or stayed
 //   ambiguous) renders near the checklist without waiting for JS;
-// - honest servings scaling: only offered when every ingredient line carries a
-//   validated numeric amount, otherwise a plain explanation and no scaling;
-// - step mode (one step at a time) after mount, keyboard and touch operable;
-// - Screen Wake Lock as a silent no-op where unsupported;
-// - a sticky mobile bar with the honest making controls only — step mode and
-//   keep-awake. No save/like controls exist in this phase, and none are faked.
-export default function Making({ ingredients, steps, quantityNote }: { ingredients: string[]; steps: string[]; quantityNote?: string | null }) {
+// - a full-screen step view (modal dialog, one step at a time) opened from the
+//   page's "Start making" button, keyboard and touch operable;
+// - Screen Wake Lock as a silent no-op where unsupported; its toggle lives in
+//   the step view. No save/like controls exist in this phase, and none are faked.
+export default function Making({ name, ingredients, steps, quantityNote }: { name: string; ingredients: string[]; steps: string[]; quantityNote?: string | null }) {
   const [mounted, setMounted] = useState(false)
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
   const [stepMode, setStepMode] = useState(false)
-  const [step, setStep] = useState(0)
   const [wakeSupported, setWakeSupported] = useState(false)
   const [wakeHeld, setWakeHeld] = useState(false)
   const wakeRef = useRef<WakeLockLike | null>(null)
   const wakeWanted = useRef(false)
-  const stepCounter = useRef<HTMLParagraphElement>(null)
 
   useEffect(() => { setMounted(true) }, [])
   useEffect(() => {
@@ -49,7 +47,11 @@ export default function Making({ ingredients, steps, quantityNote }: { ingredien
     document.addEventListener('visibilitychange', onVisibility)
     return () => document.removeEventListener('visibilitychange', onVisibility)
   }, [wakeSupported])
-  useEffect(() => { if (stepMode) stepCounter.current?.focus() }, [stepMode, step])
+  useEffect(() => {
+    const open = () => { if (steps.length > 0) setStepMode(true) }
+    window.addEventListener(START_MAKING_EVENT, open)
+    return () => window.removeEventListener(START_MAKING_EVENT, open)
+  }, [steps.length])
 
   async function requestWake() {
     try {
@@ -74,10 +76,13 @@ export default function Making({ ingredients, steps, quantityNote }: { ingredien
     }
   }
 
-  function toggleStepMode() {
-    const next = !stepMode
-    setStepMode(next)
-    if (next) setStep(0)
+  function closeCook(why: CookClose) {
+    // The toggle only lives in the step view, so closing it lets the screen sleep again.
+    if (wakeRef.current) void toggleWake()
+    setStepMode(false)
+    // Focus always returns to "Start making"; "View all steps" also brings the method into view.
+    document.getElementById('start-making')?.focus({ preventScroll: why === 'method' })
+    if (why === 'method') document.getElementById('method')?.scrollIntoView({ block: 'start' })
   }
 
   function toggleChecked(index: number) {
@@ -89,47 +94,50 @@ export default function Making({ ingredients, steps, quantityNote }: { ingredien
     })
   }
 
+  const gathered = ingredients.length > 0 ? Math.round((checked.size / ingredients.length) * 100) : 0
   return <div className={styles.making}>
-    <div id="ingredients" className={styles.makingBlock}>
+    <div id="ingredients" className={`${styles.makingBlock} ${styles.ingredientsBlock}`}>
       <h3>Ingredients</h3>
       {ingredients.length === 0
         ? <p className={styles.hint}>No ingredients are recorded for this recipe.</p>
         : <ul className={styles.checklist}>
-            {ingredients.map((ingredient, index) => <li key={index} className={styles.checkItem}>
-              <label htmlFor={`ingredient-${index + 1}`}>
-                <input id={`ingredient-${index + 1}`} type="checkbox" checked={checked.has(index)} onChange={() => toggleChecked(index)} />
-                <span>{ingredient}</span>
-              </label>
-            </li>)}
+            {ingredients.map((ingredient, index) => {
+              const [amount, rest] = splitAmount(ingredient)
+              return <li key={index} className={styles.checkItem}>
+                <label htmlFor={`ingredient-${index + 1}`}>
+                  <input id={`ingredient-${index + 1}`} type="checkbox" checked={checked.has(index)} onChange={() => toggleChecked(index)} />
+                  <span className={styles.ingredientText}>{amount && <b>{amount}</b>}{amount && ' '}{rest}</span>
+                </label>
+              </li>
+            })}
           </ul>}
-      {ingredients.length > 0 && quantityNote && <p className={styles.hint}>{quantityNote}</p>}
-      {mounted && ingredients.length > 0 && <p className={styles.progressLine} role="status">{checked.size} of {ingredients.length} ingredients gathered</p>}
-      {mounted && ingredients.length > 0 && <p className={styles.hint}>Follow the quantities shown for this recipe.</p>}
+      {mounted && ingredients.length > 0 && <div className={styles.gather}>
+        <p className={styles.progressLine} role="status">{checked.size} of {ingredients.length} ingredients gathered</p>
+        <div className={styles.gatherBar} aria-hidden="true"><span style={{ width: `${gathered}%` }} /></div>
+      </div>}
+      {ingredients.length > 0 && quantityNote && <p className={`${styles.hint} ${styles.quantityNote}`}>{quantityNote}</p>}
     </div>
     <div id="method" className={styles.makingBlock}>
       <h3>Method</h3>
       {steps.length === 0
         ? <p className={styles.hint}>No method steps are recorded for this recipe.</p>
-        : stepMode
-          ? <div>
-              <div className={styles.stepStage} key={step} aria-live="polite">
-                <p className={styles.stepCounter} tabIndex={-1} ref={stepCounter}>Step {step + 1} of {steps.length}</p>
-                <p className={styles.stepText}>{steps[step]}</p>
-              </div>
-              <div className={styles.stepNav}>
-                <button className={styles.filter} onClick={() => setStep(current => Math.max(0, current - 1))} disabled={step === 0}>Previous</button>
-                <button className={styles.filter} onClick={() => setStep(current => Math.min(steps.length - 1, current + 1))} disabled={step === steps.length - 1}>Next</button>
-              </div>
-            </div>
-          : <ol className={styles.stepsList}>
-              {steps.map((text, index) => <li key={index}>{text}</li>)}
-            </ol>}
+        : <ol className={styles.stepsList}>
+            {steps.map((text, index) => <li key={index}>{text}</li>)}
+          </ol>}
     </div>
-    <div className={styles.makingBar} role="group" aria-label="Making controls">
-      {mounted && <>
-        <button className={styles.barButton} aria-pressed={stepMode} onClick={toggleStepMode}>{stepMode ? 'View all steps' : 'Step mode'}</button>
-        {wakeSupported && <button className={styles.barButton} aria-pressed={wakeHeld} onClick={() => void toggleWake()}>{wakeHeld ? 'Keeping screen awake' : 'Keep screen awake'}</button>}
-      </>}
-    </div>
+    {stepMode && steps.length > 0 && <CookView name={name} steps={steps} ingredients={ingredients} wakeSupported={wakeSupported} wakeHeld={wakeHeld} onToggleWake={() => void toggleWake()} onClose={closeCook} />}
   </div>
+}
+
+// Presentation only: bold the leading amount ("~44 mL") when a display line
+// starts with one. The two pieces always rejoin to the exact display string.
+const AMOUNT = /^~?\d[\d.,/¼-¾⅐-⅞\s-]*(?:\s*(?:mL|ml|g|kg|l|oz|ounces?|cups?|tbsp|tsp|dash(?:es)?|pinch(?:es)?|wedges?|slices?|pieces?|sprigs?|leaves|drops?|cubes?|scoops?|whole|cans?|bottles?)\.?)?(?:\s*\(by volume\))?(?=\s|$)/i
+
+function splitAmount(display: string): [string, string] {
+  const match = AMOUNT.exec(display)
+  if (!match) return ['', display]
+  const amount = match[0].trim()
+  const rest = display.slice(match[0].length).trim()
+  if (!amount || !rest || `${amount} ${rest}` !== display) return ['', display]
+  return [amount, rest]
 }

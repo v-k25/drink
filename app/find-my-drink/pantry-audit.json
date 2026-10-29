@@ -569,5 +569,278 @@
       "Tall glass",
       "Stirring utensil"
     ]
+  },
+  {
+    "recipeId": "mm-watermelon-strawberry-mocktail",
+    "sourceSignature": "[\"mm-watermelon-strawberry-mocktail\",\"Watermelon Strawberry Mocktail\",\"Watermelon and strawberries blended with fresh lime juice.\",\"mocktail\",[\"2 cups watermelon\",\"8 strawberries\",\"1/2 cup fresh lime juice\"],[{\"raw\":\"2 cups watermelon\",\"name\":\"watermelon\",\"unit\":\"cups\",\"amount\":\"2\"},{\"raw\":\"8 strawberries\",\"name\":\"strawberries\",\"unit\":\"count\",\"amount\":\"8\"},{\"raw\":\"1/2 cup fresh lime juice\",\"name\":\"fresh lime juice\",\"unit\":\"cup\",\"amount\":\"1/2\"}],[\"Blend the watermelon, strawberries and lime juice together.\",\"Pour over ice to serve.\"],null,\"Ice\",null,\"blend\",\"2\",2,\"mindfulmocktail\",\"https://mindfulmocktail.com/watermelon-strawberry-mocktail/\",\"2026-09-20T20:18:27.494431+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "watermelon",
+        "label": "Watermelon",
+        "quantityText": "2 cups watermelon"
+      },
+      {
+        "ingredientId": "fresh-strawberries",
+        "label": "Fresh strawberries",
+        "quantityText": "8 strawberries"
+      },
+      {
+        "ingredientId": "fresh-lime-juice",
+        "label": "Fresh lime juice",
+        "quantityText": "1/2 cup fresh lime juice"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Blender",
+      "Serving glasses"
+    ]
+  },
+  {
+    "recipeId": "mm-pineapple-coconut-mocktail",
+    "sourceSignature": "[\"mm-pineapple-coconut-mocktail\",\"Pineapple Spritzer Mocktail\",\"Pineapple, coconut milk and lime blended smooth, topped with sparkling water.\",\"mocktail\",[\"1 cup pineapple\",\"1 cup reduced-fat coconut milk\",\"2 tbsp lime juice\",\"2 cups sparkling water\"],[{\"raw\":\"1 cup pineapple\",\"name\":\"pineapple\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"1 cup reduced-fat coconut milk\",\"name\":\"reduced-fat coconut milk\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"2 tbsp lime juice\",\"name\":\"lime juice\",\"unit\":\"tbsp\",\"amount\":\"2\"},{\"raw\":\"2 cups sparkling water\",\"name\":\"sparkling water\",\"unit\":\"cups\",\"amount\":\"2\"}],[\"Blend the pineapple, coconut milk and lime juice until smooth.\",\"Divide between two glasses.\",\"Top with the sparkling water and serve.\"],null,null,null,\"blend\",\"2\",2,\"mindfulmocktail\",\"https://mindfulmocktail.com/pineapple-coconut-mocktail/\",\"2026-09-20T20:18:02.12384+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "pineapple",
+        "label": "Pineapple",
+        "quantityText": "1 cup pineapple"
+      },
+      {
+        "ingredientId": "reduced-fat-coconut-milk",
+        "label": "Reduced-fat coconut milk",
+        "quantityText": "1 cup reduced-fat coconut milk"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime juice",
+        "quantityText": "2 tbsp lime juice"
+      },
+      {
+        "ingredientId": "sparkling-water",
+        "label": "Sparkling water",
+        "quantityText": "2 cups sparkling water"
+      }
+    ],
+    "equipment": [
+      "Blender",
+      "Serving glasses"
+    ]
+  },
+  {
+    "recipeId": "mm-grapefruit-martino-mocktail",
+    "sourceSignature": "[\"mm-grapefruit-martino-mocktail\",\"Grapefruit MartiNO Mocktail\",\"Grapefruit juice and rosemary syrup with aquafaba, shaken and poured cold.\",\"mocktail\",[\".5 cup grapefruit juice\",\".25 cup rosemary syrup\",\"1 tablespoon aquafaba\"],[{\"raw\":\".5 cup grapefruit juice\",\"name\":\"grapefruit juice\",\"unit\":\"cup\",\"amount\":\".5\"},{\"raw\":\".25 cup rosemary syrup\",\"name\":\"rosemary syrup\",\"unit\":\"cup\",\"amount\":\".25\"},{\"raw\":\"1 tablespoon aquafaba\",\"name\":\"aquafaba\",\"unit\":\"tablespoon\",\"amount\":\"1\"}],[\"Add the grapefruit juice, rosemary syrup and aquafaba to a shaker filled with ice.\",\"Shake hard until cold.\",\"Pour into a glass and serve.\"],null,\"Ice\",null,\"shake\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/grapefruit-martino-mocktail/\",\"2026-09-20T20:17:56.044476+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "grapefruit-juice",
+        "label": "Grapefruit juice",
+        "quantityText": ".5 cup grapefruit juice"
+      },
+      {
+        "ingredientId": "rosemary-syrup",
+        "label": "Rosemary syrup",
+        "quantityText": ".25 cup rosemary syrup"
+      },
+      {
+        "ingredientId": "aquafaba",
+        "label": "Aquafaba",
+        "quantityText": "1 tablespoon aquafaba"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Shaker",
+      "Serving glass"
+    ]
+  },
+  {
+    "recipeId": "mm-coconut-water-mocktail",
+    "sourceSignature": "[\"mm-coconut-water-mocktail\",\"Quick Coconut Water Mocktail\",\"Coconut water and citrus shaken with honey, with optional vinegar, Tajín rim and dehydrated citrus.\",\"mocktail\",[\"3 oz coconut water ((no added sugar))\",\"2 oz orange juice ((freshly squeezed is best))\",\"1/2 oz lemon juice\",\"1/2 teaspoon apple cider vinegar ((optional - see note 1) )\",\"1 teaspoon honey ((or your choice of sweetener - see note 2))\",\"Dehydrated citrus for garnish ((optional))\",\"Tajin for rim ((optional))\"],[{\"raw\":\"3 oz coconut water ((no added sugar))\",\"name\":\"coconut water ((no added sugar))\",\"unit\":\"oz\",\"amount\":\"3\"},{\"raw\":\"2 oz orange juice ((freshly squeezed is best))\",\"name\":\"orange juice ((freshly squeezed is best))\",\"unit\":\"oz\",\"amount\":\"2\"},{\"raw\":\"1/2 oz lemon juice\",\"name\":\"lemon juice\",\"unit\":\"oz\",\"amount\":\"1/2\"},{\"raw\":\"1/2 teaspoon apple cider vinegar ((optional - see note 1) )\",\"name\":\"apple cider vinegar ((optional - see note 1) )\",\"unit\":\"teaspoon\",\"amount\":\"1/2\"},{\"raw\":\"1 teaspoon honey ((or your choice of sweetener - see note 2))\",\"name\":\"honey ((or your choice of sweetener - see note 2))\",\"unit\":\"teaspoon\",\"amount\":\"1\"},{\"raw\":\"Dehydrated citrus for garnish ((optional))\",\"name\":\"Dehydrated citrus for garnish ((optional))\",\"unit\":null,\"amount\":null},{\"raw\":\"Tajin for rim ((optional))\",\"name\":\"Tajin for rim ((optional))\",\"unit\":null,\"amount\":null}],[\"Optionally rim a glass with Tajín, then fill it with ice.\",\"Shake the measured liquids and honey with ice for about 10 to 15 seconds; include the optional apple cider vinegar if using.\",\"Strain into the prepared glass, add optional dehydrated citrus, and serve.\"],\"Dehydrated citrus (optional)\",\"Ice\",null,\"shake\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/coconut-water-mocktail/\",\"2026-09-20T20:19:00.201796+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "coconut-water-no-added-sugar",
+        "label": "Coconut water (no added sugar)",
+        "quantityText": "3 oz coconut water ((no added sugar))"
+      },
+      {
+        "ingredientId": "orange-juice",
+        "label": "Orange juice",
+        "quantityText": "2 oz orange juice ((freshly squeezed is best))"
+      },
+      {
+        "ingredientId": "lemon-juice",
+        "label": "Lemon juice",
+        "quantityText": "1/2 oz lemon juice"
+      },
+      {
+        "ingredientId": "honey",
+        "label": "Honey",
+        "quantityText": "1 teaspoon honey"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Shaker",
+      "Serving glass",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "mm-hibiscus-electrolyte-drink",
+    "sourceSignature": "[\"mm-hibiscus-electrolyte-drink\",\"Hibiscus Electrolyte Drink\",\"Chilled hibiscus tea and coconut water over ice, brightened with pineapple and mineral salt.\",\"mocktail\",[\"1/2 cup chilled hibiscus tea\",\"1/2 cup coconut water\",\"Splash of pineapple juice to sweeten ((or to taste))\",\"Pinch of mineral salt\",\"Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))\",\"Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))\"],[{\"raw\":\"1/2 cup chilled hibiscus tea\",\"name\":\"chilled hibiscus tea\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"1/2 cup coconut water\",\"name\":\"coconut water\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"Splash of pineapple juice to sweeten ((or to taste))\",\"name\":\"Splash of pineapple juice to sweeten ((or to taste))\",\"unit\":null,\"amount\":null},{\"raw\":\"Pinch of mineral salt\",\"name\":\"Pinch of mineral salt\",\"unit\":null,\"amount\":null},{\"raw\":\"Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))\",\"name\":\"Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))\",\"unit\":null,\"amount\":null},{\"raw\":\"Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))\",\"name\":\"Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))\",\"unit\":null,\"amount\":null}],[\"Fill a glass with ice.\",\"Pour in the chilled hibiscus tea and coconut water, then add pineapple juice and a pinch of mineral salt.\",\"Add more pineapple juice or a sweetener of choice if wanted, then stir to combine.\",\"Finish with optional pineapple fronds, lime, or hibiscus flowers and serve.\"],\"Pineapple fronds, lime, or hibiscus flowers (optional)\",\"Ice\",null,\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/hibiscus-electrolyte-drink/\",\"2026-09-20T20:19:39.444722+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "chilled-hibiscus-tea",
+        "label": "Chilled hibiscus tea",
+        "quantityText": "1/2 cup chilled hibiscus tea"
+      },
+      {
+        "ingredientId": "coconut-water",
+        "label": "Coconut water",
+        "quantityText": "1/2 cup coconut water"
+      },
+      {
+        "ingredientId": "pineapple-juice",
+        "label": "Pineapple juice",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "mineral-salt",
+        "label": "Mineral salt",
+        "quantityText": "Pinch of mineral salt"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Serving glass",
+      "Spoon"
+    ]
+  },
+  {
+    "recipeId": "mm-lemon-mocktails",
+    "sourceSignature": "[\"mm-lemon-mocktails\",\"Lemon Mocktails\",\"Lemon, mint, coconut water and soda water stirred over ice, with optional honey.\",\"mocktail\",[\"1 tablespoon lemon juice\",\"2 lemon rounds\",\"1 teaspoon honey (optional)\",\"6-8 fresh mint leaves\",\".5 cup coconut water\",\".5 cup soda water\"],[{\"raw\":\"1 tablespoon lemon juice\",\"name\":\"lemon juice\",\"unit\":\"tablespoon\",\"amount\":\"1\"},{\"raw\":\"2 lemon rounds\",\"name\":\"lemon rounds\",\"unit\":null,\"amount\":\"2\"},{\"raw\":\"1 teaspoon honey (optional)\",\"name\":\"honey (optional)\",\"unit\":\"teaspoon\",\"amount\":\"1\"},{\"raw\":\"6-8 fresh mint leaves\",\"name\":\"fresh mint leaves\",\"unit\":null,\"amount\":\"6-8\"},{\"raw\":\".5 cup coconut water\",\"name\":\"coconut water\",\"unit\":\"cup\",\"amount\":\".5\"},{\"raw\":\".5 cup soda water\",\"name\":\"soda water\",\"unit\":\"cup\",\"amount\":\".5\"}],[\"Muddle the lemon rounds and mint in a glass, adding the optional honey if using.\",\"Add plenty of ice, then pour in the coconut water and soda water.\",\"Stir gently and serve.\"],null,\"Ice\",null,\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/lemon-mocktails/\",\"2026-09-20T20:18:06.674378+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "lemon-juice",
+        "label": "Lemon juice",
+        "quantityText": "1 tablespoon lemon juice"
+      },
+      {
+        "ingredientId": "lemon-rounds",
+        "label": "Lemon rounds",
+        "quantityText": "2 lemon rounds"
+      },
+      {
+        "ingredientId": "fresh-mint-leaves",
+        "label": "Fresh mint leaves",
+        "quantityText": "6-8 fresh mint leaves"
+      },
+      {
+        "ingredientId": "coconut-water",
+        "label": "Coconut water",
+        "quantityText": ".5 cup coconut water"
+      },
+      {
+        "ingredientId": "soda-water",
+        "label": "Soda water",
+        "quantityText": ".5 cup soda water"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Muddler",
+      "Serving glass",
+      "Spoon"
+    ]
+  },
+  {
+    "recipeId": "mm-paloma-mocktails",
+    "sourceSignature": "[\"mm-paloma-mocktails\",\"Perfect Paloma Mocktails\",\"Grapefruit and lime with maple, salt and a sharp optional alternative, finished with optional soda.\",\"mocktail\",[\"2 ounce grapefruit juice\",\"1 ounce lime juice ((squeezed fresh is best))\",\"1/2 ounce maple syrup ((or your choice of sweetener - see Note 1))\",\"1/4 teaspoon apple cider vinegar ((or non-alcoholic tequila - see Note 2))\",\"Pinch of sea salt\",\"1/2 cup plain or grapefruit soda ((optional - see Note 3))\",\"Salt or Tajin for rim ((optional))\"],[{\"raw\":\"2 ounce grapefruit juice\",\"name\":\"grapefruit juice\",\"unit\":\"ounce\",\"amount\":\"2\"},{\"raw\":\"1 ounce lime juice ((squeezed fresh is best))\",\"name\":\"lime juice ((squeezed fresh is best))\",\"unit\":\"ounce\",\"amount\":\"1\"},{\"raw\":\"1/2 ounce maple syrup ((or your choice of sweetener - see Note 1))\",\"name\":\"maple syrup ((or your choice of sweetener - see Note 1))\",\"unit\":\"ounce\",\"amount\":\"1/2\"},{\"raw\":\"1/4 teaspoon apple cider vinegar ((or non-alcoholic tequila - see Note 2))\",\"name\":\"apple cider vinegar ((or non-alcoholic tequila - see Note 2))\",\"unit\":\"teaspoon\",\"amount\":\"1/4\"},{\"raw\":\"Pinch of sea salt\",\"name\":\"Pinch of sea salt\",\"unit\":null,\"amount\":null},{\"raw\":\"1/2 cup plain or grapefruit soda ((optional - see Note 3))\",\"name\":\"plain or grapefruit soda ((optional - see Note 3))\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"Salt or Tajin for rim ((optional))\",\"name\":\"Salt or Tajin for rim ((optional))\",\"unit\":null,\"amount\":null}],[\"Optionally rim a glass with salt or Tajín, then fill it with ice.\",\"Shake the grapefruit juice, lime juice, maple syrup or another sweetener, apple cider vinegar or non-alcoholic tequila, and sea salt with ice until cold.\",\"Strain into the prepared glass.\",\"Top with the optional plain or grapefruit soda, stir gently, and serve.\"],null,\"Ice\",null,\"shake\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/paloma-mocktails/\",\"2026-09-20T20:20:02.568905+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "grapefruit-juice",
+        "label": "Grapefruit juice",
+        "quantityText": "2 ounce grapefruit juice"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime juice",
+        "quantityText": "1 ounce lime juice ((squeezed fresh is best))"
+      },
+      {
+        "ingredientId": "maple-syrup",
+        "label": "Maple syrup",
+        "quantityText": "1/2 ounce maple syrup"
+      },
+      {
+        "ingredientId": "apple-cider-vinegar",
+        "label": "Apple cider vinegar",
+        "quantityText": "1/4 teaspoon apple cider vinegar"
+      },
+      {
+        "ingredientId": "sea-salt",
+        "label": "Sea salt",
+        "quantityText": "Pinch of sea salt"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Shaker",
+      "Serving glass",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "mm-shirley-temple-mocktail",
+    "sourceSignature": "[\"mm-shirley-temple-mocktail\",\"The Best Shirley Temple Mocktail\",\"A fizzy lime-and-grenadine build over ice, with an optional maraschino cherry.\",\"mocktail\",[\"1 cup ginger ale\",\"1 teaspoon grenadine\",\"1 squeeze of fresh lime juice\",\"Maraschino cherries to garnish (optional)\"],[{\"raw\":\"1 cup ginger ale\",\"name\":\"ginger ale\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"1 teaspoon grenadine\",\"name\":\"grenadine\",\"unit\":\"teaspoon\",\"amount\":\"1\"},{\"raw\":\"1 squeeze of fresh lime juice\",\"name\":\"squeeze of fresh lime juice\",\"unit\":null,\"amount\":\"1\"},{\"raw\":\"Maraschino cherries to garnish (optional)\",\"name\":\"Maraschino cherries to garnish (optional)\",\"unit\":null,\"amount\":null}],[\"Fill a glass with ice.\",\"Combine the ginger ale with grenadine and a squeeze of fresh lime, then stir gently.\",\"Add an optional maraschino cherry garnish and serve.\"],\"Maraschino cherry (optional)\",\"Ice\",null,\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/shirley-temple-mocktail/\",\"2026-09-20T20:18:18.584979+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "ginger-ale",
+        "label": "Ginger ale",
+        "quantityText": "1 cup ginger ale"
+      },
+      {
+        "ingredientId": "grenadine",
+        "label": "Grenadine",
+        "quantityText": "1 teaspoon grenadine"
+      },
+      {
+        "ingredientId": "fresh-lime-juice",
+        "label": "Fresh lime juice",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Serving glass",
+      "Spoon"
+    ]
   }
 ]

@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { eligibilityAccepted } from '../party-planner/session'
 import Gate from './gate'
 import Browse from './components/browse'
+import Guided from './components/guided'
+import Shell from './components/shell'
+import { parseDiscovery, discoveryHref } from './discovery'
 import { buildListingData, loadRecipes, type ListingFilters } from './queries'
 
 export const metadata: Metadata = {
@@ -46,8 +49,13 @@ function parseInput(params: SearchParams): { filters: ListingFilters; cursor: { 
 export default async function FindMyDrinkPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const eligible = await eligibilityAccepted()
   if (!eligible) return <Gate />
-  const { filters, cursor } = parseInput(await searchParams)
+  const params = await searchParams
+  const { filters, cursor } = parseInput(params)
+  const discovery = parseDiscovery(params)
   const outcome = await loadRecipes()
+  if (discovery.mode !== 'browse' && outcome.state === 'ok' && outcome.data.length > 0) {
+    return <Shell><Guided key={discoveryHref(discovery)} rows={outcome.data} initial={discovery} /></Shell>
+  }
   const data = outcome.state === 'ok' ? buildListingData(outcome.data, filters, cursor) : null
   return <Browse eligibleRows={outcome.state === 'ok' ? outcome.data : []} state={outcome.state} data={data} filters={filters} cursor={cursor} />
 }

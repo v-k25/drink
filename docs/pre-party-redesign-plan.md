@@ -104,7 +104,7 @@ This is a restyle and copy pass, not new backend work.
   - Fonts stay per page: the 404 and unthemed pages do not use them, so moving them into the layout would load them everywhere.
   - Four harness scripts had stale strings and were fixed; all scripts pass `node --check`. None could be run (Playwright is not installed).
   - Pass at 1440 to 320 and 200% text: no overflow; one 30px footer link (FAQ) fixed. Contrast scan clean in light and dark.
-  - Lighthouse mobile was not run (the pane does not offer it). Open: favicon colour, default 404, one "in stock" disclaimer in the FAQ.
+  - Lighthouse mobile was not run (the pane does not offer it). The three open items (favicon, 404, "in stock" FAQ line) were fixed afterwards; see the progress log entry "R6 follow-ups".
 
 Not built in this pass: the launch state (Upcoming nights, Book a table) and the booking flow. Both are designed and wait for Phase 1 (B11).
 

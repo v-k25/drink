@@ -1,5 +1,22 @@
 # Implementation progress
 
+### R6 follow-ups and booking Phase 1 backend, 2026-10-30
+
+**Done, owner approved each item.** Two commits: the R6 follow-ups, then the booking backend.
+- **Icon.** `app/icon.svg` and `public/favicon.ico` (16, 32, 48) are a plum tile with a marigold S, replacing the pink tile. `design-polish-check` now asserts `#3d1a45`.
+- **404.** New themed `app/not-found.tsx` (+ `.module.css`) on the tools theme with the tool header and footer; `ToolHeader`'s `current` is now optional.
+- **FAQ.** "Does Socifer sell alcohol?" and "No. We don’t sell or deliver alcohol, and we can’t tell you which shops carry what."
+- **Unused images** `club-crowd.jpg` and `cocktail.jpg` deleted (`git rm`) and their rows removed from `docs/nightlife-image-credits.md`.
+- **Age check wording.** "I meet the legal drinking-age requirements for Jaipur" (was "where I live"). Existing scripts match the shared prefix, so they still work.
+- **Age check works without JavaScript on Find My Drink.** `AgeCheck` has a plain-form mode; `acceptEligibilityForm` in `app/party-planner/actions.ts` sets the same cookie and redirects. `next` is allow-listed to `/find-my-drink[/id]` paths (an outside URL falls back to `/find-my-drink`); an unticked post redirects to `/find-my-drink?age=needed`, which shows "Tick the box to continue." With JavaScript the inline error and focus behave as before. The Planner gate is unchanged: the planner is a client step machine and cannot work without JavaScript.
+- **Booking Phase 1 backend (not applied).** `supabase/migrations/20261030_booking_phase1.sql`: `venues`, `venue_members`, `venue_offers`, `booking_requests`, `booking_status_history`; RLS (customers see their own requests, venue staff see their venue's, anyone reads active venues and offers); clients get select only and write through `create_booking_request`, `decide_booking_request`, `cancel_booking_request` (SECURITY DEFINER, pinned `search_path`, offer row locked, capacity and one-live-request-per-night enforced, idempotency key, status history in one transaction) and `expire_booking_requests` (service role). No payment objects, no hard-coded age. `app/bookings/booking.ts` mirrors the rules for forms. `supabase/seed/booking_demo.sql` is one demo venue and offer, every row `is_demo`, with a removal statement. `supabase/README.md` lists both.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0 (7 routes); tokens check ok; every `scripts/*.cjs` passes `node --check`; `node scripts/booking-check.cjs` ok (state machine, demo walk-through, static SQL checks). Production server: a script that behaves like a browser with JavaScript off (reads the gate form, posts it, follows redirects with cookies) showed unticked → `/find-my-drink?age=needed` with the message and no cookie; ticked → cookie set and the recipe page opens; an outside `next` was rejected. In the pane (fresh cookie jar on 127.0.0.1): with JavaScript, unticked shows the inline error and focuses the box, ticked continues. The 404 has no overflow at 1440 and 320, also at 200% text, no control under 44px, and uses Bricolage.
+
+**Not run.** The booking SQL has not been executed anywhere (no local Postgres, Supabase not connected); it is reviewed and statically checked only. Nothing was written to the live database. The Playwright scripts, Lighthouse, real devices.
+
+**Needs the owner.** Apply the booking migration (staging or a Supabase branch first). Booking needs signed-in users, and the app has no sign-in since account save was dropped; choose the sign-in method (phone OTP or email) before the booking UI. SLA (the placeholder is 48 hours), age threshold and cancellation rules are open under D11.
+
 ### Pre-Party R6 regression and copy pass, 2026-10-30
 
 **Done (not committed, waiting for owner approval).** All six checkpoints are built.

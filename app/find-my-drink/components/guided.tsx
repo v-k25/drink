@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { BASES, discoveryCoverage, discoveryHref, parseDiscovery, rankRecipes, reasonText, recommendationPool, reviewedDiscovery, type DiscoveryState, type Taste, type DrinkType } from '../discovery'
+import { TASTES, discoveryHref, parseDiscovery, rankRecipes, reasonText, recommendationPool, reviewedDiscovery, type DiscoveryState, type GuidedStage, type Taste } from '../discovery'
 import { capitalize, pickRecipeIds, safeResultsHref } from '../recipe'
-import { PantryChecklist, usePantrySelection } from './pantry'
+import { FEELS, FEEL_LABELS, OCCASION_LABELS, QUIZ_OCCASIONS, SERVES, SERVE_LABELS, answered, profileFor, rankSpirits, reasonSentence, type SpiritProfile } from '../spirit'
 import RecipeCard from './recipe-card'
 import type { RecipeRow } from '../queries'
 import styles from '../finder.module.css'
@@ -20,39 +20,6 @@ function TasteChoices({ label, value, supported, onChange }: { label: string; va
       <button type="button" className={styles.filter} aria-pressed={!value.length} onClick={() => onChange([])}>Any</button>
     </div>
   </fieldset>
-}
-
-function PreferenceForm({ rows, value, ingredients, storageBlocked, onApply, onCancel }: {
-  rows: RecipeRow[]; value: DiscoveryState; ingredients: string[]; storageBlocked: boolean
-  onApply: (state: DiscoveryState, ingredients: string[]) => void; onCancel: () => void
-}) {
-  const [draft, setDraft] = useState(value)
-  const [selected, setSelected] = useState(ingredients)
-  const [notice, setNotice] = useState('')
-  const coverage = discoveryCoverage(rows, draft, new Set(selected))
-  function changeType(type: DrinkType) {
-    if (type === 'mocktail' && draft.base) setNotice('Base cleared: it applies only to cocktails.')
-    setDraft({ ...draft, type, base: type === 'mocktail' ? null : draft.base })
-  }
-  return <form className={styles.guidePreferences} onSubmit={event => { event.preventDefault(); onApply(draft, selected) }}>
-    <fieldset className={styles.guideFieldset}><legend>Drink type</legend><div className={styles.guideChoices}>{(['cocktail','mocktail','mixed'] as const).map(type => <button key={type} type="button" className={styles.filter} aria-pressed={draft.type === type} onClick={() => changeType(type)}>{drinkLabels[type]}</button>)}</div></fieldset>
-    {notice && <p role="status" className={styles.notice}>{notice}</p>}
-    {draft.type === 'mixed' ? <>
-      <TasteChoices label="Cocktail tastes" value={draft.cocktailTastes ?? draft.tastes} supported={discoveryCoverage(rows,{...draft,type:'cocktail'}).tastes} onChange={cocktailTastes => setDraft({...draft,cocktailTastes})} />
-      <TasteChoices label="Mocktail tastes" value={draft.mocktailTastes ?? draft.tastes} supported={discoveryCoverage(rows,{...draft,type:'mocktail'}).tastes} onChange={mocktailTastes => setDraft({...draft,mocktailTastes})} />
-    </> : <TasteChoices label="Taste" value={(draft.type === 'cocktail' ? draft.cocktailTastes : draft.mocktailTastes) ?? draft.tastes} supported={coverage.tastes} onChange={tastes => setDraft({...draft,tastes,cocktailTastes:null,mocktailTastes:null})} />}
-    {draft.type !== 'mocktail' && (coverage.bases.length > 1 || draft.base) && <fieldset className={styles.guideFieldset}><legend>Base spirit (cocktails)</legend><div className={styles.guideChoices}>
-      <button type="button" className={styles.filter} aria-pressed={!draft.base} onClick={() => setDraft({...draft,base:null})}>Any</button>
-      {BASES.filter(base => base === 'beer' || base === draft.base || coverage.bases.some(item => item.base === base)).map(base => <button type="button" key={base} className={styles.filter} aria-pressed={draft.base === base} onClick={() => setDraft({...draft,base})}>{capitalize(base)}: {coverage.bases.find(item => item.base === base)?.count ?? 0}{base === 'champagne' ? ' recipe' : ''}</button>)}
-    </div>{draft.base === 'beer' && <p className={styles.hint}>We don’t have beer recipes yet. Pick another base, or <Link href="/party-planner">browse products in Party Planner</Link>.</p>}
-    {draft.base === 'champagne' && <p className={styles.hint}>Our wine recipes are champagne only.</p>}</fieldset>}
-    {(coverage.methods.length > 1 || draft.method) && <label className={styles.guideLabel}>Method<select value={draft.method ?? ''} onChange={event => setDraft({...draft,method:event.target.value as DiscoveryState['method'] || null})}><option value="">Any</option>{[...new Set([...coverage.methods,...(draft.method ? [draft.method] : [])])].map(method => <option key={method} value={method}>{capitalize(method)}</option>)}</select></label>}
-    {coverage.occasions.length > 0 && <label className={styles.guideLabel}>Occasion<select value={draft.occasion ?? ''} onChange={event => setDraft({...draft,occasion:event.target.value as DiscoveryState['occasion'] || null})}><option value="">Any</option>{coverage.occasions.map(occasion => <option key={occasion} value={occasion}>{occasion === 'after-dinner' ? 'After dinner' : 'Casual get-together'}</option>)}</select></label>}
-    <label className={styles.guideLabel}>Name or ingredient<input type="search" maxLength={120} value={draft.q} onChange={event => setDraft({...draft,q:event.target.value})} placeholder="Any" /></label>
-    <details className={styles.guideIngredientPicker}><summary>Ingredients I have ({selected.length})</summary><PantryChecklist eligibleRows={rows} selected={selected} onChange={ids => { setSelected(ids); if (!ids.length) setDraft({...draft,onlyIngredients:false}) }} storageBlocked={storageBlocked} /></details>
-    <label className={styles.guideCheck}><input type="checkbox" disabled={!selected.length} checked={draft.onlyIngredients} onChange={event => setDraft({...draft,onlyIngredients:event.target.checked})} />Only recipes matching my ingredients</label>
-    <div className={styles.dialogActions}><button className={styles.secondary} type="button" onClick={onCancel}>Cancel</button><button className={styles.primary} type="submit">Apply</button></div>
-  </form>
 }
 
 function RandomRecipe({ rows, type, requested, onPick, returnTo }: { rows: RecipeRow[]; type: 'cocktail' | 'mocktail'; requested: string | null; onPick: (id: string) => void; returnTo: string }) {
@@ -102,18 +69,29 @@ function RandomRecipe({ rows, type, requested, onPick, returnTo }: { rows: Recip
   </section>
 }
 
+function ChoiceCards<T extends string>({ legend, options, value, onChoose }: { legend: string; options: readonly (readonly [T, string, string?])[]; value: T | null; onChoose: (value: T) => void }) {
+  return <fieldset className={styles.guideFieldset}><legend className={styles.srOnly}>{legend}</legend><div className={styles.choiceCards}>
+    {options.map(([option, label, note]) => <button type="button" key={option} className={styles.choiceCard} aria-pressed={value === option} onClick={() => onChoose(option)}><b>{label}</b>{note && <span>{note}</span>}</button>)}
+  </div></fieldset>
+}
+
+function RecipeList({ items, returnTo, label }: { items: ReturnType<typeof rankRecipes>; returnTo: string; label: string }) {
+  const [all, setAll] = useState(false)
+  const shown = all ? items : items.slice(0, 3)
+  return <>
+    <p className={styles.srOnly} role="status" aria-live="polite">{shown.length} {label} shown.</p>
+    <div className={styles.guideGrid}>{shown.map(item => <div key={item.row.id} className={styles.guideRecommendation}>
+      <RecipeCard row={item.row} returnTo={returnTo} asHeading tags={item.review?.tastes} reviewedBase={item.review?.primaryBase} reason={item.reasons.some(reason => reason.code !== 'base') ? item.reasons.filter(reason => reason.code !== 'base').slice(0, 2).map(reasonText).join(' ') : undefined} />
+      {item.review?.nonAlcoholicPath === 'reviewed' && item.review.pathNote && <p className={styles.hint}>{item.review.pathNote}</p>}
+    </div>)}</div>
+    {items.length > 3 && <div className={styles.guideActions}><button type="button" className={styles.secondary} aria-expanded={all} onClick={() => setAll(value => !value)}>{all ? 'Show fewer' : `Show all ${items.length}`}</button></div>}
+  </>
+}
+
 export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: DiscoveryState }) {
   const [view, setView] = useState(initial)
-  const [notice, setNotice] = useState('')
-  const [editorKey, setEditorKey] = useState(0)
-  const [editing, setEditing] = useState(false)
-  const { selected, setSelected, ready, storageBlocked } = usePantrySelection(rows)
   const heading = useRef<HTMLHeadingElement>(null)
-  const dialog = useRef<HTMLDialogElement>(null)
-  const editButton = useRef<HTMLButtonElement>(null)
   const returnTo = discoveryHref(view)
-  const selectedSet = new Set(selected)
-  const coverage = discoveryCoverage(rows,view)
   function navigate(next: DiscoveryState, replace = false) {
     setView(next)
     if (replace) window.history.replaceState(null,'',discoveryHref(next))
@@ -123,88 +101,137 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
     const back = () => {
       const params = new URLSearchParams(window.location.search)
       const input = Object.fromEntries([...new Set(params.keys())].map(key => [key, params.getAll(key)]))
-      setView(parseDiscovery(input)); setNotice('')
+      setView(parseDiscovery(input))
     }
     window.addEventListener('popstate',back)
     return () => window.removeEventListener('popstate',back)
   }, [])
   useEffect(() => { heading.current?.focus() }, [view.mode,view.stage])
   useEffect(() => {
-    if (!ready || !window.location.hash.startsWith('#recipe-')) return
+    if (!window.location.hash.startsWith('#recipe-')) return
     try { document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView() } catch { /* Ignore malformed return fragments. */ }
-  }, [ready, selected])
-  useEffect(() => { if (editing) dialog.current?.querySelector<HTMLButtonElement>('button')?.focus() }, [editing])
-  function closeEditor() { dialog.current?.close(); setEditing(false); editButton.current?.focus() }
-  function apply(next: DiscoveryState, ingredients: string[]) {
-    setNotice(view.base && next.type === 'mocktail' ? 'Base cleared: it applies only to cocktails.' : 'Preferences applied.')
-    setSelected(ingredients)
-    closeEditor()
-    navigate({...next,mode:'guided',stage:'results',pick:null})
-    setEditorKey(key => key + 1)
-  }
-  const results = (view.type === 'mixed' ? ['cocktail','mocktail'] as const : view.type ? [view.type] : []).map(type => ({
-    type, items: rankRecipes(rows,view,type,selectedSet),
-  }))
-  const preferenceForm = <PreferenceForm key={editorKey + ':' + returnTo + ':' + ready} rows={rows} value={view} ingredients={selected} storageBlocked={storageBlocked} onApply={apply} onCancel={() => { closeEditor(); setEditorKey(key => key + 1) }} />
-  const typeChoices = [['cocktail', 'With alcohol'], ['mocktail', 'No alcohol'], ['mixed', 'Two separate lists']] as const
-  const summary = [view.type ? drinkLabels[view.type] : '', ...(view.tastes ?? [])].filter(Boolean).map(capitalize).join(' · ')
-  const stageIndex = view.stage === 'type' ? 0 : view.stage === 'taste' ? 1 : 2
-  const stages = <ol className={styles.stages + ' sf-stages'} aria-label="Steps">{['Type', 'Taste', 'Results'].map((label, index) => <li key={label} className={index < stageIndex ? 'done' : undefined} aria-current={index === stageIndex ? 'step' : undefined}>{label}</li>)}</ol>
+  }, [])
+
+  // Guide me is the spirit quiz: drinking? then taste, feel, serve and occasion, then the best match and its cocktails.
+  // Not drinking skips to mocktails after the taste question.
+  const drinking = view.type !== 'mocktail'
+  const order: readonly GuidedStage[] = drinking ? ['type', 'taste', 'feel', 'serve', 'occasion', 'results'] : ['type', 'taste', 'results']
+  const labels = drinking ? ['Start', 'Taste', 'Feel', 'Serve', 'Occasion', 'Match'] : ['Start', 'Taste', 'Mocktails']
+  const stageIndex = Math.max(0, order.indexOf(view.stage))
+  const go = (patch: Partial<DiscoveryState>, from: GuidedStage) => navigate({ ...view, ...patch, stage: order[order.indexOf(from) + 1] ?? 'results', pick: null })
+  const backTo = (from: GuidedStage) => navigate({ ...view, stage: order[Math.max(0, order.indexOf(from) - 1)] })
+  const stages = <ol className={styles.stages + ' sf-stages'} aria-label="Steps">{labels.map((label, index) => <li key={label} className={index < stageIndex ? 'done' : undefined} aria-current={index === stageIndex ? 'step' : undefined}>{label}</li>)}</ol>
   const back = <div className={styles.guideBack}><button type="button" className={styles.backLink} onClick={() => navigate({...view,mode:'entry',stage:'type',pick:null})}>← All ways to find a drink</button></div>
+  const skipBack = (stage: GuidedStage, patch: Partial<DiscoveryState>) => <div className={styles.guideActions}>
+    <button type="button" className={styles.secondary} onClick={() => go(patch, stage)}>Skip</button>
+    <button type="button" className={styles.backLink} onClick={() => backTo(stage)}>Back</button>
+  </div>
+
+  const mocktailTastes = TASTES.filter(taste => recommendationPool(rows, 'mocktail').some(row => reviewedDiscovery(row)?.tastes.includes(taste)))
+  const answers = { tastes: view.tastes, feel: view.feel, serve: view.serve, occasion: view.quizOccasion }
+  const matches = rankSpirits(answers)
+  const top = matches[0].profile
+  const shown: SpiritProfile = view.spirit ? profileFor(view.spirit) : top
+  const alternative = shown.spirit === top.spirit ? matches[1].profile : top
+  const reasons = matches.find(match => match.profile.spirit === shown.spirit)?.reasons ?? []
+  const recipePreferences = { ...view, method: null, q: '', onlyIngredients: false, cocktailTastes: null, mocktailTastes: null }
+  const cocktails = shown.recipeBase ? rankRecipes(rows, { ...recipePreferences, base: shown.recipeBase }, 'cocktail') : []
+  const mocktails = rankRecipes(rows, { ...recipePreferences, base: null }, 'mocktail')
+  const lower = shown.name.toLowerCase()
+
   return <div className={styles.guide}>
     <noscript><p className={styles.notice}>Guide me and Surprise me need JavaScript. <a href="/find-my-drink?mode=browse">Browse all</a> works without it.</p></noscript>
     {view.mode === 'entry' && <section className={styles.entry} aria-labelledby="entry-title">
       <h1 id="entry-title" ref={heading} tabIndex={-1}>Your next recipe starts here</h1>
       <p className={styles.lede}>{rows.length} cocktails and mocktails.</p>
       <div className={styles.routes}>
-        <button type="button" className={`${styles.route} ${styles.routeLead}`} onClick={() => navigate({...view,mode:'guided',stage:'type'})}><span className={styles.routeIcon} aria-hidden="true">→</span><span><h2>Guide me</h2><p>Answer two questions.</p></span></button>
+        <button type="button" className={`${styles.route} ${styles.routeLead}`} onClick={() => navigate({...view,mode:'guided',stage:'type'})}><span className={styles.routeIcon} aria-hidden="true">→</span><span><h2>Guide me</h2><p>Find the spirit for you.</p></span></button>
         <button type="button" className={styles.route} onClick={() => navigate({...view,mode:'random',randomType:null})}><span className={styles.routeIcon} aria-hidden="true">?</span><span><h2>Surprise me</h2><p>Get one at random.</p></span></button>
         <Link className={styles.route} href="/find-my-drink?mode=browse"><span className={styles.routeIcon} aria-hidden="true">≡</span><span><h2>Browse all</h2><p>See all {rows.length}.</p></span></Link>
         <Link className={styles.route} href="/find-my-drink?mode=browse#use-what-i-have"><span className={styles.routeIcon} aria-hidden="true">✓</span><span><h2>Use what I have</h2><p>Tick what’s in your kitchen.</p></span></Link>
       </div>
     </section>}
-    {view.mode !== 'entry' && !(view.mode === 'guided' && view.stage === 'results') && back}
+    {view.mode !== 'entry' && back}
+
     {view.mode === 'guided' && view.stage !== 'results' && <section className={styles.guideSetup}>
       {stages}
-      <h1 ref={heading} tabIndex={-1}>{view.stage === 'type' ? 'What are you making?' : 'Pick up to two tastes'}</h1>
-      {view.stage === 'type' ? <fieldset className={styles.guideFieldset}><legend>Drink type</legend><div className={styles.choiceCards}>{typeChoices.map(([type, note]) => <button type="button" key={type} className={styles.choiceCard} aria-pressed={view.type === type} onClick={() => { if (type === 'mocktail' && view.base) setNotice('Base cleared: it applies only to cocktails.'); navigate({...view,type,base:type === 'mocktail' ? null : view.base,stage:'taste'}) }}><b>{drinkLabels[type]}</b><span>{note}</span></button>)}</div></fieldset>
-      : <><TasteChoices label="Tastes" supported={coverage.tastes} value={view.tastes} onChange={tastes => navigate({...view,tastes,cocktailTastes:null,mocktailTastes:null},true)} />
-      <div className={styles.guideActions}><button className={styles.primary} onClick={() => navigate({...view,stage:'results'})}>Show drinks</button><button className={styles.secondary} onClick={() => navigate({...view,tastes:[],cocktailTastes:null,mocktailTastes:null,stage:'results'})}>Skip</button><button className={styles.backLink} onClick={() => navigate({...view,stage:'type'})}>Back</button></div></>}
+      {view.stage === 'type' && <>
+        <h1 ref={heading} tabIndex={-1}>Are you drinking alcohol?</h1>
+        <ChoiceCards legend="Are you drinking alcohol?" value={view.type === 'mocktail' ? 'no' : view.type ? 'yes' : null}
+          options={[['yes', 'Yes', 'Find the spirit for you'], ['no', 'No', 'Show me mocktails']]}
+          onChoose={choice => navigate({ ...view, type: choice === 'no' ? 'mocktail' : 'cocktail', base: null, spirit: null, stage: 'taste', pick: null })} />
+      </>}
+      {view.stage === 'taste' && <>
+        <h1 ref={heading} tabIndex={-1}>Which flavours do you like?</h1>
+        <TasteChoices label="Flavours" supported={drinking ? TASTES : mocktailTastes} value={view.tastes} onChange={tastes => navigate({...view,tastes,cocktailTastes:null,mocktailTastes:null,spirit:null},true)} />
+        <div className={styles.guideActions}>
+          <button type="button" className={styles.primary} onClick={() => go({}, 'taste')}>{drinking ? 'Next' : 'Show mocktails'}</button>
+          <button type="button" className={styles.secondary} onClick={() => go({ tastes: [], spirit: null }, 'taste')}>Skip</button>
+          <button type="button" className={styles.backLink} onClick={() => backTo('taste')}>Back</button>
+        </div>
+      </>}
+      {view.stage === 'feel' && <>
+        <h1 ref={heading} tabIndex={-1}>How should it feel?</h1>
+        <ChoiceCards legend="How should it feel?" value={view.feel} options={FEELS.map(feel => [feel, ...FEEL_LABELS[feel]] as const)} onChoose={feel => go({ feel, spirit: null }, 'feel')} />
+        {skipBack('feel', { feel: null, spirit: null })}
+      </>}
+      {view.stage === 'serve' && <>
+        <h1 ref={heading} tabIndex={-1}>How do you usually drink?</h1>
+        <ChoiceCards legend="How do you usually drink?" value={view.serve} options={SERVES.map(serve => [serve, ...SERVE_LABELS[serve]] as const)} onChoose={serve => go({ serve, spirit: null }, 'serve')} />
+        {skipBack('serve', { serve: null, spirit: null })}
+      </>}
+      {view.stage === 'occasion' && <>
+        <h1 ref={heading} tabIndex={-1}>What’s the occasion?</h1>
+        <ChoiceCards legend="What’s the occasion?" value={view.quizOccasion} options={QUIZ_OCCASIONS.map(occasion => [occasion, OCCASION_LABELS[occasion]] as const)}
+          onChoose={quizOccasion => go({ quizOccasion, occasion: quizOccasion === 'party' ? null : quizOccasion, spirit: null }, 'occasion')} />
+        {skipBack('occasion', { quizOccasion: null, occasion: null, spirit: null })}
+      </>}
     </section>}
-    {notice && <p role="status" className={styles.notice}>{notice}</p>}
+
+    {view.mode === 'guided' && view.stage === 'results' && drinking && <div className={styles.guideLayout}>
+      <section className={styles.spiritResult} aria-labelledby="spirit-title">
+        <p className={styles.eyebrow}>{shown.spirit === top.spirit ? 'Your best match' : 'Also a good match'}</p>
+        <h1 id="spirit-title" ref={heading} tabIndex={-1}>{shown.name}</h1>
+        <p className={styles.lede}>{shown.note}</p>
+        <dl className={styles.spiritFacts}>
+          <div><dt>Why</dt><dd>{answered(answers) ? reasonSentence(reasons) : 'You skipped the questions, so this is a starting point.'}</dd></div>
+          <div><dt>Try it</dt><dd>{shown.tryIt}</dd></div>
+        </dl>
+        <div className={styles.guideActions}>
+          <button type="button" className={styles.secondary} onClick={() => navigate({ ...view, spirit: alternative.spirit === top.spirit ? null : alternative.spirit }, true)}>{alternative.spirit === top.spirit ? `Back to ${top.name.toLowerCase()}` : `Show ${alternative.name.toLowerCase()} instead`}</button>
+          <button type="button" className={styles.backLink} onClick={() => navigate({ ...view, stage: 'taste', spirit: null })}>Change answers</button>
+        </div>
+      </section>
+      <section className={styles.guideResults} aria-labelledby="spirit-recipes">
+        <h2 id="spirit-recipes">{shown.recipeBase ? `Cocktails with ${lower}` : `${shown.name} recipes`}</h2>
+        {cocktails.length === 0 ? <div className={styles.stateCard}>
+          <h3>We don’t have {lower} recipes yet</h3>
+          <p>You can still add {lower} to a party list.</p>
+          <Link className={styles.secondary} href="/party-planner">Find {lower} in Party Planner</Link>
+        </div> : <>
+          {shown.spirit === 'wine' && <p className={styles.hint}>Our only wine recipe uses champagne.</p>}
+          <RecipeList key={shown.spirit} items={cocktails} returnTo={returnTo} label={cocktails.length === 1 ? 'cocktail' : 'cocktails'} />
+          <p className={styles.hint}>Check quantities and equipment before you make anything.</p>
+        </>}
+      </section>
+    </div>}
+
+    {view.mode === 'guided' && view.stage === 'results' && !drinking && <div className={styles.guideLayout}>
+      <section className={styles.guideResults} aria-labelledby="mocktail-title">
+        <header className={styles.guideResultHeading}><div>
+          <h1 id="mocktail-title" ref={heading} tabIndex={-1}>Mocktails for you</h1>
+          <p className={styles.resultFacts}>{view.tastes.length ? view.tastes.map(capitalize).join(' · ') : 'Any flavour'}</p>
+        </div><button type="button" className={styles.backLink} onClick={() => navigate({ ...view, stage: 'taste' })}>Change answers</button></header>
+        <p className={styles.hint}>Only recipes with a reviewed alcohol-free path. Follow any note on a recipe; this isn’t a 0.0% claim.</p>
+        {mocktails.length ? <RecipeList items={mocktails} returnTo={returnTo} label="mocktails" /> : <div className={styles.stateCard}><h3>No matches just yet</h3><p>Try fewer flavours.</p></div>}
+      </section>
+    </div>}
+
     {view.mode === 'random' && <section className={styles.guideSetup}>
       <h1 ref={heading} tabIndex={-1}>Surprise me</h1>
-      <p className={styles.hint}>One at random. Taste, base and method don’t count. Your Guide me answers are kept.</p>
+      <p className={styles.hint}>One at random. Your Guide me answers are kept.</p>
       <fieldset className={styles.guideFieldset}><legend>What kind of drink?</legend><div className={styles.guideChoices}>{(['cocktail','mocktail'] as const).map(type => <button type="button" className={styles.filter} aria-pressed={view.randomType === type} key={type} onClick={() => { if (view.randomType !== type) navigate({...view,randomType:type,pick:null}) }}>{drinkLabels[type]}</button>)}</div></fieldset>
       {view.randomType && <RandomRecipe key={view.randomType} rows={rows} type={view.randomType} requested={view.pick} onPick={pick => navigate({...view,pick},true)} returnTo={returnTo} />}
-      {view.randomType && <button type="button" className={styles.backLink} onClick={() => navigate({...view,mode:'guided',type:view.randomType,base:view.randomType === 'mocktail' ? null : view.base,stage:'results',pick:null})}>Refine this choice</button>}
     </section>}
-    {view.mode === 'guided' && view.stage === 'results' && <div className={styles.guideLayout}>
-      {back}
-      <header className={styles.guideResultHeading}><div><h1 ref={heading} tabIndex={-1}>A few good choices</h1><p className={styles.resultFacts}>{summary}</p></div>
-        <button type="button" className={styles.secondary + ' ' + styles.guideEditButton} ref={editButton} onClick={() => { setEditing(true); setEditorKey(key => key + 1); dialog.current?.showModal() }}>Edit preferences</button>
-      </header>
-      <aside className={styles.guideDesktopPreferences} aria-label="Edit preferences"><h2>Your preferences</h2>{preferenceForm}</aside>
-      <dialog ref={dialog} className={styles.guideDialog} aria-labelledby="guide-edit-title" onCancel={event => { event.preventDefault(); closeEditor() }} onClose={() => { setEditing(false); editButton.current?.focus() }}><div className={styles.dialogHeading}><h2 id="guide-edit-title">Edit preferences</h2><button type="button" className={styles.dialogClose} aria-label="Cancel and close" onClick={closeEditor}><span aria-hidden="true">✕</span></button></div>{editing && preferenceForm}</dialog>
-      <div className={styles.guideResults}>
-        <p className={styles.srOnly} role="status" aria-live="polite">{results.map(section => Math.min(3,section.items.length) + ' ' + (section.type === 'cocktail' ? 'cocktail' : 'mocktail') + ' picks').join('; ')}.</p>
-        <p className={styles.hint}>Check quantities and equipment before you make anything.{selected.length > 0 ? ' Ingredient groups include ice and garnish; they don’t check how much you have.' : ''}</p>
-        {results.map(({type,items}) => <section key={type} aria-labelledby={'guided-' + type}>
-          <h2 id={'guided-' + type}>{type === 'cocktail' ? 'Cocktails' : 'Mocktails'}</h2>
-          {type === 'cocktail' && <p className={styles.resultFacts}>Base spirit: {view.base ? capitalize(view.base) : 'Any'} · Method: {view.method ? capitalize(view.method) : 'Any'}</p>}
-          {type === 'mocktail' && <p className={styles.hint}>Only recipes with a reviewed alcohol-free path. Follow any note on a recipe; this isn’t a 0.0% claim.</p>}
-          {!items.length && <div className={styles.stateCard}><h2>{type === 'cocktail' && view.base === 'beer' ? 'We don’t have beer recipes yet' : 'No matches just yet'}</h2>{!(type === 'cocktail' && view.base === 'beer') && <p>Try Any base, Any method or fewer ingredients.</p>}{view.base === 'beer' && type === 'cocktail' && <Link className={styles.secondary} href="/party-planner">Browse products in Party Planner</Link>}</div>}
-          {type === 'cocktail' && view.base === 'champagne' && <p className={styles.hint}>Champagne: {items.length} recipe{items.length === 1 ? '' : 's'}. Our wine recipes are champagne only.</p>}
-          {(['exact','one-away','other'] as const).map(tier => { const shown=items.slice(0,3).filter(item=>item.tier===tier); return shown.length > 0 && <div key={tier}>
-            {selected.length > 0 && <h3>{tier === 'exact' ? 'Ready to make' : tier === 'one-away' ? 'One ingredient away' : 'Other suggestions'}</h3>}
-            <div className={styles.guideGrid}>{shown.map(item => <div key={item.row.id} className={styles.guideRecommendation}>
-              <RecipeCard row={item.row} returnTo={returnTo} asHeading tags={item.review?.tastes} reviewedBase={item.review?.primaryBase} reason={item.reasons.length ? item.reasons.slice(0,2).map(reasonText).join(' ') : ((type === 'cocktail' ? view.cocktailTastes : view.mocktailTastes) ?? view.tastes).length ? 'No selected taste matched; another one to consider.' : undefined} />
-              {item.review?.nonAlcoholicPath === 'reviewed' && item.review.pathNote && <p className={styles.hint}>{item.review.pathNote}</p>}
-              {!item.pantryReviewed ? <p className={styles.hint}>Not in ingredient matching yet.</p> : item.tier === 'exact' ? <p className={styles.hint}>Uses your ingredients. Check quantities and equipment.</p> : item.missing ? <p className={styles.hint}>! Missing: {item.missing.label} ({item.missing.quantityText}).</p> : selected.length > 0 ? <p className={styles.hint}>Needs more ingredients, or one with no recorded quantity.</p> : null}
-            </div>)}</div>
-          </div> })}
-        </section>)}
-      </div>
-    </div>}
   </div>
 }

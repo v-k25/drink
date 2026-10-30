@@ -41,9 +41,9 @@
 .noticeOk::before { content: "✓"; content: "✓" / ""; color: var(--success); }
 .stateCard { display: grid; justify-items: center; gap: var(--space-2); max-width: 440px; margin: var(--space-6) auto; padding: var(--space-5) 0; text-align: center; }
 .stateGlyph { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-raised); color: var(--warning); font: 800 1.25rem/1 var(--font-text); }
-.stateCard h2 { font-size: min(1.5rem, 9vw); }
+.stateCard :is(h2, h3) { font-size: min(1.5rem, 9vw); }
 .stateCard p { margin: 0; color: var(--text-muted); }
-.stateCard .filter, .stateCard .primary { margin-top: var(--space-2); }
+.stateCard .filter, .stateCard .primary, .stateCard .secondary { margin-top: var(--space-2); }
 .listingState { max-width: 1240px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
 .card { max-width: 1240px; margin: 0 auto; }
 
@@ -64,6 +64,9 @@
 
 /* Guide me: stage bar, choices, results. */
 .stages { margin: 0 0 var(--space-3); }
+.stages li { min-width: 0; overflow-wrap: anywhere; }
+/* The six-step quiz bar: on narrow screens only the current step keeps its label, so 200% text cannot push it sideways. Labels stay in the accessibility tree. */
+@media (max-width: 599px) { .stages:has(li:nth-child(4)) li:not([aria-current="step"]) { font-size: 0; line-height: 0; gap: 0; } }
 .guideFieldset { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: var(--space-3); }
 .guideFieldset legend { padding: 0; margin-bottom: var(--space-2); font: 700 0.9375rem/1.25rem var(--font-text); }
 .guideChoices, .guideActions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
@@ -94,6 +97,13 @@
 .resultFacts { margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
 .guideGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--space-3); }
 .guideRecommendation { display: grid; gap: var(--space-2); align-content: start; min-width: 0; }
+/* Spirit quiz result (Guide me): the match is the main answer, its cocktails follow. */
+.spiritResult { display: grid; gap: var(--space-3); max-width: 720px; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface); }
+.spiritResult h1 { font-size: min(clamp(2.5rem, 1.6rem + 3.6vw, 4rem), 16vw); line-height: 1; }
+.spiritFacts { display: grid; gap: var(--space-3); margin: 0; }
+.spiritFacts div { display: grid; gap: 2px; }
+.spiritFacts dt { color: var(--text-muted); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
+.spiritFacts dd { margin: 0; font-size: 1rem; line-height: 1.5rem; }
 .guideRandom { display: grid; gap: var(--space-4); max-width: 440px; }
 .guideRandom .product { width: 100%; }
 .randomActions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }

@@ -1,32 +1,25 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import AgeCheck from '../age-check'
 import { ToolFooter, ToolHeader, toolRoot } from '../tool-shell'
-import { confirmEligibility } from '../party-planner/actions'
+import { acceptEligibilityForm } from '../party-planner/actions'
 import styles from './finder.module.css'
 
 export default function Gate() {
   const [checked, setChecked] = useState(false)
-  const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState('')
-  const router = useRouter()
+  const params = useSearchParams()
+  const pathname = usePathname()
+  const next = pathname + (params.get('age') ? '' : params.toString() ? '?' + params.toString() : '')
+  const message = params.get('age') === 'needed' ? 'Tick the box to continue.' : ''
 
   return <div className={`${styles.shell} ${toolRoot}`} data-theme="tools">
     <a href="#main" className="skip-link">Skip to content</a>
     <ToolHeader current="finder" />
     <main id="main" tabIndex={-1}>
       <h1 className={styles.srOnly}>Find My Drink</h1>
-      <AgeCheck lines={['Find', 'My Drink']} checked={checked} onCheckedChange={setChecked} continueLabel="Continue" busy={busy} busyLabel="confirming…" message={message} onContinue={() => void (async () => {
-        setBusy(true); setMessage('')
-        try {
-          const confirmation = await confirmEligibility(true)
-          if (!confirmation.ok) { setMessage(confirmation.error || 'Please confirm eligibility.'); return }
-          router.refresh()
-        } catch { setMessage('Connection interrupted. Your choice is still here; please try again.') }
-        finally { setBusy(false) }
-      })()} />
+      <AgeCheck lines={['Find', 'My Drink']} checked={checked} onCheckedChange={setChecked} continueLabel="Continue" busy={false} busyLabel="confirming…" message={message} form={{ action: acceptEligibilityForm, next }} />
     </main>
     <ToolFooter />
   </div>

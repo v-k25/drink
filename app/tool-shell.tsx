@@ -10,7 +10,7 @@ export const toolRoot = `sf ${styles.root} ${toolFonts}`
 
 export type ToolName = 'planner' | 'finder'
 
-export function ToolHeader({ current }: { current: ToolName }) {
+export function ToolHeader({ current }: { current?: ToolName }) {
   return <header className={styles.header} data-tool-header>
     <Link href="/" className={styles.wordmark} aria-label="Socifer home">socifer</Link>
     <nav className={styles.nav} aria-label="Tools">

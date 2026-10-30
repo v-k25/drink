@@ -70,7 +70,7 @@ async function main() {
     const response = await fetch(origin + asset); assert.equal(response.status, 200)
     const data = Buffer.from(await response.arrayBuffer())
     if (asset.endsWith('.ico')) { assert.equal(data.readUInt16LE(2), 1); assert.ok(data.readUInt16LE(4) >= 3, 'favicon.ico bundles at least three sizes') }
-    else assert.match(data.toString(), /#a92355/)
+    else assert.match(data.toString(), /#3d1a45/)
   }
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto(origin)

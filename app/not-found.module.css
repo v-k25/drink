@@ -1,0 +1,7 @@
+/* Themed 404. Colours come from the tools theme tokens; sizes are rem so 200% text scales them. */
+.stage { display: grid; justify-items: start; gap: 12px; max-width: 40rem; margin: 0 auto; padding: clamp(32px, 10vw, 112px) 16px; }
+.stage:focus { outline: none; }
+.code { margin: 0; color: var(--accent-text); font: 800 min(5rem, 22vw)/1 var(--font-display); letter-spacing: -.04em; }
+.title { margin: 0; color: var(--text); font: 800 min(2.25rem, 10vw)/1.1 var(--font-display); letter-spacing: -.03em; overflow-wrap: anywhere; }
+.copy { margin: 0; color: var(--text-muted); font: 500 1.0625rem/1.5rem var(--font-text); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }

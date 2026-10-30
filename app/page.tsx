@@ -98,7 +98,7 @@ export default function Home() {
             <details><summary>Who confirms my booking?</summary><div className="body">The venue will. You’ll get your pass once they do.</div></details>
             <details><summary>What will it cost?</summary><div className="body">We haven’t decided pricing or fees yet. We’ll share them before bookings open.</div></details>
             <details><summary>Can I use the tools without an account?</summary><div className="body">Yes. Party Planner and Find My Drink are free and don’t need a login. Your plan stays on this device.</div></details>
-            <details><summary>Does Socifer sell alcohol or show stock?</summary><div className="body">No. We don’t sell or deliver alcohol, and we don’t know what shops have in stock.</div></details>
+            <details><summary>Does Socifer sell alcohol?</summary><div className="body">No. We don’t sell or deliver alcohol, and we can’t tell you which shops carry what.</div></details>
             <details id="responsible-use"><summary>Who is Socifer for?</summary><div className="body">Adults in Jaipur going out with friends, drinking or not. If you drink, follow local eligibility laws, drink responsibly and never drink and drive.</div></details>
           </div>
         </section>

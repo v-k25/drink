@@ -12,7 +12,7 @@ export default function MobileMenu({ className, children }: { className: string;
   const onKeyDown = (event: KeyboardEvent) => { if (event.key === 'Escape') close(true) }
   return (
     <details ref={menu} className={className} onKeyDown={onKeyDown}>
-      <summary>Menu <span aria-hidden="true">+</span></summary>
+      <summary aria-label="Menu"><span aria-hidden="true">≡</span></summary>
       <nav aria-label="Mobile navigation" onClick={event => { if ((event.target as HTMLElement).closest('a')) close(false) }}>{children}</nav>
     </details>
   )

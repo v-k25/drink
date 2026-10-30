@@ -15,7 +15,7 @@ import styles from '../finder.module.css'
 export function DetailUnavailable() {
   return <Shell>
     <div className={styles.detailBody}>
-      <Link href="/find-my-drink" className={styles.backLink}>← All recipes</Link>
+      <Link href="/find-my-drink" className={styles.backLink}>← All ways to find a drink</Link>
       <Unavailable />
     </div>
   </Shell>
@@ -32,7 +32,7 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   // checklist whenever any line converted or stayed ambiguous.
   const metric = metricIngredients(recipe.ingredients)
   const quantityNote = metric.convertedCount > 0 || metric.ambiguousCount > 0
-    ? 'Approximate metric conversions; source quantities retained internally. Where conversion is unclear, original unit shown.'
+    ? 'Metric amounts are approximate. Where a conversion is unclear, the original unit is shown.'
     : null
   const allergens = recipe.allergens === null ? 'not specified' : recipe.allergens.length > 0 ? recipe.allergens.join(', ') : 'none listed'
   const caffeine = recipe.hasCaffeine === null ? 'not specified' : recipe.hasCaffeine ? 'contains' : 'none reported'
@@ -50,7 +50,7 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   return <Shell>
     <div className={styles.detailBody}>
       <article className={styles.detailPage}>
-        <Link href={resultsHref} className={styles.backLink}>← Back to recipes<ListingPending /></Link>
+        <Link href={resultsHref} className={styles.backLink}>← Back to results<ListingPending /></Link>
         <div className={styles.titleBlock}>
           <p className={styles.typeLine}>{typeLabel(recipe.alcoholType, recipe.baseSpirit)}</p>
           <h1>{recipe.name}</h1>
@@ -61,7 +61,7 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
               <span className={styles.srOnly}>{spec.label}: {spec.value}</span>
             </li>)}
           </ul>
-          <div className={styles.detailJumps}><StartButton hasSteps={recipe.preparation.length > 0} /><a href="#ingredients" className={styles.filter}>Ingredients ↓</a></div>
+          <div className={styles.detailJumps}><StartButton hasSteps={recipe.preparation.length > 0} /><a href="#ingredients" className={styles.filter}>Ingredients</a></div>
         </div>
         <section className={styles.makeSection} aria-labelledby="making-title">
           <h2 id="making-title" className={styles.srOnly}>Make it</h2>
@@ -69,15 +69,15 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
         </section>
         <RecipeImage key={`${recipe.id}:${recipe.imageUrl}`} row={recipe} width={1200} height={750} className={styles.heroImage} />
         <details className={styles.sourceContext}>
-          <summary>Source & recipe context</summary>
+          <summary>Source &amp; recipe context</summary>
           <p>Recipe facts from <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">{recipe.sourceName}</a>. Retrieved {recipe.sourceRetrievedAt.slice(0, 10)}.</p>
-          <p>Preparation wording reviewed for this collection. Unspecified or unlisted allergens and caffeine do not establish their absence.</p>
+          <p>We reviewed the wording of these steps. If allergens or caffeine aren’t listed, that doesn’t mean there are none.</p>
         </details>
         {related !== null && related.length > 0 && <section className={styles.related} aria-labelledby="related-title">
           <h2 id="related-title">More like this</h2>
           <div className={styles.relatedGrid}>{related.map(row => <RecipeCard key={row.id} row={row} returnTo={resultsHref} preserveAnchor />)}</div>
         </section>}
-        <p className={styles.disclaimer}>Recipes are for adults who meet the legal drinking-age requirements where they live. Please enjoy responsibly.</p>
+        <p className={styles.disclaimer}>Cocktail recipes are for adults of legal drinking age. Please drink responsibly.</p>
       </article>
     </div>
   </Shell>

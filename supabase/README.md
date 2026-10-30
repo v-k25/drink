@@ -16,10 +16,13 @@ files. The read-only introspection query used for the readback is
 | `20260801000001_profiles_baseline.sql` | `profiles`, `set_updated_at`, `handle_new_user`, auth trigger | nothing today; FK target for B11 bookings |
 | `20260802_drinks_baseline.sql` | `drinks` (50 publishable recipes, fail-closed read policy) | `app/find-my-drink/queries.ts` (anon key) |
 | `20260803_planner_products_baseline.sql` | `planner_products` (1,311 Jaipur bottles, service role only) | `app/party-planner/catalogue-server.ts` |
+| `20261030_booking_phase1.sql` | **New, not applied.** `venues`, `venue_members`, `venue_offers`, `booking_requests`, `booking_status_history` and the create/decide/cancel/expire functions (B11 Phase 1, no payment) | nothing yet; rules mirrored in `app/bookings/booking.ts`, checked by `scripts/booking-check.cjs` |
 
 Project-level (not in migrations): the `ensure_rls` event trigger and
 `public.rls_auto_enable()` come from the Supabase "automatically enable RLS"
 project setting.
+
+`seed/booking_demo.sql` is one demo venue and offer, test data only (every row has `is_demo = true`; `delete from public.venues where is_demo` removes it). Run it by hand on a staging database, never as a migration.
 
 ## Remote migration history -> repo
 

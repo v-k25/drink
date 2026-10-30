@@ -1,5 +1,177 @@
 # Implementation progress
 
+### R6 follow-ups and booking Phase 1 backend, 2026-10-30
+
+**Done, owner approved each item.** Two commits: the R6 follow-ups, then the booking backend.
+- **Icon.** `app/icon.svg` and `public/favicon.ico` (16, 32, 48) are a plum tile with a marigold S, replacing the pink tile. `design-polish-check` now asserts `#3d1a45`.
+- **404.** New themed `app/not-found.tsx` (+ `.module.css`) on the tools theme with the tool header and footer; `ToolHeader`'s `current` is now optional.
+- **FAQ.** "Does Socifer sell alcohol?" and "No. We don’t sell or deliver alcohol, and we can’t tell you which shops carry what."
+- **Unused images** `club-crowd.jpg` and `cocktail.jpg` deleted (`git rm`) and their rows removed from `docs/nightlife-image-credits.md`.
+- **Age check wording.** "I meet the legal drinking-age requirements for Jaipur" (was "where I live"). Existing scripts match the shared prefix, so they still work.
+- **Age check works without JavaScript on Find My Drink.** `AgeCheck` has a plain-form mode; `acceptEligibilityForm` in `app/party-planner/actions.ts` sets the same cookie and redirects. `next` is allow-listed to `/find-my-drink[/id]` paths (an outside URL falls back to `/find-my-drink`); an unticked post redirects to `/find-my-drink?age=needed`, which shows "Tick the box to continue." With JavaScript the inline error and focus behave as before. The Planner gate is unchanged: the planner is a client step machine and cannot work without JavaScript.
+- **Booking Phase 1 backend (not applied).** `supabase/migrations/20261030_booking_phase1.sql`: `venues`, `venue_members`, `venue_offers`, `booking_requests`, `booking_status_history`; RLS (customers see their own requests, venue staff see their venue's, anyone reads active venues and offers); clients get select only and write through `create_booking_request`, `decide_booking_request`, `cancel_booking_request` (SECURITY DEFINER, pinned `search_path`, offer row locked, capacity and one-live-request-per-night enforced, idempotency key, status history in one transaction) and `expire_booking_requests` (service role). No payment objects, no hard-coded age. `app/bookings/booking.ts` mirrors the rules for forms. `supabase/seed/booking_demo.sql` is one demo venue and offer, every row `is_demo`, with a removal statement. `supabase/README.md` lists both.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0 (7 routes); tokens check ok; every `scripts/*.cjs` passes `node --check`; `node scripts/booking-check.cjs` ok (state machine, demo walk-through, static SQL checks). Production server: a script that behaves like a browser with JavaScript off (reads the gate form, posts it, follows redirects with cookies) showed unticked → `/find-my-drink?age=needed` with the message and no cookie; ticked → cookie set and the recipe page opens; an outside `next` was rejected. In the pane (fresh cookie jar on 127.0.0.1): with JavaScript, unticked shows the inline error and focuses the box, ticked continues. The 404 has no overflow at 1440 and 320, also at 200% text, no control under 44px, and uses Bricolage.
+
+**Not run.** The booking SQL has not been executed anywhere (no local Postgres, Supabase not connected); it is reviewed and statically checked only. Nothing was written to the live database. The Playwright scripts, Lighthouse, real devices.
+
+**Needs the owner.** Apply the booking migration (staging or a Supabase branch first). Booking needs signed-in users, and the app has no sign-in since account save was dropped; choose the sign-in method (phone OTP or email) before the booking UI. SLA (the placeholder is 48 hours), age threshold and cancellation rules are open under D11.
+
+### Pre-Party R6 regression and copy pass, 2026-10-30
+
+**Done (not committed, waiting for owner approval).** All six checkpoints are built.
+- **Changed:** `app/globals.css` (dead landing, hero, planner, steps, button, form, FAQ and footer rules deleted; kept the reset, base type, unthemed focus ring, `.skip-link` and `.honeypot` that the 404 and both shells use), `app/home.module.css` (footer links 44px wide: the FAQ link was 30px), `scripts/design-polish-check`, `brewlist-tools-style-check`, `recipe-guided-browser-check`, `recipe-pantry-browser-check` (stale strings: "More options", "Refine matches", "Over budget by ₹350.00", "Missing Campari: ...", "Uses your selected ingredients...", "All required ingredients selected", "This is the only eligible recipe...", "Browse and filter all published recipes", "Search the ingredient checklist", "Browser storage is unavailable.").
+- **Untouched:** `app/early-access/actions.ts`, Planner logic, recipe data, URL parameters, package and lock files, tokens.
+- **Fonts:** left per page. The 404 and any unthemed page use Arial, so moving Bricolage and Manrope into the layout would preload them for pages that do not use them.
+- **Scripts:** every `scripts/*.cjs` passes `node --check`. I also checked every string and `[class*=]` / `.class` selector the `*-check.cjs` scripts use against the app source and stylesheets. The remaining mismatches are fixtures or dynamic names. Playwright is not installed, so none were run.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder`, `/robots.txt` 200; `/nope` 404.
+- Browser pane: `/` at 1440, 1024, 768, 390, 360, 320; Find My Drink entry at the same six; Browse all at 1440, 768, 390, 320; a recipe page at 1440, 390, 320; Party Planner at 1440, 390, 320. Every page, every width, and again with root text at 200%: no horizontal overflow. No control under 44px except inline text links in sentences. The one real miss was the landing footer FAQ link (30px), fixed and re-measured at 44px.
+- Rendered text contrast scan (every text node against its own background, 4.5:1, 3:1 for large text) on the Planner, Browse all and recipe page in light and dark, the landing page in light and dark, and cook mode: no failures. Text over the hero photo is not scanned (image background).
+- Keyboard: Escape closes the Planner filters sheet, the category sheet (focus returns to the trigger) and cook mode (focus returns to Start making). R2 to R5 covered the menu, dialogs and the Find My Drink filters sheet.
+- Reduced motion: `ui.css` zeroes animations under `.sf`, the landing root and both tool roots carry `sf`, and the landing hover is inside `no-preference`. Checked in the CSS, not emulated.
+- Copy: grep of all app source for slogans, exclamation marks, "order", "in stock", "MRP", "near you" and pressure to drink. Only error "!" prefixes and one FAQ sentence (below) turned up.
+
+**Not run.** The Playwright scripts, Lighthouse mobile (the pane has no Lighthouse; not run), real devices, screen readers, real print preview (R4 checked the print CSS on screen; the recipe page print rules exist in `finder.module.css` but were not previewed), a JavaScript-off browser, the age check at each width (the eligibility cookie is httpOnly and could not be cleared in the pane; R3 covered it), and the unavailable states.
+
+**Found, not fixed.**
+- **Favicon** (`app/icon.svg`) is still the old berry-pink tile (#a92355). The tools are not pink and the design has no favicon spec. Needs a design decision. `design-polish-check` still asserts that colour.
+- **404** is Next's default page on the unthemed body (Arial on cream), with the layout title.
+- **FAQ wording.** "Does Socifer sell alcohol or show stock? ... we don’t know what shops have in stock." uses "in stock" as a disclaimer, which the writing rules discourage. Suggest "which shops carry what"; it is the owner's copy call.
+- **Age check needs JavaScript** (carried from R3).
+- `club-crowd.jpg` and `cocktail.jpg` are unused (R2 note); not deleted.
+
+**Next.** Owner approval, then commit R6. Phase 1 backlog (B11 bookings) is separate.
+
+### Pre-Party R5 Find My Drink, 2026-10-30
+
+**Done (not committed, waiting for owner approval).** Find My Drink is on the Pre-Party tokens and primitives. Decisions and deviations are in `docs/pre-party-redesign-plan.md` (R5 status).
+- **Changed:** `app/find-my-drink/finder.module.css` (rewritten on the token names), `components/guided.tsx` (entry route cards, stage bar, choice cards, results, edit sheet, Surprise me), `browse.tsx`, `filter-sheet.tsx`, `discovery.tsx`, `pantry.tsx`, `recipe-card.tsx` (type tag, facts), `detail.tsx`, `making.tsx`, `cook-view.tsx` (✕ close), `states.tsx`, `icons.tsx`. Filters sheet now returns focus to its button on close.
+- **Removed:** `app/tool-theme.module.css` (no tool uses it any more).
+- **Untouched:** `app/early-access/actions.ts`, `discovery.ts`, `queries.ts`, `pantry.ts`, `metric.ts`, `recipe.ts`, URL parameters, recipe data, the Planner, package and lock files.
+- **Scripts updated, not run** (Playwright is not installed): `brewlist-tools-style-check`, `recipe-detail-check`, `recipe-discovery-check`, `recipe-guided-browser-check`, `recipe-pantry-browser-check`. New headings and labels (All n recipes, Filters, Show n recipes, Show drinks, Apply, Pick for me, Back to results, "That’s every match."). All pass `node --check`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`) against the live catalogue (read only, no writes): entry, Browse all, recipe page and cook mode work.
+- Browser pane: no horizontal overflow (clientWidth equals scrollWidth) and no control under 44px on Browse all at 1440, 1024, 768, 390, 360 and 320, each also at 200% root text; Guide me (type, taste, results, edit sheet), Surprise me, the filters sheet, the recipe page and cook mode at 320 and 390 with and without 200% text. Escape closes the filters sheet and cook mode; focus returns to the Filters button and to Start making. Cancel returns focus to Edit preferences. Light and dark (`prefers-color-scheme`) seen on entry, results, filters sheet and cook mode (cook mode stays plum in light). Use what I have opens from `#use-what-i-have` and lists matches.
+- Browse all without JavaScript: the server-rendered HTML (fetched with the eligibility cookie) has the h1, a GET search form, the Filters `<details>` with 14 facet links, recipe links and "Next recipes (23 more)". A real JavaScript-off browser run was not possible in the pane.
+
+**Not run.** The Playwright scripts, Lighthouse, real devices, screen readers, the unavailable and nothing-published states (markup and CSS only), print preview of the recipe page.
+
+**Found, not fixed.** None new.
+
+**Next.** R6: regression and copy pass (waits for approval of R5).
+
+### Pre-Party R4 Party Planner, 2026-10-30
+
+**Done (not committed, waiting for owner approval).** The Party Planner content is on the Pre-Party tokens and primitives. Decisions and deviations are in `docs/pre-party-redesign-plan.md` (R4 status).
+- **Changed:** `app/party-planner/planner.module.css` (rewritten on the token names; no longer uses `tool-theme.module.css`), `planner.tsx` (markup and copy only: stage indicator, radio start choice with Continue, "Suggest my list", Not drinking / Drinks each, visible "Build your list", empty and no-match states, summary bar, receipt grouped by category, flat action list, dialog copy, "How are quantities chosen?" list, "Drinks are temporarily unavailable"), `app/tool-shell.module.css` (footer links 44px wide, found in the audit).
+- **Untouched:** `model.ts`, `suggest.ts`, `catalogue-server.ts`, `actions.ts`, `early-access/actions.ts`, stored draft shape, package and lock files. `tool-theme.module.css` is kept for Find My Drink.
+- **Scripts updated, not run** (Playwright is not installed): `planner-inventory-check`, `planner-redesign-check`, `planner-retry-production-check`, `planner-tool-shell-check`, `planner-ux-production-check`, `brewlist-tools-style-check`, `design-polish-check`. New strings, the radio plus Continue start, no "More options", "Keep my list" / "Keep this plan" on the confirmations. All pass `node --check`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder` return 200.
+- Browser pane, production build, against the live catalogue (read only; no database writes): the whole flow (setup, suggest, build, plan sheet, receipt) at 1440, 1024, 768, 390, 360 and 320, and at 200% root text on each: no horizontal overflow (clientWidth equals scrollWidth) and no control under 44px (the footer "Home" link was 42px wide; fixed). Error states for guests, budget and the suggest step show "!" text, a red border, `aria-invalid` and focus on the first field. Confirmation dialog: Escape closes and returns focus to its trigger; Filters opens from the keyboard and Escape returns focus to the button. Dark (`prefers-color-scheme`) checked on setup-to-build and the receipt. Focus ring is the 2px token ring with the page-colour gap.
+- Print: the `@media print` rules were applied to the screen and checked: the print-only receipt is black on white with the brand line, grouped lines, total, caveat and the adults line, and the app shell is hidden. A real print preview was not run.
+
+**Not run.** The Playwright scripts above, Lighthouse, real devices, screen readers, a real print preview, the catalogue-unavailable state (styled, not triggered: it needs the catalogue read to fail), drag and drop onto the plan panel, and the early-access form.
+
+**Found, not fixed.** None new.
+
+**Next.** R5: Find My Drink (waits for approval of R4). `tool-theme.module.css` can be deleted when R5 no longer uses it.
+
+### Pre-Party R3 tool shell and age check, 2026-10-30
+
+**Done (not committed).** Party Planner and Find My Drink now share the Pre-Party header, footer, theme and age check. Details and decisions are in `docs/pre-party-redesign-plan.md` (R3 status).
+- **New:** `app/tool-shell.tsx` and `.module.css` (header, footer, focus ring), `app/age-check.tsx` and `.module.css`. `tool-theme.module.css` now maps the old `--tool-*` names onto the tokens, so tool content takes the light theme (dark under `prefers-color-scheme: dark`) without layout changes.
+- **Changed:** `gate.tsx`, `components/shell.tsx`, `planner.tsx` (root is a `div`, `<main>` around the content, shared header, footer and age check), `finder.module.css` and `planner.module.css` (old header, gate and focus rules removed; font is Manrope), `layout.tsx`, `globals.css`, `fonts.ts`. `components/header.tsx` deleted.
+- **Removed:** Nunito Sans (layout, body font, `app/fonts/NunitoSans-*` and its OFL text); nothing uses it.
+- **Untouched:** `app/early-access/actions.ts`, `model.ts`, `suggest.ts`, `catalogue-server.ts`, the Find My Drink guided contract, package and lock files.
+- **Scripts updated, not run** (Playwright is not installed): `planner-tool-shell-check.cjs` (age-check heading, new nav names, saved note), `brewlist-tools-style-check.cjs` (heading text, fonts, primary button colours), `design-polish-check.cjs` (Manrope instead of Nunito on `/`). All pass `node --check`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder` return 200. `/` and `/party-planner` preload only Bricolage and Manrope (no Nunito).
+- Browser pane, production build: both gates in light and dark (`data-theme="tools"`, background `#fff8ee`, Bricolage mark, Manrope text); one `h1`; no horizontal overflow at 1440, 390 and 320, and at 200% root text at 320 (this found a real overflow: the card grew past its column; fixed with a `minmax(0, 1fr)` track and capped mark size). Touch targets: header and footer links, Continue and the exit link are 44px or more; the checkbox itself is 22px but sits inside a 56px choice card that is the click target.
+- Behaviour: Continue unticked shows "! Tick the box to continue" with a red border, `aria-invalid="true"`, `aria-describedby` and focus on the checkbox. Ticking and continuing in Find My Drink opens the guided entry; the Planner then skips its gate and loads "Set your party" (the cookie is remembered). The focus ring is the design's 2px `--focus` outline with a page-coloured gap (keyboard Tab).
+- Tool pages after the gate (guided entry, Set your party) render correctly in light and dark; their content was not redesigned.
+
+**Not run.** The Playwright scripts, a computed-style back-to-back comparison against the committed build (R3 changes the look of the tool pages on purpose, so an identical fingerprint is not expected), a print preview (header and footer are hidden in print by CSS only), Lighthouse, real devices, screen readers, the full planner flow beyond "Set your party", Find My Drink listing, detail and cook mode in the new theme (R5 restyles them).
+
+**Found, not fixed.** The age check has always needed JavaScript to pass; see the plan's R3 status.
+
+**Next.** R4: Party Planner content (waits for approval of R3).
+
+### Pre-Party R2 landing page, 2026-10-30
+
+**Done (not committed).** `/` is rebuilt to the approved Pre-Party prototype; R1 was committed first as `e10097c`.
+- **Page:** `app/page.tsx` and `app/home.module.css` rewritten (sticky header and ≡ menu below 1024px, hero with the arch photo, How it'll work, Free tools, For venues, launch-list form, Questions, Privacy, footer). Anchors kept: `#how-it-works`, `#for-venues`, `#early-access`, `#faq`, `#privacy`, `#responsible-use`, `#top`, `#main`.
+- **Form:** `app/early-access/form.tsx` restyled (new `form.module.css`); fields, validation call, honeypot, consent wording and `consent_version` untouched. `actions.ts` not modified.
+- **Fonts:** new `app/fonts.ts`; the display and text faces now load only on routes that import it. Damion removed from the layout and its files deleted (`git rm`); Nunito Sans stays for the tool pages.
+- **Tokens/styles:** `scripts/pre-party-tokens.cjs` now writes the font stacks on `[data-theme]` instead of `:root`; `app/tokens.css` regenerated. Font sizes and line heights in `ui.css`, `home.module.css` and `form.module.css` converted from `px` to `rem` (R1 had them in `px`). `globals.css`: only the landing-only `#privacy, #responsible-use` scroll rule removed.
+- **Scripts updated, not run:** `home-design-check.cjs`, `brewlist-home-check.cjs`, `design-polish-check.cjs` and `brewlist-tools-style-check.cjs` now assert the new heading, hero CTA ("Join the list"), one hero image, the `#tools` links and the new form selectors. Playwright is not installed in the repo, so none of them were run (only `node --check` for syntax).
+- **Copy deviations from the prototype** (honesty and consent): cost answer, "The venue will", original privacy note and original consent sentence are kept. Details in `docs/pre-party-redesign-plan.md`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke: `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder`, `/robots.txt` all 200. `/` preloads the two new fonts plus Nunito Sans; `/party-planner` preloads only Nunito Sans.
+- In the browser pane on the production build, at 1440, 1024, 768, 390, 360 and 320: no horizontal overflow, one `h1`, every in-page anchor resolves, no touch target under 44px (header, menu, footer links, FAQ rows, form chips, choice cards and button), fonts Bricolage Grotesque and Manrope in use, no running animations.
+- At 200% root text size at 360, 390 and 320: no overflow and the hero stays inside the screen. This test caught a real overflow (the headline at 112px was wider than the screen), fixed by capping headline size with `vw`.
+- Mobile menu: opens, closes on link tap, closes on Escape and returns focus to the button. FAQ opens and closes. Anchor offsets under the sticky header are 80px (mobile) and 96px.
+- Form error state: submitted with an invalid email and nothing ticked (native validation turned off so the server action ran): summary note, field errors with "!", red borders, `aria-invalid`, entries kept, and no request reached Supabase.
+- Focus ring on the landing page is the design's cream ring with the background gap (not the old orange).
+- Tool pages unchanged: a computed-style fingerprint of `/party-planner` and `/find-my-drink` at 1440 and 390 is identical between the committed R1 build and the R2 build in the same browser state (back-to-back builds).
+
+**Not run.** Real form submissions (success, "already on the list" and the server-error state were not triggered, to avoid writing to the live waitlist; they were checked on the design board only), Lighthouse and LCP (the hidden browser pane does not report LCP), real devices, screen readers, the Playwright scripts above, and a print preview. The design brief's 768px header breakpoint was moved to 1024px because the link row does not fit at 768.
+
+**Next.** R3: tool header and footer, theme switching on tool routes, and the age check.
+
+### Pre-Party R1 foundations, 2026-10-30
+
+**Done (not committed).** Design tokens, themes, fonts and shared primitives added with no visible change to any existing page.
+- **Fonts:** `app/fonts/BricolageGrotesque-latin.woff2` (39 KB, weights 700–800, optical size pinned at 48) and `Manrope-latin.woff2` (23 KB, weights 500–800), each with its OFL text. They were trimmed from the google/fonts repository variable fonts (Latin plus ₹, arrows, dashes) with `scripts/pre-party-fonts.py`, which records the sources and the recipe. Loaded with `next/font/local`, `preload: false`, in `app/layout.tsx`.
+- **Tokens:** `app/tokens.css` is generated from `docs/design/pre-party/tokens.json` by `scripts/pre-party-tokens.cjs` (`--write`, `--check`). Themes `landing`, `tools` (dark under `prefers-color-scheme: dark`) and `tools-dark` apply only under `[data-theme]`; print resolves to the light tools values. Spacing, radius, size and font tokens are on `:root`.
+- **Primitives:** `app/ui.css` holds the `sf-` button, stepper, chip, choice card, field, accordion, tabs, sheet, toast, skeleton, product, recipe, event, summary bar, receipt, age check, stage bar, sticker and arch styles. A `[data-theme] :is(h1, h2, h3, h4) { color: inherit }` rule stops the old global plum heading colour leaking into themed pages.
+- **Not done:** Nunito Sans and Damion are still loaded, because existing pages use them (removal moves to R2 and R4/R5). No Tailwind `@theme` mapping: the app does not import Tailwind in its CSS.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: tokens match; all text and border pairs pass AA in all three themes.
+- `node node_modules/typescript/bin/tsc --noEmit`: exit 0.
+- `corepack pnpm build`: exit 0, 7 routes.
+- `git diff --check`: CRLF warnings only.
+- Production smoke (`next start`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder` and `/robots.txt` all return 200. The page head preloads only the two old fonts.
+- No-regression check: a computed-style fingerprint (font, colour, spacing, size and border of every element, 186/71/21 elements) of `/`, `/party-planner` and `/find-my-drink` at 1440 and 390, taken from the pre-change build and from the new build, is identical. A back-to-back build of the original `layout.tsx` and of the new one in the same browser state also matches.
+- Themes in the production build: the primary button resolves to the right fill and 52px height in all three themes; Bricolage and Manrope load; ₹ and tabular figures render; `tools` flips between `#fff8ee` (plum button) and `#170e1a` (marigold button) with the OS colour scheme.
+
+**Not run.** No Lighthouse, no screen reader, no real device, and the regression scripts under `scripts/` were not re-run (nothing they assert changed). The print override was checked in the generated CSS only, not in a print preview. Fingerprints depend on the browser's pixel ratio, so compare them only at the same ratio (the pane's ratio drifted during testing, which briefly looked like a regression).
+
+**Next.** R2: rebuild `/` to match `docs/design/pre-party/landing-prototype.html`.
+
+### Pre-Party redesign approved, handoff and plan written, 2026-10-30
+
+**Done.**
+- **Design approved.** The owner approved a clean-slate redesign, "Pre-Party (refined)":
+  - Bricolage Grotesque + Manrope.
+  - Plum + marigold, with pink landing-only.
+  - Themes `landing`, `tools` and `tools-dark`.
+  - Minimal layout and plain copy.
+- **Where it lives.** Design system artifact: https://claude.ai/artifact/5ACGtEEdZn8wKknfZzZiUU (14 screen boards at 1440/390, components, brand book).
+- **Handoff files in `docs/design/pre-party/`:** `tokens.json`, `tokens.css`, `components.css` and `landing-prototype.html`. The prototype is the approved responsive landing page and uses the existing `public/images/nightlife/hero-night-mobile*` photo as a stand-in.
+- **Plan.** `docs/pre-party-redesign-plan.md` sets out checkpoints R1–R6 (foundations, landing, tool shell/age check, Party Planner, Find My Drink, regression pass).
+- **AGENTS.md.** "Scope and design" now points to the new plan. It supersedes section 3 of `docs/socifer-product-plan.md`, D6 (magenta) and D14 (script face).
+
+**Unchanged.** Application code, backend, dependencies and lockfile.
+
+**Verification.** None needed beyond `git diff --check`, since only docs and the handoff files changed.
+
+**Open.**
+- Final hero photo (B2/D12).
+- Owner approval at R1 to fetch the two OFL font files.
+
 ### Staging push, Vercel preview verification, field-LCP option and decision brief, 2026-10-30
 
 **Done.** Pushed `socifer/b0-baseline` (11 commits ahead of `main`, head `fdb0809`) to `origin` as a new branch, no force, and opened PR #2 against `main`. Tooling files (`AGENTS.md`, `.opencode/`, `opencode.jsonc`, `.mcp.json`) were not committed. No dependency or lockfile change, no database write, no env value read or printed, nothing promoted to production.

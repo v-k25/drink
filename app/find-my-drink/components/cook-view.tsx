@@ -57,10 +57,11 @@ export default function CookView({ name, steps, ingredients, wakeSupported, wake
     onClose={() => onClose(reason.current)}
   >
     <div className={styles.cookBar}>
-      <p className={styles.cookName}>{name}</p>
+      <h2 className={styles.cookName}>{name}</h2>
       <div className={styles.cookTools}>
         {wakeSupported && <button type="button" className={styles.cookTool} aria-pressed={wakeHeld} onClick={onToggleWake}>{sun}<span>Keep screen awake</span></button>}
         <button type="button" className={styles.cookTool} onClick={() => close('method')}>{list}<span>View all steps</span></button>
+        <button type="button" className={`${styles.cookTool} ${styles.cookClose}`} aria-label="Close" onClick={() => close('dismiss')}><span aria-hidden="true">✕</span></button>
       </div>
     </div>
     <div className={styles.cookProgress}>

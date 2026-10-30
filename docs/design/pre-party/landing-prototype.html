@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Socifer · landing prototype (approved 2026-10-30)</title>
+<!-- Visual reference only. The shipped page (app/page.tsx) differs in copy for honesty and consent reasons (cost, who confirms, privacy, consent sentence) and shows the link row from 1024px, not 768px. See docs/pre-party-redesign-plan.md, R2. -->
+<link rel="preload" as="image" href="../../../public/images/nightlife/hero-night-mobile-800.avif" type="image/avif">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-text); font-weight: 500; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--content-max); margin: 0 auto; padding: 0 var(--space-6); }
+  .skip { position: absolute; left: -9999px; }
+  .skip:focus { left: 16px; top: 16px; z-index: 10; background: var(--highlight); color: var(--on-highlight); padding: 8px 12px; border-radius: 8px; }
+
+  /* header */
+  .hdr { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px); }
+  .hdr .wrap { display: flex; align-items: center; gap: 28px; height: 80px; }
+  .wm { font: 800 30px/1 var(--font-display); letter-spacing: -.04em; }
+  .links { display: flex; gap: 28px; margin-left: auto; font-weight: 600; font-size: 15px; color: var(--text-muted); }
+  .links a { min-height: 44px; display: inline-flex; align-items: center; }
+  .links a:hover { color: var(--text); }
+  .menu-btn { display: none; margin-left: auto; width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid var(--line-strong); background: none; color: var(--text); font-size: 20px; }
+  .menu { display: none; }
+
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1fr 440px; gap: 64px; align-items: end; padding-top: 48px; }
+  .h1 { font: 800 clamp(56px, 7.4vw, 104px)/.9 var(--font-display); letter-spacing: -.035em; margin: 20px 0 24px; }
+  .lede { font-size: 19px; line-height: 29px; color: var(--text-muted); max-width: 520px; margin: 0; }
+  .lede b { color: var(--text); font-weight: 700; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+  .arch { aspect-ratio: 440 / 560; border-radius: 999px 999px var(--radius-lg) var(--radius-lg); overflow: hidden; background: var(--surface-raised); }
+  .arch img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; display: block; }
+  .credit { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--text-muted); margin-top: 10px; }
+
+  /* sections */
+  section { scroll-margin-top: 96px; }
+  .sec { padding-top: var(--space-9); }
+  .h2 { font: 700 clamp(30px, 3vw, 40px)/1.02 var(--font-display); letter-spacing: -.025em; margin: 0; }
+  .h3 { font: 700 22px/1.15 var(--font-display); letter-spacing: -.01em; margin: 0; }
+  .muted { color: var(--text-muted); }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-top: 48px; }
+  .step .n { font: 800 72px/.9 var(--font-display); color: var(--highlight); letter-spacing: -.04em; }
+  .step .h3 { margin: 16px 0 6px; }
+  .tools { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 40px; }
+  .tool { border-radius: var(--radius-lg); padding: 36px; min-height: 300px; display: flex; flex-direction: column; justify-content: space-between; transition: transform .16s ease; }
+  .tool:hover { transform: translateY(-2px); }
+  @media (prefers-reduced-motion: reduce) { .tool { transition: none; } .tool:hover { transform: none; } }
+  .tool.y { background: var(--highlight); color: var(--on-highlight); }
+  .tool.p { background: var(--surface-raised); }
+  .tool h3 { font: 700 36px/1.02 var(--font-display); letter-spacing: -.025em; margin: 0; }
+  .tool p { margin: 10px 0 0; font-size: 17px; line-height: 25px; max-width: 380px; }
+  .tool.p p { color: var(--text-muted); }
+  .tool .go { font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; }
+  .tool.p .go { color: var(--accent-text); }
+  .venue { background: var(--city); color: var(--on-city); border-radius: var(--radius-lg); padding: 48px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+  .venue .h2 { color: var(--on-city); }
+  .vbtn { display: inline-flex; align-items: center; min-height: 52px; padding: 0 22px; border-radius: var(--radius-md); font-weight: 700; }
+  .vbtn.d { background: var(--on-city); color: var(--city); }
+  .vbtn.o { border: 2px solid var(--on-city); }
+  .join { display: grid; grid-template-columns: 1fr 520px; gap: 64px; align-items: start; }
+  .card { background: var(--surface); border-radius: var(--radius-lg); padding: 32px; display: grid; gap: 20px; }
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .faq { max-width: 760px; margin-top: 32px; }
+  .privacy { padding-top: var(--space-7); max-width: 760px; }
+  footer { margin-top: var(--space-9); border-top: 1px solid var(--line); padding: 40px 0 48px; }
+  footer .wrap { display: grid; gap: 20px; }
+  .flinks { display: flex; gap: 8px 24px; flex-wrap: wrap; font-weight: 600; font-size: 15px; }
+  .flinks a { min-height: 44px; display: inline-flex; align-items: center; }
+  .legal { font-size: 13px; line-height: 20px; color: var(--text-muted); }
+  .proto-note { position: fixed; right: 12px; bottom: 12px; z-index: 9; background: var(--surface-raised); color: var(--text-muted); font-size: 12px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); }
+
+  /* tablet */
+  @media (max-width: 1023px) {
+    .hero { grid-template-columns: 1fr 340px; gap: 40px; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .join { grid-template-columns: 1fr; gap: 24px; }
+  }
+  /* mobile */
+  @media (max-width: 767px) {
+    .wrap { padding: 0 var(--space-4); }
+    .hdr .wrap { height: 64px; }
+    .wm { font-size: 26px; }
+    .links, .hdr .sf-btn { display: none; }
+    .menu-btn { display: grid; place-items: center; }
+    .menu[data-open] { display: grid; gap: 4px; padding: 8px 16px 20px; border-bottom: 1px solid var(--line); background: var(--bg); }
+    .menu a { min-height: 48px; display: flex; align-items: center; font-weight: 700; font-size: 18px; }
+    .hero { grid-template-columns: 1fr; gap: 24px; padding-top: 20px; }
+    .h1 { font-size: 56px; margin: 14px 0 16px; }
+    .lede { font-size: 17px; line-height: 26px; }
+    .cta { flex-direction: column; margin-top: 24px; gap: 4px; }
+    .cta .sf-btn { width: 100%; }
+    .cta .sf-btn--secondary { border-color: transparent; color: var(--accent-text); }
+    .arch { aspect-ratio: 358 / 400; }
+    .sec { padding-top: var(--space-8); }
+    .steps { grid-template-columns: 1fr; gap: 20px; margin-top: 24px; }
+    .step { display: grid; grid-template-columns: 52px 1fr; gap: 2px 12px; }
+    .step .n { font-size: 44px; grid-row: 1 / 3; }
+    .step .h3 { margin: 2px 0 0; }
+    .tools { grid-template-columns: 1fr; gap: 12px; margin-top: 20px; }
+    .tool { min-height: 0; padding: 22px; gap: 28px; }
+    .tool h3 { font-size: 30px; }
+    .venue { padding: 24px; flex-direction: column; align-items: flex-start; }
+    .card { padding: 20px; gap: 16px; }
+    .faq { margin-top: 16px; }
+    footer { margin-top: var(--space-8); }
+  }
+</style>
+</head>
+<body class="sf">
+<a class="skip" href="#main">Skip to content</a>
+<header class="hdr">
+  <div class="wrap">
+    <a class="wm" href="#">socifer</a>
+    <nav class="links" aria-label="Main"><a href="#how">How it works</a><a href="#venues">For venues</a><a href="#tools">Plan a party</a><a href="#tools">Find a drink</a></nav>
+    <a class="sf-btn sf-btn--primary" href="#join">Get launch updates</a>
+    <button class="menu-btn" aria-expanded="false" aria-controls="menu" aria-label="Menu">≡</button>
+  </div>
+  <nav class="menu" id="menu" aria-label="Mobile"><a href="#how">How it works</a><a href="#venues">For venues</a><a href="#tools">Plan a party</a><a href="#tools">Find a drink</a><a href="#join" class="sf-btn sf-btn--primary" style="justify-content:center;margin-top:8px">Get launch updates</a></nav>
+</header>
+
+<main id="main" class="wrap">
+  <section class="hero">
+    <div>
+      <span class="sf-sticker">Coming soon</span>
+      <h1 class="h1">Jaipur nights,<br>booked.</h1>
+      <p class="lede">Book clubs and tables, pay upfront, walk in with a pass. <b>We’re not taking bookings yet.</b></p>
+      <div class="cta"><a class="sf-btn sf-btn--primary" href="#join">Join the list</a><a class="sf-btn sf-btn--secondary" href="#how" style="min-height:52px">How it works</a></div>
+    </div>
+    <div>
+      <div class="arch">
+        <picture>
+          <source type="image/avif" srcset="../../../public/images/nightlife/hero-night-mobile-800.avif 800w, ../../../public/images/nightlife/hero-night-mobile.avif 1200w" sizes="(max-width: 767px) 100vw, 440px">
+          <source type="image/webp" srcset="../../../public/images/nightlife/hero-night-mobile-800.webp 800w, ../../../public/images/nightlife/hero-night-mobile.webp 1200w" sizes="(max-width: 767px) 100vw, 440px">
+          <img src="../../../public/images/nightlife/hero-night-mobile-800.webp" width="800" height="1200" alt="" fetchpriority="high">
+        </picture>
+      </div>
+      <p class="credit">Stock imagery; not listed Jaipur venues</p>
+    </div>
+  </section>
+
+  <section class="sec" id="how">
+    <h2 class="h2">How it’ll work</h2>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3 class="h3">Pick a night</h3><div class="muted">See what’s on in Jaipur this week.</div></div>
+      <div class="step"><div class="n">2</div><h3 class="h3">Choose tickets</h3><div class="muted">The price is shown upfront.</div></div>
+      <div class="step"><div class="n">3</div><h3 class="h3">Pay</h3><div class="muted">The venue confirms it.</div></div>
+      <div class="step"><div class="n">4</div><h3 class="h3">Show your pass</h3><div class="muted">It’s on your phone. No calls or DMs.</div></div>
+    </div>
+  </section>
+
+  <section class="sec" id="tools">
+    <h2 class="h2">Free tools, no sign-up</h2>
+    <div class="tools">
+      <a class="tool y" href="#"><div><h3>Party Planner</h3><p>Work out the drinks and the cost for a house party.</p></div><span class="go">Plan a party →</span></a>
+      <a class="tool p" href="#"><div><h3>Find My Drink</h3><p>50 cocktails and mocktails you can make at home.</p></div><span class="go">Find a drink →</span></a>
+    </div>
+  </section>
+
+  <section class="sec" id="venues">
+    <div class="venue">
+      <div><h2 class="h2">Run a club in Jaipur?</h2><p style="margin:8px 0 0;font-size:18px;font-weight:600">Partner with us.</p></div>
+      <div class="sf-row"><a class="vbtn d" href="#">Email us</a><a class="vbtn o" href="#">WhatsApp</a></div>
+    </div>
+  </section>
+
+  <section class="sec join" id="join">
+    <div><h2 class="h2">Get launch updates</h2><p class="lede" style="margin-top:12px">One email when bookings open in Jaipur.</p></div>
+    <form class="card" onsubmit="event.preventDefault()">
+      <div class="sf-field"><label for="email">Email</label><input id="email" class="sf-input" type="email" autocomplete="email" placeholder="name@example.com" required></div>
+      <div class="sf-field"><label for="drinks">Drinks</label><select id="drinks" class="sf-select"><option>Undecided</option><option>Alcoholic</option><option>Non-alcoholic</option><option>Both</option></select></div>
+      <fieldset class="sf-fieldset"><legend>Interested in <span class="muted" style="font-weight:500">(optional)</span></legend>
+        <div class="chips"><button type="button" class="sf-chip" aria-pressed="false">Finding my drink</button><button type="button" class="sf-chip" aria-pressed="false">Planning a party</button><button type="button" class="sf-chip" aria-pressed="false">Non-alcoholic drinks</button></div></fieldset>
+      <label class="sf-choice"><input type="checkbox" required><span><b>I’m joining early access for Jaipur</b></span></label>
+      <label class="sf-choice"><input type="checkbox" required><span><b>Email me launch updates</b><small>See the <a href="#privacy"><u>privacy note</u></a>.</small></span></label>
+      <button class="sf-btn sf-btn--primary sf-btn--block">Join the list</button>
+    </form>
+  </section>
+
+  <section class="sec" id="faq">
+    <h2 class="h2">Questions</h2>
+    <div class="sf-accordion faq">
+      <details><summary>Are bookings live?</summary><div class="body">Not yet. Join the list and we’ll email you when they are.</div></details>
+      <details><summary>Who confirms my booking?</summary><div class="body">The venue will. You’ll get your pass once they do.</div></details>
+      <details><summary>What will it cost?</summary><div class="body">We haven’t decided pricing or fees yet. We’ll share them before bookings open.</div></details>
+      <details><summary>Can I use the tools without an account?</summary><div class="body">Yes. Party Planner and Find My Drink are free and don’t need a login.</div></details>
+      <details><summary>Does Socifer sell alcohol or show stock?</summary><div class="body">No. We don’t sell or deliver alcohol, and we don’t know what shops have in stock.</div></details>
+      <details><summary>Who is Socifer for?</summary><div class="body">Adults in Jaipur going out with friends, drinking or not. Please drink responsibly and never drink and drive.</div></details>
+    </div>
+  </section>
+
+  <section class="privacy" id="privacy">
+    <h3 class="h3" style="font-size:18px">Privacy</h3>
+    <p class="muted" style="font-size:14px;line-height:20px;margin:8px 0 0">We store your email, selected interests, drinks preference, Jaipur selection and consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="wm">socifer</span>
+    <nav class="flinks" aria-label="Footer"><a href="#tools">Plan a party</a><a href="#tools">Find a drink</a><a href="#faq">FAQ</a><a href="#venues">For venues</a><a href="#privacy">Privacy</a><a href="#">Responsible use</a></nav>
+    <div class="legal">For adults. Drink responsibly and never drink and drive.<br>Stock imagery; not listed Jaipur venues.</div>
+  </div>
+</footer>
+<div class="proto-note">Prototype · stand-in photo</div>
+
+<script>
+  const btn = document.querySelector('.menu-btn'), menu = document.getElementById('menu');
+  const setMenu = (open) => { btn.setAttribute('aria-expanded', open); open ? menu.setAttribute('data-open', '') : menu.removeAttribute('data-open'); };
+  btn.addEventListener('click', () => setMenu(btn.getAttribute('aria-expanded') !== 'true'));
+  menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { setMenu(false); btn.focus(); } });
+  document.querySelectorAll('.chips .sf-chip').forEach((c) => c.addEventListener('click', () => c.setAttribute('aria-pressed', c.getAttribute('aria-pressed') !== 'true')));
+</script>
+</body>
+</html>

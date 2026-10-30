@@ -38,7 +38,7 @@ async function main() {
   const chooseCategory = async (category, pg = page, tap = false) => {
     const act = loc => tap ? loc.tap() : loc.click()
     if (pg.viewportSize().width >= 1024) await act(categoryButton(category, pg))
-    else { await act(pg.getByRole('button', { name: /^Browse category:/ })); await act(pg.getByRole('dialog', { name: 'Browse categories' }).getByRole('button', { name: category, exact: true })) }
+    else { await act(pg.getByRole('button', { name: /^Browse category:/ })); await act(pg.getByRole('dialog', { name: 'Categories' }).getByRole('button', { name: category, exact: true })) }
   }
   const plan = page.locator('aside[aria-label="Your selected plan"]')
   const basics = page.locator('dialog[aria-labelledby="basics-title"]')
@@ -50,7 +50,7 @@ async function main() {
   const add = p => button(`Add ${p.name} to inventory`)
   const increase = p => line(p).getByRole('button', { name: `Increase ${p.name} packs`, exact: true })
   const review = () => button('Review list').filter({ visible: true })
-  const openMore = async () => { const more = page.locator('details[class*="exportMore"]'); if (!(await more.evaluate(node => node.open))) await more.locator('summary').click() }
+  const openMore = async () => {} // copy, print and start over are always visible since R4
   const inViewport = el => el.evaluate(node => { const r = node.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight })
   async function screenshots(name) {
     for (const width of [1440, 768, 390, 320]) {
@@ -76,8 +76,8 @@ async function main() {
   assert.equal(await basics.isVisible(), false, 'the Guests & budget dialog no longer auto-opens')
   await page.getByRole('heading', { name: 'Set your party' }).waitFor()
   await page.locator('#setup-guests').fill('12'); await page.locator('#setup-budget').fill('5000.25')
-  await button('Choose drinks myself').click()
-  await page.getByRole('heading', { name: 'Build your list.' }).waitFor()
+  await page.getByLabel('Choose drinks myself').check(); await button('Continue').click()
+  await page.getByRole('heading', { name: 'Build your list' }).waitFor()
   assert.ok(await review().isDisabled(), 'an empty list blocks review')
   await chooseCategory('Beer'); assert.equal(await categoryButton('Beer').getAttribute('aria-current'), 'true')
   await chooseCategory(other.category)
@@ -161,7 +161,7 @@ async function main() {
     await filters.getByRole('group', { name: 'Brand', exact: true }).getByRole('button').first().click(); await closeFilters()
     await otherShelf.getByRole('button', { name: 'Clear all filters', exact: true }).click() // the other category's own scope
     await search.fill('no such drink')
-    await otherShelf.getByRole('button', { name: 'Reset filters', exact: true }).click()
+    await otherShelf.getByRole('button', { name: 'Clear filters', exact: true }).click()
     assert.equal(await search.inputValue(), '')
     await chooseCategory('Beer')
     await openFilters()
@@ -184,7 +184,7 @@ async function main() {
       await page.screenshot({ path: path.join(output, 'filter-empty-320.png'), fullPage: true })
       await page.setViewportSize({ width, height: 844 })
     }
-    await shelf.getByRole('button', { name: 'Reset filters', exact: true }).click()
+    await shelf.getByRole('button', { name: 'Clear filters', exact: true }).click()
     await expectMatches(beer)
     assert.equal(await search.inputValue(), '')
     // Search alone also exposes clear-all; reset is not tied to a selected chip.
@@ -242,8 +242,8 @@ async function main() {
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight))
   assert.ok(await inViewport(review()), 'Review stays reachable after a deep scroll')
   await review().click()
-  await page.getByRole('heading', { name: 'Ready for the shops.' }).waitFor()
-  assert.ok(await page.getByRole('heading', { name: 'Ready for the shops.' }).evaluate(el => el === document.activeElement))
+  await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
+  assert.ok(await page.getByRole('heading', { name: 'Ready for the shops' }).evaluate(el => el === document.activeElement))
   await screenshots('final')
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight))
   await openMore()
@@ -274,7 +274,7 @@ async function main() {
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight))
   assert.ok(await inViewport(trigger), 'the plan bar stays reachable after a deep scroll')
   await trigger.click(); await drawer.getByRole('button', { name: 'Review list', exact: true }).click()
-  await page.getByRole('heading', { name: 'Ready for the shops.' }).waitFor()
+  await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
   await page.evaluate(() => { window.print = () => { window.__printed = true }; Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { window.__copied = text } } }); Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.__shared = data.text } }) })
   await openMore(); await button('Copy list').click(); await button('Share list').click(); await button('Print / Save as PDF').click()
   for (const p of [b0, b1, other]) assert.ok(await page.evaluate(name => window.__copied.includes(name) && window.__shared.includes(name), p.name))
@@ -282,7 +282,7 @@ async function main() {
 
   // Budget-aware shelf: remaining/per-guest line, affordability tiers, escape hatch, within-budget chip.
   await page.setViewportSize({ width: 1440, height: 900 })
-  await button('Edit list').click(); await page.getByRole('heading', { name: 'Build your list.' }).waitFor()
+  await button('Edit list').click(); await page.getByRole('heading', { name: 'Build your list' }).waitFor()
   await line(other).getByRole('button', { name: `Remove ${other.name}`, exact: true }).click()
   await quantity(b0).fill('1'); await quantity(b1).fill('1')
   const subtotal0 = b0.pricePaise + b1.pricePaise
@@ -290,7 +290,7 @@ async function main() {
   await page.getByRole('button', { name: 'Edit guests and budget', exact: true }).click(); await basics.waitFor({ state: 'visible' })
   await basics.getByLabel(/^Guests/).fill('12')
   await page.screenshot({ path: path.join(output, 'budget-dialog-1440.png'), fullPage: false })
-  await basics.getByLabel('Drinks budget (INR)').fill(String(budgetPaise0 / 100))
+  await basics.getByLabel('Drinks budget').fill(String(budgetPaise0 / 100))
   await basics.getByRole('button', { name: 'Save changes', exact: true }).click(); await basics.waitFor({ state: 'hidden' })
   const rem0 = budgetPaise0 - subtotal0
   const lineQuantity = { [b0.id]: 1, [b1.id]: 1 }
@@ -352,7 +352,7 @@ async function main() {
   await touch.getByRole('checkbox').tap(); await touch.getByRole('button', { name: 'Continue to planner', exact: true }).tap()
   await touch.getByRole('heading', { name: 'Set your party' }).waitFor()
   await touch.locator('#setup-guests').fill('4'); await touch.locator('#setup-budget').fill('1000')
-  await touch.getByRole('button', { name: 'Choose drinks myself', exact: true }).tap()
+  await touch.getByLabel('Choose drinks myself').check(); await touch.getByRole('button', { name: 'Continue', exact: true }).tap()
   await touch.getByRole('heading', { name: 'Set your party' }).waitFor({ state: 'detached' })
   // Touch: pick the category from the Browse category dialog (below 1024px).
   await chooseCategory('Beer', touch, true)
@@ -364,7 +364,7 @@ async function main() {
   await touchDrawer.getByRole('button', { name: `Increase ${b0.name} packs`, exact: true }).tap()
   assert.equal(await touchDrawer.getByLabel(`${b0.name} pack quantity`, { exact: true }).inputValue(), '2')
   await touch.screenshot({ path: path.join(output, 'touch-drawer-390.png'), fullPage: true })
-  await touchDrawer.getByRole('button', { name: 'Review list', exact: true }).tap(); await touch.getByRole('heading', { name: 'Ready for the shops.' }).waitFor()
+  await touchDrawer.getByRole('button', { name: 'Review list', exact: true }).tap(); await touch.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
   await mobile.close()
   fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify({ result: 'PASS', pageErrors: errors, widths: [1440, 768, 390, 320], curl: 200, flows: 'siblings/mixed/repeat/invalid/bounds/removal/undo/native-drag/foreign-drop/keyboard/touch/dialog-focus/deep-scroll/export' }, null, 2))
   console.log('PASS: inventory mixed/sibling arithmetic, bounds/invalid raw values, keyboard/native drag/foreign drop, item removal with undo, responsive screens, deep-scroll Review, touch drawer and exports; curl 200')

@@ -1,0 +1,104 @@
+/* Socifer (Pre-Party) — generated from tokens.json. Themes: landing (default), tools, tools-dark. */
+:root,[data-theme="landing"]{
+  --bg: #140a17;
+  --surface: #1f1224;
+  --surface-raised: #2b1a31;
+  --line: #3a2541;
+  --line-strong: #8e7493;
+  --text: #fff4e8;
+  --text-muted: #cdb9cb;
+  --accent: #ffbf2e;
+  --on-accent: #1a0c1d;
+  --accent-text: #ffc94f;
+  --highlight: #ffbf2e;
+  --on-highlight: #1a0c1d;
+  --highlight-quiet: #3b2b14;
+  --city: #f5a3c0;
+  --on-city: #1a0c1d;
+  --bar: #2b1a31;
+  --on-bar: #fff4e8;
+  --on-bar-muted: #cdb9cb;
+  --scrim: #140a17d9;
+  --success: #8fe0c0;
+  --warning: #ffd98a;
+  --error: #ff8a78;
+  --focus: #fff4e8;
+  --shadow-sheet: 0 -12px 40px rgba(0,0,0,0.55);
+  --shadow-dialog: 0 24px 64px rgba(0,0,0,0.6);
+}
+[data-theme="tools"]{
+  --bg: #fff8ee;
+  --surface: #ffffff;
+  --surface-raised: #f7ecdc;
+  --line: #eadcc8;
+  --line-strong: #8b7686;
+  --text: #1f1023;
+  --text-muted: #5e4b61;
+  --accent: #3d1a45;
+  --on-accent: #fff8ee;
+  --accent-text: #6a2c74;
+  --highlight: #ffbf2e;
+  --on-highlight: #1a0c1d;
+  --highlight-quiet: #ffeab5;
+  --city: var(--accent-text);
+  --on-city: var(--on-accent);
+  --bar: #1f1023;
+  --on-bar: #fff4e8;
+  --on-bar-muted: #cdb9cb;
+  --scrim: #1f1023a6;
+  --success: #1d6e55;
+  --warning: #7a5200;
+  --error: #b3261e;
+  --focus: #1f1023;
+  --shadow-sheet: 0 -8px 32px rgba(31,16,35,0.18);
+  --shadow-dialog: 0 16px 48px rgba(31,16,35,0.2);
+}
+[data-theme="tools-dark"]{
+  --bg: #170e1a;
+  --surface: #22152a;
+  --surface-raised: #2e1f35;
+  --line: #3d2a45;
+  --line-strong: #8e7493;
+  --text: #fff4e8;
+  --text-muted: #cdb9cb;
+  --accent: #ffbf2e;
+  --on-accent: #1a0c1d;
+  --accent-text: #ffc94f;
+  --highlight: #ffbf2e;
+  --on-highlight: #1a0c1d;
+  --highlight-quiet: #3b2b14;
+  --city: var(--accent-text);
+  --on-city: var(--on-accent);
+  --bar: #2e1f35;
+  --on-bar: #fff4e8;
+  --on-bar-muted: #cdb9cb;
+  --scrim: #170e1ad9;
+  --success: #8fe0c0;
+  --warning: #ffd98a;
+  --error: #ff8a78;
+  --focus: #fff4e8;
+  --shadow-sheet: 0 -12px 40px rgba(0,0,0,0.5);
+  --shadow-dialog: 0 24px 64px rgba(0,0,0,0.55);
+}
+:root{
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 40px;
+  --space-7: 64px;
+  --space-8: 96px;
+  --space-9: 160px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+  --target-min: 44px;
+  --target-primary: 52px;
+  --content-max: 1200px;
+  --tool-max: 1120px;
+  --summary-bar-h: 76px;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-text: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+}

@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import EarlyAccessForm from './early-access/form'
 import MobileMenu from './mobile-menu'
+import { bricolage, manrope } from './fonts'
 import styles from './home.module.css'
 
 const PARTNER_EMAIL = 'partners@socifer.com'
@@ -14,126 +14,107 @@ const navLinks = [
   ['/find-my-drink', 'Find a drink'],
 ] as const
 
-const values = [
-  ['Venue-confirmed entry', 'Each booking is meant to be confirmed by the club, so you know before you go.'],
-  ['Price shown upfront', 'You should see what a night costs before you commit.'],
-  ['A digital pass', 'Your pass is meant to live on your phone, ready at the door.'],
-  ['No calls or DMs', 'Planned to replace the back-and-forth with one place to book.'],
-]
-
+// Each step carries one of the four planned benefits. Copy describes the plan, under a "How it'll work" heading.
 const steps = [
-  ['Pick a night', 'Browse upcoming nights at Jaipur clubs.'],
-  ['Choose tickets', 'Select how many tickets you need for your group.'],
-  ['Pay', 'Pay online to confirm your tickets.'],
-  ['Get your pass', 'Show your pass at the door.'],
-]
-
-const tools = [
-  {
-    title: 'Party Planner',
-    copy: 'Build a drinks list for a private party and estimate the cost in ₹.',
-    href: '/party-planner',
-    label: 'Open Party Planner',
-    image: '/images/nightlife/club-crowd.jpg',
-    imageAlt: 'A crowd gathered under nightclub lights',
-  },
-  {
-    title: 'Find My Drink',
-    copy: 'Browse cocktail and mocktail recipes by ingredient, type or spirit.',
-    href: '/find-my-drink',
-    label: 'Browse recipes',
-    image: '/images/nightlife/cocktail.jpg',
-    imageAlt: 'A red cocktail on a table in a dark bar',
-  },
+  ['Pick a night', 'See what’s on in Jaipur this week.'],
+  ['Choose tickets', 'The price is shown upfront.'],
+  ['Pay', 'The venue confirms it.'],
+  ['Show your pass', 'It’s on your phone. No calls or DMs.'],
 ]
 
 export default function Home() {
   return (
-    <div className={styles.home}>
+    <div className={`${styles.home} sf ${bricolage.variable} ${manrope.variable}`} data-theme="landing">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className={styles.header} id="top">
-        <a className={styles.wordmark} href="#top" aria-label="Socifer home">Socifer</a>
-        <nav className={styles.desktopNav} aria-label="Main navigation">
-          {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
-          <a className={styles.navCta} href="#early-access">Get launch updates</a>
-        </nav>
-        <MobileMenu className={styles.mobileMenu}>
-          {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
-          <a href="#early-access">Get launch updates</a>
-        </MobileMenu>
+        <div className={`${styles.wrap} ${styles.headerRow}`}>
+          <a className={styles.wordmark} href="#top" aria-label="Socifer home">socifer</a>
+          <nav className={styles.desktopNav} aria-label="Main navigation">
+            {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
+          </nav>
+          <a className={`sf-btn sf-btn--primary ${styles.navCta}`} href="#early-access">Get launch updates</a>
+          <MobileMenu className={styles.mobileMenu}>
+            {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
+            <a className="sf-btn sf-btn--primary" href="#early-access">Get launch updates</a>
+          </MobileMenu>
+        </div>
       </header>
 
-      <main id="main" tabIndex={-1}>
+      <main id="main" tabIndex={-1} className={styles.wrap}>
         <section className={styles.hero} aria-labelledby="hero-title">
-          <picture>
-            <source media="(max-width: 700px)" type="image/avif" srcSet="/images/nightlife/hero-night-mobile-800.avif" />
-            <source media="(max-width: 700px)" type="image/webp" srcSet="/images/nightlife/hero-night-mobile-800.webp" />
-            <source type="image/avif" srcSet="/images/nightlife/hero-night-desktop.avif" />
-            <img className={styles.heroImage} src="/images/nightlife/hero-night-desktop.webp" alt="A silhouetted crowd with raised hands in front of a stage lit in magenta and violet, with sparks rising" width={2400} height={1600} fetchPriority="high" decoding="async" />
-          </picture>
-          <div className={styles.heroShade} aria-hidden="true" />
           <div className={styles.heroCopy}>
-            <p className={styles.script}>Jaipur, after dark</p>
-            <h1 id="hero-title">Book the night.</h1>
-            <p className={styles.heroLead}>Club bookings in Jaipur are launching soon. We&apos;re not taking bookings yet. Join the launch list and we&apos;ll tell you as soon as they open.</p>
-            <div className={styles.actions}>
-              <a className={styles.primaryButton} href="#early-access">Get launch updates</a>
-              <a className={styles.secondaryButton} href="#how-it-works">How it works</a>
+            <span className="sf-sticker">Coming soon</span>
+            <h1 id="hero-title" className={styles.h1}>Jaipur nights,{' '}<br />booked.</h1>
+            <p className={styles.lede}>Book clubs and tables, pay upfront, walk in with a pass. <b>We’re not taking bookings yet.</b></p>
+            <div className={styles.cta}>
+              <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
+              <a className={`sf-btn sf-btn--secondary ${styles.secondary}`} href="#how-it-works">How it works</a>
+            </div>
+          </div>
+          <div>
+            <div className={styles.arch}>
+              <picture>
+                <source type="image/avif" srcSet="/images/nightlife/hero-night-mobile-800.avif 800w, /images/nightlife/hero-night-mobile.avif 1200w" sizes="(max-width: 767px) 100vw, (max-width: 1023px) 340px, 420px" />
+                <source type="image/webp" srcSet="/images/nightlife/hero-night-mobile-800.webp 800w, /images/nightlife/hero-night-mobile.webp 1200w" sizes="(max-width: 767px) 100vw, (max-width: 1023px) 340px, 420px" />
+                <img src="/images/nightlife/hero-night-mobile-800.webp" alt="" width={800} height={1200} fetchPriority="high" decoding="async" />
+              </picture>
+            </div>
+            <p className={styles.credit}>Stock imagery; not listed Jaipur venues</p>
+          </div>
+        </section>
+
+        <section className={styles.section} id="how-it-works" aria-labelledby="how-title">
+          <h2 id="how-title" className={styles.h2}>How it’ll work</h2>
+          <ol className={styles.steps}>{steps.map(([title, copy], index) => <li key={title}><b className={styles.stepNumber} aria-hidden="true">{index + 1}</b><h3 className={styles.h3}>{title}</h3><p>{copy}</p></li>)}</ol>
+        </section>
+
+        <section className={styles.section} id="tools" aria-labelledby="tools-title">
+          <h2 id="tools-title" className={styles.h2}>Free tools, no sign-up</h2>
+          <div className={styles.tools}>
+            <a className={`${styles.tool} ${styles.toolYellow}`} href="/party-planner"><div><h3>Party Planner</h3><p>Work out the drinks and the cost for a house party.</p></div><span className={styles.go}>Plan a party <span aria-hidden="true">→</span></span></a>
+            <a className={`${styles.tool} ${styles.toolPlum}`} href="/find-my-drink"><div><h3>Find My Drink</h3><p>50 cocktails and mocktails you can make at home.</p></div><span className={styles.go}>Find a drink <span aria-hidden="true">→</span></span></a>
+          </div>
+        </section>
+
+        <section className={styles.section} id="for-venues" aria-labelledby="venues-title">
+          <div className={styles.venue}>
+            <div><h2 id="venues-title" className={styles.h2}>Run a club in Jaipur?</h2><p className={styles.venueLine}>Partner with us.</p></div>
+            <div className={styles.venueActions}>
+              <a className={`${styles.venueButton} ${styles.venueSolid}`} href={`mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent('Venue partnership')}`}>Email {PARTNER_EMAIL}</a>
+              {PARTNER_WHATSAPP && <a className={`${styles.venueButton} ${styles.venueOutline}`} href={`https://wa.me/${PARTNER_WHATSAPP}`}>WhatsApp</a>}
             </div>
           </div>
         </section>
 
-        <section className={styles.section} aria-labelledby="why-title">
-          <div className={styles.intro}><p className={styles.eyebrow}>Why Socifer</p><h2 id="why-title">Going out, without the chasing.</h2><p>This is what we&apos;re building. None of it is live yet.</p></div>
-          <ul className={styles.valueGrid}>{values.map(([title, copy]) => <li key={title}><h3>{title}</h3><p>{copy}</p></li>)}</ul>
+        <section className={`${styles.section} ${styles.join}`} id="early-access" aria-labelledby="early-title">
+          <div><h2 id="early-title" className={styles.h2}>Get launch updates</h2><p className={`${styles.lede} ${styles.joinLede}`}>One email when bookings open in Jaipur.</p></div>
+          <div className={styles.card}><EarlyAccessForm /></div>
         </section>
 
-        <section className={`${styles.section} ${styles.raised}`} id="how-it-works" aria-labelledby="booking-title">
-          <div className={styles.intro}><p className={styles.eyebrow}>Coming soon</p><h2 id="booking-title">How booking will work.</h2><p>Ticket booking isn&apos;t live yet. This is the plan for launch, and details may change.</p></div>
-          <ol className={styles.steps}>{steps.map(([title, copy], index) => <li key={title}><b aria-hidden="true">0{index + 1}</b><div><h3>{title}</h3><p>{copy}</p></div></li>)}</ol>
-        </section>
-
-        <section className={`${styles.section} ${styles.venues}`} id="for-venues" aria-labelledby="venues-title">
-          <div><p className={styles.eyebrow}>For venues</p><h2 id="venues-title">Run a club in Jaipur? Partner with us.</h2><p>We&apos;re talking to Jaipur clubs ahead of launch. Get in touch to hear how Socifer could work with your venue.</p></div>
-          <div className={styles.venueActions}>
-            <a className={styles.primaryButton} href={`mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent('Venue partnership')}`}>Email {PARTNER_EMAIL}</a>
-            {PARTNER_WHATSAPP && <a className={styles.secondaryButton} href={`https://wa.me/${PARTNER_WHATSAPP}`}>WhatsApp us</a>}
+        <section className={styles.section} id="faq" aria-labelledby="faq-title">
+          <h2 id="faq-title" className={styles.h2}>Questions</h2>
+          <div className={`sf-accordion ${styles.faq}`}>
+            <details><summary>Are bookings live?</summary><div className="body">Not yet. Join the list and we’ll email you when they are.</div></details>
+            <details><summary>Who confirms my booking?</summary><div className="body">The venue will. You’ll get your pass once they do.</div></details>
+            <details><summary>What will it cost?</summary><div className="body">We haven’t decided pricing or fees yet. We’ll share them before bookings open.</div></details>
+            <details><summary>Can I use the tools without an account?</summary><div className="body">Yes. Party Planner and Find My Drink are free and don’t need a login. Your plan stays on this device.</div></details>
+            <details><summary>Does Socifer sell alcohol?</summary><div className="body">No. We don’t sell or deliver alcohol, and we can’t tell you which shops carry what.</div></details>
+            <details id="responsible-use"><summary>Who is Socifer for?</summary><div className="body">Adults in Jaipur going out with friends, drinking or not. If you drink, follow local eligibility laws, drink responsibly and never drink and drive.</div></details>
           </div>
         </section>
 
-        <p className={styles.divider} aria-hidden="true">Jaipur nights</p>
-
-        <section className={styles.section} aria-labelledby="tools-title">
-          <div className={styles.intro}><p className={styles.eyebrow}>Available now</p><h2 id="tools-title">Plan the pre-party.</h2><p>Two free tools to use while clubs come on board.</p></div>
-          <div className={styles.toolGrid}>{tools.map(tool => <article className={styles.tool} key={tool.title}>
-            <div className={styles.toolImage}><Image src={tool.image} alt={tool.imageAlt} fill sizes="(max-width: 700px) 100vw, 50vw" /></div>
-            <div className={styles.toolBody}><h3>{tool.title}</h3><p>{tool.copy}</p><a href={tool.href}>{tool.label} <span aria-hidden="true">→</span></a></div>
-          </article>)}</div>
+        <section className={styles.privacy} id="privacy" aria-labelledby="privacy-title">
+          <h2 id="privacy-title" className={styles.h3}>Privacy</h2>
+          <p>We store your email, selected interests, drinks preference, Jaipur selection and consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
         </section>
-
-        <section className={`${styles.section} ${styles.reserve}`} id="early-access" aria-labelledby="early-title">
-          <div className={styles.reserveCopy}><p className={styles.eyebrow}>Launch updates</p><h2 id="early-title">Want to be first in?</h2><p>Join the Jaipur launch list for Socifer updates and early news. Bookings aren&apos;t open yet, so there&apos;s nothing to reserve today.</p></div>
-          <div className={styles.reservePanel}><EarlyAccessForm /></div>
-        </section>
-
-        <section className={`${styles.section} ${styles.faq}`} id="faq" aria-labelledby="faq-title">
-          <p className={styles.eyebrow}>FAQ</p><h2 id="faq-title">Good to know.</h2>
-          <details><summary>Are club bookings live?</summary><p>No. Club bookings are coming soon. You can join the launch list for updates.</p></details>
-          <details><summary>Who will confirm a booking?</summary><p>The plan is for the club to confirm each booking. We&apos;ll share the details when bookings open.</p></details>
-          <details><summary>What will it cost?</summary><p>Pricing and any fees haven&apos;t been decided yet. We&apos;ll publish them before bookings open.</p></details>
-          <details><summary>Can I use the tools as a guest?</summary><p>Yes. Both tools have a quick age check, and no account is needed. Your party plan is kept on this device only.</p></details>
-          <details><summary>Does Socifer sell alcohol or show live stock?</summary><p>No. Party Planner estimates costs from its catalogue; it does not show store stock. Socifer does not sell or deliver alcohol.</p></details>
-          <details id="responsible-use"><summary>Who is Socifer for, and what does responsible use mean?</summary><p>Socifer is for adults. There is room for everyone&apos;s choice, including not drinking. If you choose alcohol, follow local eligibility laws, drink responsibly and never drink and drive.</p></details>
-        </section>
-
-        <section className={`${styles.section} ${styles.privacy}`} id="privacy" aria-labelledby="privacy-title"><h2 id="privacy-title">Early-access privacy</h2><p>We store your email, selected interests, drinks preference, Jaipur selection and consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p></section>
       </main>
 
       <footer className={styles.footer}>
-        <a className={styles.wordmark} href="#top">Socifer</a>
-        <nav aria-label="Footer navigation"><a href="/party-planner">Party Planner</a><a href="/find-my-drink">Find My Drink</a><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
-        <p>© Socifer · Jaipur. For adults. Drink responsibly and never drink and drive.</p>
-        <p className={styles.photoCredit}>Stock imagery; not listed Jaipur venues. Photos: <a href="https://www.pexels.com/photo/1190298/">Wendy Wei / Pexels</a> · <a href="https://www.pexels.com/photo/people-dancing-inside-dim-room-2114365/">Jerome Govender / Pexels</a> · <a href="https://www.pexels.com/photo/glass-of-red-cocktail-on-a-wooden-table-in-a-darkly-lit-bar-17541202/">Thu Huynh / Pexels</a></p>
+        <div className={styles.wrap}>
+          <a className={styles.wordmark} href="#top" aria-label="Socifer, back to top">socifer</a>
+          <nav aria-label="Footer navigation"><a href="/party-planner">Plan a party</a><a href="/find-my-drink">Find a drink</a><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
+          <p>For adults. Drink responsibly and never drink and drive.<br />Stock imagery; not listed Jaipur venues. Photo: <a href="https://www.pexels.com/photo/1190298/">Wendy Wei / Pexels</a>.</p>
+        </div>
       </footer>
     </div>
   )

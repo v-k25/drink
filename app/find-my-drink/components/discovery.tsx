@@ -26,11 +26,11 @@ export default function Discovery({ pool, initial, pageRows, returnTo, query }: 
       if (Array.isArray(stored)) for (const id of stored) if (typeof id === 'string') seen.current.add(id)
     } catch { /* Session continues if browser storage is blocked. */ }
     const ids = pickRecipeIds(pool.map(row => row.id), seen.current)
-    if (!ids.length) { setMessage('All matching recipes shown'); return }
+    if (!ids.length) { setMessage('That’s every match.'); return }
     ids.forEach(id => seen.current.add(id))
     setChoices(ids.map(id => pool.find(row => row.id === id)!))
     setPicked(true)
-    setMessage(seen.current.size >= pool.length ? 'All matching recipes shown' : `${ids.length} fresh ${ids.length === 1 ? 'choice' : 'choices'} from your matches`)
+    setMessage(seen.current.size >= pool.length ? 'That’s every match.' : `${ids.length} new ${ids.length === 1 ? 'pick' : 'picks'} from your matches.`)
     try { sessionStorage.setItem(sessionKey, JSON.stringify([...seen.current])) } catch { }
   }
   const chosen = new Set(choices.map(row => row.id))
@@ -39,20 +39,20 @@ export default function Discovery({ pool, initial, pageRows, returnTo, query }: 
   const choiceReturn = `${choiceUrl.pathname}${choiceUrl.search}`
   const browse = [...pageRows, ...initial].filter(row => !chosen.has(row.id))
   function reason(row: RecipeRow): string {
-    if (query) return row.name.toLowerCase().includes(query.toLowerCase()) ? `Name matches “${query}”` : `Ingredients include “${query}”`
-    return row.preparationMethod ? `Recorded method: ${row.preparationMethod}` : `${row.ingredients.length} listed ingredients`
+    if (query) return row.name.toLowerCase().includes(query.toLowerCase()) ? `Name matches “${query}”` : `Has “${query}”`
+    return ''
   }
   return <div className={styles.discovery}>
     {choices.length > 0 && <section aria-labelledby="choices-title">
       <div className={styles.sectionHeading}>
-        <h2 id="choices-title">A few good choices<span className={styles.srOnly}> — a place to start</span></h2>
+        <h2 id="choices-title">A few good choices</h2>
         {ready && <button type="button" className={styles.pickButton} onClick={pick}><ShuffleIcon />Pick for me</button>}
       </div>
-      <p className={`${styles.pickStatus} ${styles.srOnly}`} role="status">{message || 'Selected from your current matches. Check the recipe quantities and equipment.'}</p>
-      <div className={styles.choiceGrid}>{choices.map(row => <RecipeCard key={row.id} row={row} reason={reason(row)} returnTo={choiceReturn} asHeading />)}</div>
+      <p className={`${styles.pickStatus} ${styles.srOnly}`} role="status">{message || 'Picked from your current matches.'}</p>
+      <div className={styles.choiceGrid}>{choices.map(row => <RecipeCard key={row.id} row={row} reason={reason(row) || undefined} returnTo={choiceReturn} asHeading />)}</div>
     </section>}
     {browse.length > 0 && <section id="all-matches" aria-labelledby="all-title">
-      <div className={styles.sectionHeading}><h2 id="all-title">Browse all matches</h2></div>
+      <div className={styles.sectionHeading}><h2 id="all-title">All matches</h2></div>
       <div className={styles.productGrid}>{browse.map(row => <RecipeCard key={row.id} row={row} returnTo={returnTo} asHeading />)}</div>
     </section>}
   </div>

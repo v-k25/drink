@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react'
 import { submitEarlyAccess, type EarlyAccessState } from './actions'
+import styles from './form.module.css'
 
 const interests = [
   ['find-my-sip', 'Finding my drink'],
@@ -22,48 +23,64 @@ export default function EarlyAccessForm() {
       return { status: 'error' }
     }
   }, { status: 'idle' })
+  const errors = state.fieldErrors
 
   return (
-    <div className="access-form-wrap">
+    <div className={styles.wrap}>
       <div role="status" aria-live="polite" aria-atomic="true">
-        {state.status === 'success' && <p className="form-message success">You&apos;re on the list. We&apos;ll be in touch when Socifer is ready for Jaipur.</p>}
-        {state.status === 'duplicate' && <p className="form-message">That email is already on the list.</p>}
-        {state.status === 'invalid' && <p className="form-message error">Please check the highlighted fields below.</p>}
-        {state.status === 'error' && <p className="form-message error">We couldn&apos;t save that just now. Your entries are still here. Please try again.</p>}
+        {state.status === 'success' && (
+          <div className={styles.done}>
+            <span className={styles.tick} aria-hidden="true">✓</span>
+            <h3>You&apos;re on the list</h3>
+            <p>We&apos;ll email {email ? <b>{email}</b> : 'you'} when bookings open.</p>
+          </div>
+        )}
+        {state.status === 'duplicate' && <div className={styles.note}><b>You&apos;re already on the list</b>{email ? <>We have <span className={styles.address}>{email}</span>. Nothing else to do.</> : 'Nothing else to do.'}</div>}
+        {state.status === 'invalid' && <div className={`${styles.note} ${styles.noteError}`}><b><span aria-hidden="true">! </span>Check the fields marked below</b></div>}
+        {state.status === 'error' && <div className={`${styles.note} ${styles.noteError}`}><b><span aria-hidden="true">! </span>That didn&apos;t go through</b>Your details are still here. Try again.</div>}
       </div>
       {state.status !== 'success' && (
-        <form action={action} onReset={event => event.preventDefault()} className="access-form" aria-busy={pending}>
-          <label htmlFor="email">Email address</label>
-          <input id="email" name="email" type="email" autoComplete="email" value={email} onChange={e => setEmail(e.target.value)} required aria-invalid={Boolean(state.fieldErrors?.email)} aria-describedby={state.fieldErrors?.email ? 'email-error' : undefined} />
-          {state.fieldErrors?.email && <p id="email-error" className="error">{state.fieldErrors.email}</p>}
-          <fieldset aria-describedby={state.fieldErrors?.interests ? 'interests-error' : undefined}>
-            <legend>What are you interested in? <span className="optional">(optional)</span></legend>
-            {interests.map(([value, label]) => (
-              <label className="check-label" key={value}>
-                <input type="checkbox" name="interests" value={value} checked={selected.includes(value)} onChange={e => setSelected(e.target.checked ? [...selected, value] : selected.filter(item => item !== value))} />
-                {label}
-              </label>
-            ))}
-            {state.fieldErrors?.interests && <p id="interests-error" className="error">{state.fieldErrors.interests}</p>}
+        <form action={action} onReset={event => event.preventDefault()} className={styles.form} aria-busy={pending}>
+          <div className={`sf-field${errors?.email ? ' sf-field--error' : ''}`}>
+            <label htmlFor="email">Email</label>
+            <input id="email" className="sf-input" name="email" type="email" autoComplete="email" placeholder="name@example.com" value={email} onChange={e => setEmail(e.target.value)} required aria-invalid={Boolean(errors?.email)} aria-describedby={errors?.email ? 'email-error' : undefined} />
+            {errors?.email && <p id="email-error" className={styles.error}><span aria-hidden="true">!</span>{errors.email}</p>}
+          </div>
+          <fieldset className="sf-fieldset" aria-describedby={errors?.interests ? 'interests-error' : undefined}>
+            <legend>Interested in <span className={styles.optional}>(optional)</span></legend>
+            <div className={styles.chips}>
+              {interests.map(([value, label]) => (
+                <label className={styles.chip} key={value}>
+                  <input type="checkbox" name="interests" value={value} checked={selected.includes(value)} onChange={e => setSelected(e.target.checked ? [...selected, value] : selected.filter(item => item !== value))} />
+                  {label}
+                </label>
+              ))}
+            </div>
+            {errors?.interests && <p id="interests-error" className={styles.error}><span aria-hidden="true">!</span>{errors.interests}</p>}
           </fieldset>
-          <label htmlFor="preference">Drinks preference <span className="optional">(optional)</span></label>
-          <select id="preference" name="preference" value={preference} onChange={e => setPreference(e.target.value)}>
-            <option value="undecided">I&apos;m undecided</option><option value="alcoholic">Alcoholic</option>
-            <option value="zero">Non-alcoholic</option><option value="both">Both</option>
-          </select>
-          <label className="check-label">
-            <input type="checkbox" name="interests" value="jaipur" required checked={jaipur} onChange={e => setJaipur(e.target.checked)} />
-            I&apos;m joining early access for Jaipur.
-          </label>
-          <label className="check-label">
-            <input type="checkbox" name="consent" required checked={consent} onChange={e => setConsent(e.target.checked)} aria-invalid={Boolean(state.fieldErrors?.consent)} aria-describedby="consent-note consent-error" />
-            I agree to receive Socifer early-access and launch updates by email.
-          </label>
-          <p id="consent-note" className="fine-print">See how your signup information is used in our <a href="#privacy">early-access privacy information</a>.</p>
-          <p id="consent-error" className="error">{state.fieldErrors?.consent}</p>
+          <div className="sf-field">
+            <label htmlFor="preference">Drinks</label>
+            <select id="preference" className="sf-select" name="preference" value={preference} onChange={e => setPreference(e.target.value)}>
+              <option value="undecided">Undecided</option><option value="alcoholic">Alcoholic</option>
+              <option value="zero">Non-alcoholic</option><option value="both">Both</option>
+            </select>
+          </div>
+          <div className={styles.choices}>
+            <label className="sf-choice">
+              <input type="checkbox" name="interests" value="jaipur" required checked={jaipur} onChange={e => setJaipur(e.target.checked)} />
+              <span><b>I&apos;m joining early access for Jaipur</b></span>
+            </label>
+            <label className={`sf-choice${errors?.consent ? ` ${styles.invalid}` : ''}`}>
+              <input type="checkbox" name="consent" required checked={consent} onChange={e => setConsent(e.target.checked)} aria-invalid={Boolean(errors?.consent)} aria-describedby={errors?.consent ? 'consent-note consent-error' : 'consent-note'} />
+              <span><b>I agree to receive Socifer early-access and launch updates by email.</b><small id="consent-note">See the <a href="#privacy">privacy note</a>.</small></span>
+            </label>
+            {errors?.consent && <p id="consent-error" className={styles.error}><span aria-hidden="true">!</span>{errors.consent}</p>}
+          </div>
           <input name="company" tabIndex={-1} autoComplete="off" className="honeypot" aria-hidden="true" />
           <input type="hidden" name="cta_source" value="homepage" />
-          <button className="button" type="submit" disabled={pending}>{pending ? 'Joining…' : 'Join early access'}</button>
+          <button className={`sf-btn sf-btn--primary sf-btn--block ${styles.submit}`} type="submit" disabled={pending} aria-busy={pending}>
+            {pending ? <><span className="sf-spinner" aria-hidden="true" />Joining</> : state.status === 'error' ? 'Try again' : 'Join the list'}
+          </button>
         </form>
       )}
     </div>

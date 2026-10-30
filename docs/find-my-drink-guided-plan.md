@@ -32,12 +32,9 @@ Owner request: 2026-10-14. Implement strength filtering as soon as reviewed data
 - **Acceptance:** never silently relax a selected base or strength; explain an empty match and let users change their choices. Recipes with unknown strength are excluded from a specific strength filter and remain available under Any without a strength claim. In mixed mode, strength affects only the alcoholic section. Keep the type-only Surprise me shortcut. Preserve strength selections when editing answers or returning from a recipe.
 - **Verification before release:** check classification boundaries, missing/invalid/stale data, combined base and strength filtering, mixed-mode isolation, empty states and return navigation; run the required build, standalone TypeScript and production UI checks. Do not show a working-looking strength control before the data is ready.
 
-## Pegpedia data acquisition follow-up — 2026-10-14
+## Pegpedia dropped — 2026-10-30
 
-See [Pegpedia import plan](pegpedia-import-plan.md) for the owner-requested catalogue acquisition and comparison. Public product data can provide bottle identity, category, brand, size and some bottle ABVs. Store nationwide facts separately from Jaipur-priced Planner rows, with links and provenance. All source records need validation before recommendation use. This work does not by itself supply recipe ABV, mood/occasion mappings, taste scores, ingredient quantities or non-alcoholic recipe coverage; existing editorial recipe reviews remain necessary. Do not enable the deferred strength UI merely because bottle ABV has been imported. UI implementation follows a separate approved checkpoint after the data report.
-
-
-Acquisition result (2026-10-15): 13,951 unique source product IDs; 767 have bottle ABV (5.5%). Conservative matching found 413 exact Planner links, only 18 with ABV. Another 193 records are ambiguous and 3 have category conflicts; 13,342 have no conservative match and require review before being called new. Product-specific Jaipur prices have not been checked. Records are prepared locally with pending_review status; new-table approval and remote import remain pending. See [data report](pegpedia-import-report.md).
+The owner dropped the Pegpedia catalogue import: its data lacked the taste, occasion and finished-drink strength information Find My Drink needs. No table was ever created. The import plan, report and scripts were removed from the repo; they remain in git history (commit f3bae48).
 
 ## Checkpoints
 

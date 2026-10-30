@@ -61,7 +61,7 @@ Implemented + acceptance criteria met + verification passed + no known blockers 
 
 ## Scope and design
 
-Follow `docs/socifer-product-plan.md` section 3 ("Jaipur After Dark"): dark booking-first landing page, dark warm-gold Tool Night surfaces, Nunito Sans, WCAG 2.2 AA. Do not implement design changes ahead of their approved checkpoint.
+Follow the Pre-Party design approved on 2026-10-30. The plan and checkpoints (R1–R6) are in `docs/pre-party-redesign-plan.md`, and the handoff files (tokens, component CSS, landing prototype) are in `docs/design/pre-party/`. This supersedes section 3 ("Jaipur After Dark") of `docs/socifer-product-plan.md`. In brief: Bricolage Grotesque + Manrope; plum and marigold; a dark landing page and light tools (dark under `prefers-color-scheme: dark`); minimal, plain copy; WCAG 2.2 AA. Do not implement design changes ahead of their checkpoint.
 
 ## Graphify
 

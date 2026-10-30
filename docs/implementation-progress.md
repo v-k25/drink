@@ -1,5 +1,33 @@
 # Implementation progress
 
+### Pre-Party R6 regression and copy pass, 2026-10-30
+
+**Done (not committed, waiting for owner approval).** All six checkpoints are built.
+- **Changed:** `app/globals.css` (dead landing, hero, planner, steps, button, form, FAQ and footer rules deleted; kept the reset, base type, unthemed focus ring, `.skip-link` and `.honeypot` that the 404 and both shells use), `app/home.module.css` (footer links 44px wide: the FAQ link was 30px), `scripts/design-polish-check`, `brewlist-tools-style-check`, `recipe-guided-browser-check`, `recipe-pantry-browser-check` (stale strings: "More options", "Refine matches", "Over budget by ₹350.00", "Missing Campari: ...", "Uses your selected ingredients...", "All required ingredients selected", "This is the only eligible recipe...", "Browse and filter all published recipes", "Search the ingredient checklist", "Browser storage is unavailable.").
+- **Untouched:** `app/early-access/actions.ts`, Planner logic, recipe data, URL parameters, package and lock files, tokens.
+- **Fonts:** left per page. The 404 and any unthemed page use Arial, so moving Bricolage and Manrope into the layout would preload them for pages that do not use them.
+- **Scripts:** every `scripts/*.cjs` passes `node --check`. I also checked every string and `[class*=]` / `.class` selector the `*-check.cjs` scripts use against the app source and stylesheets. The remaining mismatches are fixtures or dynamic names. Playwright is not installed, so none were run.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder`, `/robots.txt` 200; `/nope` 404.
+- Browser pane: `/` at 1440, 1024, 768, 390, 360, 320; Find My Drink entry at the same six; Browse all at 1440, 768, 390, 320; a recipe page at 1440, 390, 320; Party Planner at 1440, 390, 320. Every page, every width, and again with root text at 200%: no horizontal overflow. No control under 44px except inline text links in sentences. The one real miss was the landing footer FAQ link (30px), fixed and re-measured at 44px.
+- Rendered text contrast scan (every text node against its own background, 4.5:1, 3:1 for large text) on the Planner, Browse all and recipe page in light and dark, the landing page in light and dark, and cook mode: no failures. Text over the hero photo is not scanned (image background).
+- Keyboard: Escape closes the Planner filters sheet, the category sheet (focus returns to the trigger) and cook mode (focus returns to Start making). R2 to R5 covered the menu, dialogs and the Find My Drink filters sheet.
+- Reduced motion: `ui.css` zeroes animations under `.sf`, the landing root and both tool roots carry `sf`, and the landing hover is inside `no-preference`. Checked in the CSS, not emulated.
+- Copy: grep of all app source for slogans, exclamation marks, "order", "in stock", "MRP", "near you" and pressure to drink. Only error "!" prefixes and one FAQ sentence (below) turned up.
+
+**Not run.** The Playwright scripts, Lighthouse mobile (the pane has no Lighthouse; not run), real devices, screen readers, real print preview (R4 checked the print CSS on screen; the recipe page print rules exist in `finder.module.css` but were not previewed), a JavaScript-off browser, the age check at each width (the eligibility cookie is httpOnly and could not be cleared in the pane; R3 covered it), and the unavailable states.
+
+**Found, not fixed.**
+- **Favicon** (`app/icon.svg`) is still the old berry-pink tile (#a92355). The tools are not pink and the design has no favicon spec. Needs a design decision. `design-polish-check` still asserts that colour.
+- **404** is Next's default page on the unthemed body (Arial on cream), with the layout title.
+- **FAQ wording.** "Does Socifer sell alcohol or show stock? ... we don’t know what shops have in stock." uses "in stock" as a disclaimer, which the writing rules discourage. Suggest "which shops carry what"; it is the owner's copy call.
+- **Age check needs JavaScript** (carried from R3).
+- `club-crowd.jpg` and `cocktail.jpg` are unused (R2 note); not deleted.
+
+**Next.** Owner approval, then commit R6. Phase 1 backlog (B11 bookings) is separate.
+
 ### Pre-Party R5 Find My Drink, 2026-10-30
 
 **Done (not committed, waiting for owner approval).** Find My Drink is on the Pre-Party tokens and primitives. Decisions and deviations are in `docs/pre-party-redesign-plan.md` (R5 status).

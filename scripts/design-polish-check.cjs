@@ -104,7 +104,6 @@ async function main() {
   const originalReceipt = await receipt.innerText()
   for (const width of [1440, 768, 390, 320]) { await page.setViewportSize({ width, height: 900 }); await fits(page); await shot(page, `guest-list-${width}`) }
   await page.evaluate(() => { window.print = () => { window.__printed = true }; Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { window.__copied = text } } }); Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.__shared = data.text } }) })
-  await page.getByText('More options', { exact: true }).click() // copy, print and start-over live in this disclosure
   await page.getByRole('button', { name: 'Copy list', exact: true }).click()
   await page.getByRole('button', { name: 'Share list', exact: true }).click()
   await page.getByRole('button', { name: 'Print / Save as PDF', exact: true }).click()

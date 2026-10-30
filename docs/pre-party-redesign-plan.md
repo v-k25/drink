@@ -1,6 +1,6 @@
 # Pre-Party redesign: implementation plan
 
-Status: **design approved by the owner, 2026-10-30. R1–R5 built; R6 pending.**
+Status: **design approved by the owner, 2026-10-30. All checkpoints (R1–R6) built, waiting for the owner to approve R6.**
 
 ## What this replaces
 
@@ -99,6 +99,12 @@ This is a restyle and copy pass, not new backend work.
   - **States.** Unavailable is "Recipes are temporarily unavailable / Check your connection, then try again." with a Try again button. Skeleton bones use the Planner's sweep, static under reduced motion.
   - **Copy changed from the boards, on purpose.** (1) No "Both" in Surprise me, and no Continue button in Guide me (choosing a type moves on, as before): both would change the guided contract. (2) Browse all keeps the "A few good choices" / Pick for me section above "All matches" because it is existing behaviour; the board shows only the grid. (3) Filters stay links that apply at once, not the board's Apply form (they already work without JavaScript). (4) Browse all has no page numbers: results use cursor paging, so "Next recipes (N more)" stays. (5) Use what I have stays a panel on Browse all, not its own page, and shows no "Other matches" group because the matcher has none. (6) The entry has no recipe grid under the cards. (7) Card facts show the stored method word as it is ("Build", "Shake"), not "Shaken". (8) The note under a mocktail section still says it is not a 0.0% claim, and the beer, champagne and "not in ingredient matching yet" notes are kept.
   - **Not done / not checked.** The unavailable and nothing-published states were checked as markup and CSS only (they need the catalogue read to fail). The Playwright scripts were updated for the new strings and pass `node --check`, but have not been run.
+- **R6: done, 2026-10-30** (not committed). Regression and copy pass; details and findings are in `docs/implementation-progress.md`.
+  - `globals.css` is cut to the reset, base type, the unthemed focus ring, `.skip-link` and `.honeypot`; the old landing, hero, planner, steps, button, form, FAQ and footer rules are gone.
+  - Fonts stay per page: the 404 and unthemed pages do not use them, so moving them into the layout would load them everywhere.
+  - Four harness scripts had stale strings and were fixed; all scripts pass `node --check`. None could be run (Playwright is not installed).
+  - Pass at 1440 to 320 and 200% text: no overflow; one 30px footer link (FAQ) fixed. Contrast scan clean in light and dark.
+  - Lighthouse mobile was not run (the pane does not offer it). Open: favicon colour, default 404, one "in stock" disclaimer in the FAQ.
 
 Not built in this pass: the launch state (Upcoming nights, Book a table) and the booking flow. Both are designed and wait for Phase 1 (B11).
 

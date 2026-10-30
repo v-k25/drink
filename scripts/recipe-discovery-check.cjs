@@ -62,7 +62,7 @@ async function main() {
       await page.setViewportSize({ width, height: 900 })
       await page.goto(`${origin}/find-my-drink?mode=browse`)
       await page.getByRole('button', { name: 'Pick for me', exact: true }).waitFor()
-      assert.equal(await page.getByRole('heading', { name: 'What sounds good?' }).count(), 1)
+      assert.equal(await page.getByRole('heading', { name: /^All \d+ recipes$/ }).count(), 1)
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `listing overflow ${width}`)
       const cards = await page.locator('article').evaluateAll(articles => articles.map(article => article.id))
       assert.equal(new Set(cards).size, cards.length, 'no duplicated initial recommendation or full-browse cards')
@@ -76,18 +76,18 @@ async function main() {
       await settlePhotos()
       await page.screenshot({ path: `${evidence}/listing-${width}.png`, fullPage: true, animations: 'disabled' })
       await page.screenshot({ path: `${evidence}/listing-viewport-${width}.png`, animations: 'disabled' })
-      // <=800px: a Filters button opens the "Refine matches" dialog; wider: facets sit inline in the aside.
+      // <=800px: a Filters button opens the "Filters" dialog; wider: facets sit inline in the aside.
       const filterLinks = width <= 800 ? page.locator('dialog[open] a') : page.locator('aside[aria-label="Recipe refinement"] a:visible')
       if (width <= 800) {
         await page.getByRole('button', { name: /^Filters/ }).click()
-        await page.getByRole('heading', { name: 'Refine matches' }).waitFor()
+        await page.getByRole('heading', { name: 'Filters', exact: true }).waitFor()
       }
       assert.ok(await filterLinks.count() > 0, `filter links visible at ${width}`)
       for (const element of await filterLinks.all()) {
         const box = await element.boundingBox()
         assert.ok(box && box.height >= 43.5, `expanded filter targets are at least 44px at ${width}`)
       }
-      if (width <= 800) await page.getByRole('button', { name: 'Done', exact: true }).click()
+      if (width <= 800) await page.getByRole('button', { name: /^Show \d+ recipes?$/ }).click()
       await page.goto(`${origin}/find-my-drink/mm-roy-rogers-drink`)
       await page.getByRole('button', { name: 'Start making', exact: true }).waitFor()
       await page.locator('a[href="#ingredients"]').click()
@@ -115,7 +115,7 @@ async function main() {
     const laterPick = pickedIds.find(id => !firstPageIds.includes(id))
     assert.ok(laterPick, 'the picker genuinely selected an eligible recipe beyond page one')
     await page.locator(`#recipe-${laterPick} a`).click()
-    await page.getByRole('link', { name: 'Back to recipes' }).click()
+    await page.getByRole('link', { name: 'Back to results' }).click()
     await page.waitForURL(url => url.pathname === '/find-my-drink')
     await page.locator(`#recipe-${laterPick}`).waitFor()
     assert.ok(page.url().includes('pick='), 'returned choices are represented in the local URL')
@@ -133,17 +133,17 @@ async function main() {
       for (const card of await page.locator('article').all()) assert.ok((await card.innerText()).includes('Mocktail'), 'all suggestions and full results respect mocktail type')
     }
     await page.getByRole('button', { name: 'Pick for me', exact: true }).click()
-    await page.getByRole('status').filter({ hasText: 'All matching recipes shown' }).waitFor()
+    await page.getByRole('status').filter({ hasText: 'That’s every match.' }).waitFor()
     await page.reload()
     await page.getByRole('button', { name: 'Pick for me', exact: true }).click()
-    await page.getByRole('status').filter({ hasText: 'All matching recipes shown' }).waitFor()
+    await page.getByRole('status').filter({ hasText: 'That’s every match.' }).waitFor()
 
     await page.goto(`${origin}/find-my-drink?mode=browse&drink=cocktail&q=cranberry&method=build&max=3&pick=negroni,unknown`)
     await page.getByRole('button', { name: 'Pick for me', exact: true }).waitFor()
     for (const card of await page.locator('article').all()) assert.ok((await card.innerText()).includes('Cocktail'))
     assert.ok(!(await page.locator('main').innerText()).includes('Negroni'))
     await page.locator('article a').first().click()
-    await page.getByRole('link', { name: 'Back to recipes' }).click()
+    await page.getByRole('link', { name: 'Back to results' }).click()
     await page.waitForURL(url => url.pathname === '/find-my-drink')
     for (const [key, value] of [['drink', 'cocktail'], ['q', 'cranberry'], ['method', 'build'], ['max', '3']]) assert.equal(new URL(page.url()).searchParams.get(key), value)
     await page.goto(`${origin}/find-my-drink?mode=browse&q=no-such-drink`)

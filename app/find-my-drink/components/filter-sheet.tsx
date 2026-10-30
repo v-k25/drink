@@ -7,7 +7,7 @@ import styles from '../finder.module.css'
 
 function PendingLinkStatus() {
   const { pending } = useLinkStatus()
-  return <span className={`${styles.pendingLinkStatus} ${styles.srOnly}`} role="status" aria-live="polite">{pending ? 'Updating recipe matches…' : ''}</span>
+  return <span className={`${styles.pendingLinkStatus} ${styles.srOnly}`} role="status" aria-live="polite">{pending ? 'Updating…' : ''}</span>
 }
 
 export function FilterChoice({ href, children, className, current = false }: { href: string; children: React.ReactNode; className: string; current?: boolean }) {
@@ -26,6 +26,7 @@ export default function FilterSheet({ children, count, resultCount }: { children
   const [ready, setReady] = useState(false)
   const [open, setOpen] = useState(false)
   const dialog = useRef<HTMLDialogElement>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
   useEffect(() => setReady(true), [])
   useEffect(() => {
     const node = dialog.current
@@ -33,13 +34,12 @@ export default function FilterSheet({ children, count, resultCount }: { children
     if (open && !node.open) node.showModal()
     if (!open && node.open) node.close()
   }, [open])
-  if (!ready) return <details className={styles.filterFallback}><summary>Refine matches{count ? ' (' + count + ')' : ''}</summary>{children}<p className={styles.filterCount} role="status" aria-live="polite">{resultCount} matching {resultCount === 1 ? 'recipe' : 'recipes'}</p><FilterChoice className={styles.resetFilters} href="/find-my-drink">Reset all filters</FilterChoice></details>
+  if (!ready) return <details className={styles.filterFallback}><summary>Filters{count ? ' · ' + count : ''}</summary>{children}<p className={styles.filterCount} role="status" aria-live="polite">{resultCount} {resultCount === 1 ? 'recipe' : 'recipes'}</p><FilterChoice className={styles.resetFilters} href="/find-my-drink?mode=browse">Clear all</FilterChoice></details>
   return <>
-    <button type="button" className={styles.mobileFilters} aria-haspopup="dialog" aria-expanded={open} aria-controls="finder-filter-dialog" onClick={() => setOpen(true)}>{<FilterIcon />}Filters{count ? ' (' + count + ')' : ''}</button>
-    <dialog ref={dialog} className={styles.filterDialog} id="finder-filter-dialog" aria-labelledby="filter-sheet-title" onClose={() => setOpen(false)} onKeyDown={keepTabInside}>
-      <div className={styles.dialogHeading}><h2 id="filter-sheet-title">Refine matches</h2><button type="button" className={styles.secondary} onClick={() => setOpen(false)}>Close</button></div>
-      <p className={styles.filterCount} role="status" aria-live="polite">{resultCount} matching {resultCount === 1 ? 'recipe' : 'recipes'}</p>{children}<FilterChoice className={styles.resetFilters} href="/find-my-drink">Reset all filters</FilterChoice>
-      <button type="button" className={styles.primary} onClick={() => setOpen(false)}>Done</button>
+    <button type="button" ref={trigger} className={styles.mobileFilters} aria-haspopup="dialog" aria-expanded={open} aria-controls="finder-filter-dialog" onClick={() => setOpen(true)}>{<FilterIcon />}Filters{count ? ' · ' + count : ''}</button>
+    <dialog ref={dialog} className={styles.filterDialog} id="finder-filter-dialog" aria-labelledby="filter-sheet-title" onClose={() => { setOpen(false); trigger.current?.focus() }} onKeyDown={keepTabInside}>
+      <div className={styles.dialogHeading}><h2 id="filter-sheet-title">Filters</h2><button type="button" className={styles.dialogClose} aria-label="Close filters" onClick={() => setOpen(false)}><span aria-hidden="true">✕</span></button></div>
+      {children}<div className={styles.dialogActions}><FilterChoice className={styles.resetFilters} href="/find-my-drink?mode=browse">Clear all</FilterChoice><button type="button" className={styles.primary} onClick={() => setOpen(false)}>Show {resultCount} {resultCount === 1 ? 'recipe' : 'recipes'}</button></div><p className={styles.srOnly} role="status" aria-live="polite">{resultCount} {resultCount === 1 ? 'recipe' : 'recipes'}</p>
     </dialog>
   </>
 }

@@ -46,7 +46,7 @@ async function main() {
       assert.ok(!body.includes('Original quantities are kept for every ingredient'), 'the prior below-section note wording must be replaced')
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `overflow at ${width}`)
       await page.getByRole('checkbox').first().check()
-      await page.getByRole('status').filter({ hasText: '1 of 3 ingredients gathered' }).waitFor()
+      await page.getByRole('status').filter({ hasText: '1 of 3 gathered' }).waitFor()
       await page.getByRole('button', { name: 'Start making', exact: true }).click()
       await page.getByText('Step 1 of 3', { exact: true }).waitFor()
       await page.getByRole('button', { name: 'Next', exact: true }).click()

@@ -1,5 +1,25 @@
 # Implementation progress
 
+### Pre-Party R5 Find My Drink, 2026-10-30
+
+**Done (not committed, waiting for owner approval).** Find My Drink is on the Pre-Party tokens and primitives. Decisions and deviations are in `docs/pre-party-redesign-plan.md` (R5 status).
+- **Changed:** `app/find-my-drink/finder.module.css` (rewritten on the token names), `components/guided.tsx` (entry route cards, stage bar, choice cards, results, edit sheet, Surprise me), `browse.tsx`, `filter-sheet.tsx`, `discovery.tsx`, `pantry.tsx`, `recipe-card.tsx` (type tag, facts), `detail.tsx`, `making.tsx`, `cook-view.tsx` (✕ close), `states.tsx`, `icons.tsx`. Filters sheet now returns focus to its button on close.
+- **Removed:** `app/tool-theme.module.css` (no tool uses it any more).
+- **Untouched:** `app/early-access/actions.ts`, `discovery.ts`, `queries.ts`, `pantry.ts`, `metric.ts`, `recipe.ts`, URL parameters, recipe data, the Planner, package and lock files.
+- **Scripts updated, not run** (Playwright is not installed): `brewlist-tools-style-check`, `recipe-detail-check`, `recipe-discovery-check`, `recipe-guided-browser-check`, `recipe-pantry-browser-check`. New headings and labels (All n recipes, Filters, Show n recipes, Show drinks, Apply, Pick for me, Back to results, "That’s every match."). All pass `node --check`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`) against the live catalogue (read only, no writes): entry, Browse all, recipe page and cook mode work.
+- Browser pane: no horizontal overflow (clientWidth equals scrollWidth) and no control under 44px on Browse all at 1440, 1024, 768, 390, 360 and 320, each also at 200% root text; Guide me (type, taste, results, edit sheet), Surprise me, the filters sheet, the recipe page and cook mode at 320 and 390 with and without 200% text. Escape closes the filters sheet and cook mode; focus returns to the Filters button and to Start making. Cancel returns focus to Edit preferences. Light and dark (`prefers-color-scheme`) seen on entry, results, filters sheet and cook mode (cook mode stays plum in light). Use what I have opens from `#use-what-i-have` and lists matches.
+- Browse all without JavaScript: the server-rendered HTML (fetched with the eligibility cookie) has the h1, a GET search form, the Filters `<details>` with 14 facet links, recipe links and "Next recipes (23 more)". A real JavaScript-off browser run was not possible in the pane.
+
+**Not run.** The Playwright scripts, Lighthouse, real devices, screen readers, the unavailable and nothing-published states (markup and CSS only), print preview of the recipe page.
+
+**Found, not fixed.** None new.
+
+**Next.** R6: regression and copy pass (waits for approval of R5).
+
 ### Pre-Party R4 Party Planner, 2026-10-30
 
 **Done (not committed, waiting for owner approval).** The Party Planner content is on the Pre-Party tokens and primitives. Decisions and deviations are in `docs/pre-party-redesign-plan.md` (R4 status).

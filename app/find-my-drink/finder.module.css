@@ -1,698 +1,341 @@
-.shell { composes: toolTheme from "../tool-theme.module.css"; }
-.shell { --cream: var(--tool-raised); --plum: var(--tool-text); --berry: var(--tool-accent); --ink: var(--tool-text); --line: var(--tool-line); --muted: var(--tool-muted); min-height: 100vh; background-color: var(--tool-night); color: var(--ink); font-family: var(--font-text); font-size: 1rem; line-height: 1.55; }
-.intro { max-width: 1288px; margin: auto; padding: 42px max(24px, calc((100% - 1240px) / 2)) 22px; }
-.intro h1 { font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 800; line-height: 1.1; margin: 0; letter-spacing: -.02em; }
-.introLine { margin: 6px 0 0; color: var(--muted); font-size: .95rem; }
-.eyebrow { color: var(--berry); text-transform: uppercase; letter-spacing: .16em; font-size: .76rem; font-weight: 800; margin-bottom: 8px; }
-.card { max-width: 1116px; margin: 0 auto 60px; background: var(--tool-surface); border: 1px solid var(--line); border-radius: 6px; padding: clamp(22px, 4vw, 42px); }
-.card h2 { font-size: clamp(1.5rem, 3vw, 1.9rem); font-weight: 800; line-height: 1.1; letter-spacing: -.02em; margin-bottom: 12px; }
-.card h3 { font-size: 1.05rem; margin-bottom: 10px; }
-.card input { width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px; border: 1px solid var(--tool-control); border-radius: 6px; background: var(--tool-raised); color: var(--ink); }
-.card input[type=checkbox] { width: 20px; min-height: 20px; height: 20px; padding: 0; flex-shrink: 0; accent-color: var(--berry); }
-.shell :is(button, input, select, textarea, a):focus-visible { outline: 2px solid var(--tool-accent); outline-offset: 2px; }
-.primary, .secondary, .linkButton { min-height: 44px; cursor: pointer; }
-.primary { display: inline-flex; align-items: center; justify-content: center; padding: 11px 24px; border: 1px solid transparent; border-radius: 4px; background: var(--berry); color: var(--tool-night); font-weight: 700; }
-.primary:hover:not(:disabled) { background: var(--tool-accent-hover); }
-.secondary, .linkButton { border: 0; background: none; color: var(--plum); text-decoration: underline; padding: 10px 12px; }
-.linkButton { padding: 8px 0; flex-shrink: 0; }
-.primary:disabled, .secondary:disabled { cursor: not-allowed; }
-.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 24px; }
-.check { display: flex; align-items: start; gap: 12px; margin: 24px 0; font-weight: 700; }
-.check input { margin-top: 2px; }
-.notice { padding: 14px; margin: 0 0 22px; background: var(--cream); border-left: 3px solid var(--berry); color: var(--ink); overflow-wrap: anywhere; }
-.hint, .disclaimer { color: var(--muted); font-size: .9rem; margin-top: 14px; }
+/* Find My Drink (Pre-Party R5). Plain CSS on the design tokens (app/tokens.css) and the sf- primitives (app/ui.css).
+   The root carries data-theme="tools" (light, dark under prefers-color-scheme: dark); print always resolves to the light theme.
+   Text sizes and line heights are rem so a 200% text setting scales them; widths, borders and tap targets stay in px.
+   Old global rules (footer, section[id] scroll margin, button:disabled opacity, heading colour) are overridden here. */
 
-/* Listing: search */
-.browseCard { display: grid; gap: 16px; }
-.searchForm { display: grid; gap: 8px; }
-.searchRow { display: flex; gap: 10px; align-items: stretch; }
-.searchRow input { flex: 1; }
-.searchRow .primary { flex-shrink: 0; }
-
-/* Listing: filter chips (links, fully server-rendered) */
-.stripRow { display: flex; gap: 12px; align-items: baseline; }
-.stripRow .categoryStrip { flex: 1; min-width: 0; }
-.chipLabel { font-size: .78rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--plum); flex-shrink: 0; }
-.categoryStrip { display: flex; gap: 8px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; scrollbar-width: thin; }
-.filter, .filterActive { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid var(--tool-control); border-radius: 12px; background: var(--cream); color: var(--plum); white-space: nowrap; flex-shrink: 0; cursor: pointer; font-size: .85rem; text-decoration: none; }
-.filterActive { background: var(--plum); color: var(--tool-night); border-color: var(--plum); }
-
-/* Listing: status, empty states, rails, grid */
-.statusLine { min-height: 44px; margin: 0; display: flex; align-items: center; font-size: .88rem; color: var(--plum); }
-.emptySlot { border: 1px dashed var(--line); padding: 24px 16px; margin: 4px 0; border-radius: 6px; }
-.emptySlot p { margin: 0 0 8px; }
-.emptySlot .filter { display: inline-flex; }
-.rail { margin-top: 8px; }
-.railRow { display: flex; gap: 12px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 6px; scrollbar-width: thin; }
-.railRow .product { flex-shrink: 0; width: 200px; }
-.productGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 8px; }
-.product { display: grid; align-content: start; gap: 10px; min-width: 0; text-align: left; padding: 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--tool-surface); color: var(--ink); overflow-wrap: anywhere; }
-.productLink { display: grid; align-content: start; gap: 10px; color: inherit; text-decoration: none; }
-.productLink > img { margin: auto; height: 112px; width: 100%; object-fit: contain; }
-.productLink span { font-size: .875rem; color: var(--muted); }
-
-/* Detail */
-.detailBody { max-width: 1116px; margin: 0 auto; padding: 18px 32px 24px; }
-/* Detail hero: a reserved aspect-ratio box so any stored original image or the
-   hand-authored fallback renders without layout shift; contain keeps every
-   image fully visible inside the well. */
-.heroImage { display: block; width: 100%; max-width: 640px; height: auto; aspect-ratio: 3 / 2; object-fit: contain; background: var(--tool-surface); border: 1px solid var(--line); border-radius: 6px; margin-bottom: 18px; }
-.backLink { display: inline-flex; align-items: center; min-height: 44px; color: var(--plum); text-decoration: underline; }
-.titleBlock { margin: 8px 0 26px; }
-.titleBlock h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); overflow-wrap: anywhere; }
-.typeLine { margin-top: 8px; font-weight: 700; color: var(--plum); }
-.abvLine { margin-top: 6px; font-size: .9rem; color: var(--muted); }
-.description { margin-top: 12px; max-width: 720px; overflow-wrap: anywhere; }
-.metaLine { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: .9rem; color: var(--muted); }
-.unknownLine { margin-top: 10px; color: var(--muted); font-size: .9rem; }
-.sectionCard { margin-bottom: 24px; }
-.making { display: grid; gap: 26px; }
-.makingBlock { display: grid; gap: 8px; min-width: 0; }
-.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-.checkItem label { display: flex; align-items: start; gap: 12px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--tool-surface); cursor: pointer; overflow-wrap: anywhere; }
-.checkItem input { margin-top: 3px; }
-.checkItem label:has(input:checked) { background: var(--tool-selected); border-color: var(--berry); }
-.progressLine { min-height: 24px; font-size: .85rem; color: var(--plum); font-weight: 700; }
-.stepsList { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
-.stepsList li { overflow-wrap: anywhere; }
-.stepStage { border: 1px solid var(--line); border-radius: 6px; padding: 20px 16px; background: var(--tool-surface); }
-.stepStage:focus { outline: none; }
-.stepCounter { font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: var(--berry); }
-.stepText { margin-top: 10px; font-size: 1.15rem; line-height: 1.45; overflow-wrap: anywhere; }
-.stepNav { display: flex; gap: 10px; margin-top: 12px; }
-
-/* Provenance + related */
-.provenance { max-width: 720px; }
-.provenanceList { margin: 8px 0 0; display: grid; gap: 10px; }
-.provenanceList div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 12px; }
-.provenanceList dt { font-weight: 700; color: var(--plum); }
-.provenanceList dd { margin: 0; overflow-wrap: anywhere; }
-.provenanceList a { color: var(--plum); text-decoration: underline; }
-.related { margin-top: 8px; }
-.relatedGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 8px; }
-
-/* Inline making-mode controls share the bar styling.
-   Bottom-anchored bar on mobile, inline controls at the end of the making card
-   on desktop. Renders empty before hydration, so nothing falsely interactive
-   appears without JS. */
-.makingBar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 3; display: flex; gap: 10px; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); background: var(--tool-raised); border-top: 1px solid var(--line); }
-.makingBar:empty { display: none; }
-.barButton { display: inline-flex; align-items: center; justify-content: center; flex: 1; min-height: 48px; padding: 12px 16px; border: 1px solid var(--tool-control); border-radius: 999px; background: var(--cream); color: var(--plum); font-weight: 700; cursor: pointer; }
-.barButton[aria-pressed="true"] { background: var(--plum); border-color: var(--plum); color: var(--tool-night); }
-
-@media (max-width: 1180px) { .card { margin-left: 5%; margin-right: 5%; } .detailBody { margin: 0 5%; padding-left: 0; padding-right: 0; } }
-@media (min-width: 651px) { .makingBar { position: static; padding: 0; background: none; border: 0; } .barButton { flex: 0 1 auto; } }
-@media (max-width: 650px) {
-  .intro { padding: 16px 5% 12px; }
-  .card { padding: 22px 18px; }
-  .detailBody { padding: 14px 5% calc(96px + env(safe-area-inset-bottom)); }
-  .productGrid, .relatedGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .railRow .product { width: 180px; }
-  .stripRow { flex-direction: column; gap: 8px; }
-  .provenanceList div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
-}
-@media (max-width: 650px) { .sectionCard .makingBar { position: static; left: auto; right: auto; bottom: auto; padding: 0; background: none; border: 0; } }
-@media (max-width: 380px) { .productGrid, .relatedGrid { grid-template-columns: 1fr; } }
-
-@media (prefers-reduced-motion: no-preference) {
-  .stepStage { animation: recipe-step-fade 200ms ease both; }
-  @keyframes recipe-step-fade {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-}
-
-/* Editorial finder: compact controls, wrapping facets and a photo-led collection. */
-.shell h1, .shell h2, .shell h3 { font-family: inherit; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
-.intro { max-width: 1288px; padding: 42px max(24px, calc((100% - 1240px) / 2)) 28px; }
-.intro h1 { font-size: clamp(2.4rem, 4.5vw, 3.6rem); }
-.intro .eyebrow { margin: 0 0 8px; font-size: .7rem; }
-.browseLayout { max-width: 1200px; margin: auto; padding: 0 32px 48px; display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 32px; align-items: start; }
-.filterPanel { display: grid; gap: 18px; min-width: 0; padding: 22px 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--tool-surface); }
-.typeControl { display: flex; padding: 4px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; background: var(--cream); }
-.typeOption, .typeActive { display: flex; align-items: center; justify-content: center; flex: 1; gap: 3px; min-height: 44px; border-radius: 999px; font-size: .79rem; font-weight: 800; text-decoration: none; }
-.typeOption span, .typeActive span { font-size: .68rem; }
-.typeActive { background: var(--plum); color: var(--tool-night); }
-.fieldLabel { font-size: .85rem; font-weight: 800; }
-.searchRow { gap: 8px; }
-.searchRow input { flex: 1; width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px; border: 1px solid var(--tool-control); border-radius: 6px; background: var(--tool-raised); color: var(--ink); font-size: .875rem; }
-.searchRow .primary { padding: 10px 14px; font-size: .85rem; }
-.moreFilters { border-top: 1px solid var(--line); }
-.moreFilters summary, .sourceContext summary { min-height: 44px; padding: 12px 0; font-size: .85rem; font-weight: 800; cursor: pointer; }
-.facetGroup { padding-top: 16px; }
-.chipLabel { display: block; font-size: .7rem; margin-bottom: 8px; }
-.categoryStrip { gap: 6px; flex-wrap: wrap; overflow: visible; }
-.filter, .filterActive { padding: 8px 12px; border-radius: 999px; font-size: .8rem; white-space: normal; }
-.filterPanel .hint { margin: 0; font-size: .76rem; }
-.facetGroup .hint { margin-top: 10px; }
-.resultsPanel { min-width: 0; }
-.statusLine { min-height: 0; margin: 0 0 20px; font-size: .875rem; color: var(--muted); }
-.discovery { display: grid; gap: 36px; }
-.sectionHeading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.sectionHeading .eyebrow { margin-bottom: 6px; font-size: .65rem; }
-.sectionHeading h2 { font-size: clamp(1.7rem, 3vw, 2.3rem); }
-.pickStatus { font-size: .875rem; color: var(--muted); margin: -6px 0 16px; }
-.choiceGrid, .productGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.product { display: block; min-width: 0; padding: 0; border-radius: 6px; background: var(--tool-surface); overflow: hidden; scroll-margin-top: 24px; }
-.productLink { gap: 7px; height: 100%; padding: 0 14px 16px; }
-.productLink > img { display: block; margin: 0 -14px 8px; width: calc(100% + 28px); height: 170px; object-fit: cover; background: var(--cream); }
-.productLink > img[src$=".svg"] { object-fit: contain; padding: 16px; }
-.productLink strong { font-family: inherit; font-size: 1.3rem; font-weight: 800; line-height: 1.15; color: var(--plum); }
-.productLink span { font-size: .75rem; }
-.productLink .matchReason { border-top: 1px solid var(--line); margin-top: 5px; padding-top: 10px; color: var(--berry); font-weight: 800; }
-.product:focus-within { outline: 2px solid var(--tool-accent); outline-offset: 2px; }
-.secondary { display: inline-flex; align-items: center; }
-.browseDisclaimer { grid-column: 1 / -1; max-width: 800px; color: var(--muted); font-size: .875rem; border-top: 1px solid var(--line); padding-top: 20px; }
-.detailIntro { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 36px; align-items: center; margin-bottom: 28px; }
-.detailJumps { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-.sourceContext { padding: 6px 0 18px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .875rem; }
-.sourceContext p { margin: 8px 0; }
-.sourceContext a { display: inline-flex; align-items: center; min-height: 44px; }
-.heroImage { max-width: 480px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; margin-bottom: 0; }
-.heroImage[src$=".svg"] { object-fit: contain; }
-.titleBlock { margin: 8px 0; }
-.titleBlock h1 { font-size: clamp(2.3rem, 4vw, 3.4rem); }
-.sectionCard { border-radius: 8px; }
-.checkItem label { min-height: 44px; padding: 10px; }
-.makingBlock { scroll-margin-top: 24px; }
-.makingBlock { align-content: start; }
-@media (min-width: 900px) {
-  .making { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 32px; }
-  .makingBar { grid-column: 1 / -1; }
-}
-@media (max-width: 1000px) {
-  .browseLayout { grid-template-columns: 250px minmax(0, 1fr); gap: 22px; }
-  .choiceGrid, .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 800px) {
-  .browseLayout { grid-template-columns: minmax(0, 1fr); gap: 22px; }
-  .filterPanel { padding: 16px; gap: 12px; }
-  .typeControl { max-width: 440px; }
-  .detailIntro { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .heroImage { max-width: 480px; aspect-ratio: 3 / 2; }
-}
-@media (max-width: 650px) {
-  .intro { padding: 22px 5% 20px; }
-  .browseLayout { padding: 0 5% 32px; gap: 22px; }
-  .choiceGrid { grid-template-columns: minmax(0, 1fr); }
-  .choiceGrid .productLink { grid-template-columns: 100px minmax(0, 1fr); column-gap: 14px; padding: 14px; }
-  .choiceGrid .productLink > img { grid-row: 1 / span 4; width: 100px; height: 126px; margin: 0; border-radius: 5px; }
-  .choiceGrid .productLink .matchReason { grid-column: 2; }
-  .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .sectionHeading h2 { font-size: 1.8rem; }
-  .detailIntro { gap: 20px; }
-}
-@media (max-width: 380px) {
-  .productGrid { grid-template-columns: minmax(0, 1fr); }
-  .choiceGrid .productLink { grid-template-columns: 80px minmax(0, 1fr); gap: 7px 10px; }
-  .choiceGrid .productLink > img { width: 80px; height: 110px; }
-}
-
-/* Session ingredient checklist; existing ordinary browsing remains server-rendered. */
-.pantry { margin-bottom: 24px; min-width: 0; }
-.pantryContent { margin-top: 16px; padding: 18px; border: 1px solid var(--line); border-radius: 6px; background: var(--tool-surface); display: grid; gap: 14px; }
-.pantryContent h2 { font-size: 1.8rem; }
-.pantryContent h3 { font-family: inherit; font-size: 1.35rem; font-weight: 800; margin-top: 6px; }
-.pantryContent .hint { margin: 0; }
-.pantryContent .hint a { display: inline-flex; align-items: center; min-height: 44px; }
-.pantrySelected { display: flex; flex-wrap: wrap; gap: 8px; }
-.pantrySearch { width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px; border: 1px solid var(--tool-control); border-radius: 6px; background: var(--tool-raised); color: var(--ink); font-size: .9rem; }
-.pantryChecklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-height: 280px; overflow-y: auto; border: 1px solid var(--line); border-radius: 6px; padding: 6px; gap: 4px 8px; }
-.pantryChecklist label { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px; font-size: .85rem; cursor: pointer; overflow-wrap: anywhere; }
-.pantryChecklist input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--plum); }
-.pantryChecklist label:focus-within { outline: 2px solid var(--berry); outline-offset: -2px; }
-.pantryMatches { display: grid; gap: 10px; }
-.pantryMatch { padding: 12px; border: 1px solid var(--line); border-radius: 6px; scroll-margin-top: 24px; }
-.pantryMatch a { display: flex; align-items: center; min-height: 44px; font-family: inherit; font-size: 1.3rem; font-weight: 800; }
-.pantryMatch p { font-size: .8rem; margin-top: 6px; overflow-wrap: anywhere; }
-.pantryResultStatus { font-size: .8rem; color: var(--plum); }
-@media (max-width: 650px) { .pantryChecklist { grid-template-columns: minmax(0, 1fr); } .pantryContent { padding: 14px; } }
-
-/* Browse-first Finder layout */
-.browseLayout { grid-template-columns: minmax(220px, 260px) minmax(0, 1fr); gap: 24px; }
-.discoveryControls { grid-column: 1 / -1; display: grid; gap: 14px; min-width: 0; }
-.discoveryControls .searchForm { max-width: none; }
-.discoveryControls .searchRow input { font-size: 1rem; }
-.discoveryControls .typeControl { width: fit-content; max-width: 100%; }
-.activeFilters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-height: 44px; }
-.activeFilters .filterActive { min-height: 44px; }
-.resetFilters { display: inline-flex; min-height: 44px; align-items: center; padding: 8px; color: var(--plum); }
-.filterPanel { position: sticky; top: 16px; }
-.filterPanel > .facetContent { display: grid; gap: 8px; }
-.filterFallback, .mobileFilters { display: none; }
-.filterDialog { width: min(560px, calc(100vw - 24px)); max-width: none; max-height: min(88dvh, 760px); margin: auto; padding: 20px; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: var(--tool-surface); overflow: auto; }
-.filterDialog::backdrop { background: var(--tool-backdrop); }
-.dialogHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-.dialogHeading h2 { margin: 0; font-size: 1.5rem; }
-.filterDialog > .primary { margin-top: 14px; width: 100%; }
-.productGrid { grid-template-columns: minmax(0, 1fr); gap: 0; }
-.product { border: 0; border-bottom: 1px solid var(--line); border-radius: 0; overflow: visible; background: transparent; }
-.productLink { display: grid; grid-template-columns: 76px minmax(0,1fr); grid-template-rows: auto auto auto; align-content: center; align-items: center; column-gap: 16px; min-height: 104px; padding: 12px 4px; }
-.productLink > img { grid-row: 1 / span 3; width: 76px; height: 76px; margin: 0; border-radius: 5px; object-fit: cover; }
-.productLink > img[src$=".svg"] { padding: 8px; }
-.productLink strong { font-size: 1.1rem; line-height: 1.25; }
-.productLink span { font-size: .84rem; }
-.productLink .matchReason { grid-column: 2; margin: 0; padding: 0; border: 0; font-weight: 600; }
-.detailIntro { grid-template-columns: minmax(0,1fr); }
-.heroImage { grid-row: 2; max-width: 320px; aspect-ratio: 3/2; object-fit: cover; }
-@media (max-width: 800px) {
-  .browseLayout { grid-template-columns: minmax(0,1fr); gap: 16px; padding-inline: 20px; }
-  .filterPanel { position: static; padding: 0; border: 0; background: transparent; }
-  .filterPanel > .facetContent { display: none; }
-  .filterPanel .filterFallback { display: block; border: 1px solid var(--line); border-radius: 6px; padding: 0 14px; background: var(--tool-surface); }
-  .filterFallback summary { display: flex; align-items: center; min-height: 48px; font-weight: 800; cursor: pointer; }
-  .filterPanel:has(.mobileFilters) .filterFallback { display: none; }
-  .mobileFilters { display: inline-flex; align-items: center; justify-content: center; justify-self: start; min-height: 48px; padding: 10px 18px; border: 1px solid var(--tool-control); border-radius: 6px; background: var(--tool-raised); color: var(--ink); font-weight: 800; cursor: pointer; }
-  .filterDialog .facetContent { display: grid; }
-  .resultsPanel { min-width: 0; }
-  .browseDisclaimer { grid-column: auto; }
-}
-@media (max-width: 650px) {
-  .browseLayout { padding-inline: 5%; }
-  .typeControl { width: 100%; }
-  .typeOption, .typeActive { font-size: .88rem; }
-  .productLink { grid-template-columns: 68px minmax(0,1fr); column-gap: 12px; min-height: 96px; }
-  .productLink > img { width: 68px; height: 68px; }
-  .activeFilters { gap: 6px; }
-}
-@media (max-height: 620px) and (max-width: 800px) { .filterDialog { max-height: 94dvh; } }
-@media (prefers-reduced-motion: reduce) { .stepStage { animation: none; } }
-
-.activeFilters { min-height: 0; }
-.filterPanel { max-height: calc(100vh - 32px); overflow-y: auto; }
-.filterCount { margin: 4px 0 12px; color: var(--muted); }
-@media (max-height: 700px) { .filterPanel { position: static; max-height: none; overflow: visible; } }
-
-.typeOption, .typeActive { min-width: 44px; }
-
-/* Keep labels readable and allow the browse controls to wrap at text zoom. */
-.intro h1 { font-size: clamp(2rem, 3vw, 2.75rem); }
-.typeControl { width: 100%; max-width: 580px; flex-wrap: wrap; justify-content: stretch; border-radius: 8px; }
-.typeOption, .typeActive { flex: 1 1 auto; min-width: max-content; gap: 6px; padding: 8px 14px; white-space: nowrap; }
-.searchRow { min-width: 0; flex-wrap: wrap; }
-.searchRow input { box-sizing: border-box; flex: 1 1 12rem; width: auto; }
-.filterPanel .hint { font-size: .875rem; }
-.filterPanel .filter, .filterPanel .filterActive { font-size: .875rem; }
-.productLink span { font-size: .875rem; }
-@media (max-width: 650px) {
-  .intro { padding-top: 14px; padding-bottom: 10px; }
-  .discovery { gap: 24px; }
-  .sectionHeading { margin-bottom: 10px; }
-  .sectionHeading h2 { font-size: 1.5rem; }
-  .pickStatus { margin-bottom: 10px; }
-}
-
-
-.pendingLinkStatus { margin-left: 6px; color: var(--berry); font-size: .75rem; font-weight: 800; white-space: normal; }
-.filterActive .pendingLinkStatus, .typeActive .pendingLinkStatus { color: var(--tool-night); }
-
-/* Tool Night: shared dark tool theme (tokens in app/tool-theme.module.css). */
-.shell .intro h1 { letter-spacing: .06em; text-transform: uppercase; }
-.shell h1, .shell h2, .shell h3 { color: var(--tool-text); }
-.eyebrow, .intro .eyebrow, .sectionHeading .eyebrow { color: var(--tool-accent); font-size: .8125rem; letter-spacing: .14em; }
-.card, .sectionCard, .filterDialog, .stepStage { border-radius: 8px; }
-.primary { font-weight: 800; color: var(--tool-on-accent); }
-.primary:active:not(:disabled) { background: var(--tool-accent-pressed); }
-.primary:disabled { background: var(--tool-raised); border-color: var(--tool-line); color: var(--tool-control); opacity: 1; }
-.secondary, .linkButton, .backLink, .resetFilters, .sourceContext a, .pantryContent .hint a { color: var(--tool-text); }
-.filter, .filterActive, .typeControl, .typeOption, .typeActive, .mobileFilters, .barButton, .filterPanel .filterFallback { border-radius: 4px; }
-.filter, .mobileFilters, .barButton { background: transparent; border-color: var(--tool-control); color: var(--tool-text); }
-.filterActive, .typeActive, .barButton[aria-pressed="true"] { background: var(--tool-text); border-color: var(--tool-text); color: var(--tool-night); }
-.filterActive .pendingLinkStatus, .typeActive .pendingLinkStatus { color: var(--tool-night); }
-.typeControl { background: var(--tool-surface); border-color: var(--tool-line); }
-.card input:not([type=checkbox]), .searchRow input, .pantrySearch { border-color: var(--tool-control); background: var(--tool-raised); color: var(--tool-text); border-radius: 4px; }
-.shell input::placeholder { color: var(--tool-muted); opacity: 1; }
-.notice { border-left-color: var(--tool-accent); }
-.product, .productLink .matchReason { border-color: var(--tool-line); }
-.productLink strong { color: var(--tool-text); }
-.productLink .matchReason { color: var(--tool-accent); }
-.productLink > img, .heroImage { background: var(--tool-surface); }
-.product:focus-within, .pantryChecklist label:focus-within { outline-color: var(--tool-accent); }
-.error { color: var(--tool-danger); }
-.success { color: var(--tool-success); }
-.detailJumps .filter { font-size: 1rem; font-weight: 700; min-height: 48px; padding: 10px 18px; }
-.detailJumps .primary { min-height: 48px; text-decoration: none; }
-/* Long reading on dark: off-white on near-black, larger type, capped measure. */
-.description, .stepsList { font-size: 1.0625rem; line-height: 1.7; max-width: 65ch; }
-.stepsList { gap: 12px; }
-.stepStage { padding: 28px 24px; }
-.stepCounter { color: var(--tool-accent); }
-.stepText { font-size: clamp(1.375rem, 2.6vw, 1.75rem); line-height: 1.5; max-width: 40ch; }
-.makingBar { flex-wrap: wrap; background: var(--tool-raised); border-color: var(--tool-line); }
-.barButton { flex: 1 1 11rem; min-height: 48px; padding: 10px 16px; }
-@media (min-width: 651px) { .makingBar { background: none; } .barButton { flex: 0 1 auto; } }
-@media (max-width: 650px) { .sectionCard .makingBar { background: none; } }
-@media (prefers-reduced-motion: no-preference) {
-  .primary, .filter, .barButton, .mobileFilters { transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease; }
-  .filter:hover, .mobileFilters:hover, .barButton:not([aria-pressed="true"]):hover { background: var(--tool-raised); }
-  .secondary:hover, .linkButton:hover, .backLink:hover, .resetFilters:hover { color: var(--tool-accent); }
-}
-@media print {
-  .shell { background: white; color: black; }
-  .makingBar, .detailJumps, .filterPanel, .discoveryControls, .stepNav { display: none !important; }
-  .card, .stepStage, .checkItem label { border-color: #cbc5ba; box-shadow: none; }
-}
-
-/* Tool redesign v2 S7: shared tool header, gate card and calm states (same pattern as the Party Planner). */
+.shell { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font-text); font-size: 1rem; line-height: 1.5rem; }
+.shell :is(a, button, input, select, textarea, summary):focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--bg); }
+.shell section[id] { scroll-margin-top: 96px; }
+:global(html):has(.shell) { scroll-padding-top: 96px; }
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-:global(html):has(.shell) { scroll-padding-top: 84px; }
 
+/* Headings. The viewport cap keeps them on screen at a 200% text setting. */
+.shell :is(h1, h2, h3) { margin: 0; font-family: var(--font-display); font-weight: 800; letter-spacing: -.025em; line-height: 1.05; color: inherit; overflow-wrap: anywhere; }
+.shell h1 { font-size: min(clamp(2rem, 1.4rem + 2.4vw, 2.75rem), 11vw); }
+.shell h2 { font-size: min(1.5rem, 9vw); }
+.shell h3 { font-size: 1.125rem; line-height: 1.25; letter-spacing: -.01em; }
+.shell :is(h1, h2, h3):focus { outline: none; }
+.hint, .disclaimer { margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
+.disclaimer { max-width: 64ch; }
+.eyebrow { margin: 0; color: var(--text-muted); font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.lede { margin: 0; color: var(--text-muted); font-size: 1.0625rem; line-height: 1.625rem; }
 
-.stateCard { display: grid; justify-items: center; gap: 8px; max-width: 440px; margin: 32px auto; padding: 32px 16px; text-align: center; border: 0; background: none; }
-.stateCard svg { color: var(--tool-muted); }
-.stateCard p { margin: 0; font-size: 1.0625rem; font-weight: 700; }
-.stateCard .filter { margin-top: 8px; justify-content: center; text-decoration: none; }
-.card:has(> .stateCard) { width: 100%; padding: 0; border: 0; background: none; }
-.stateCard { width: 100%; }
+/* Buttons and chips (same look as the Party Planner). */
+.primary, .secondary, .filter, .filterActive, .resetFilters, .backLink, .moreButton, .pickButton, .mobileFilters, .moreText { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: var(--target-min); border: 1.5px solid transparent; font: 700 0.9375rem/1.25rem var(--font-text); text-decoration: none; cursor: pointer; transition: background-color .16s ease, border-color .16s ease; }
+.primary { min-height: var(--target-primary); padding: 12px 22px; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); }
+.primary:hover:not(:disabled) { filter: brightness(1.06); }
+.secondary, .moreButton, .pickButton, .mobileFilters { padding: 10px 18px; border-radius: var(--radius-md); background: transparent; border-color: var(--line-strong); color: var(--text); }
+.secondary:hover, .moreButton:hover, .pickButton:hover, .mobileFilters:hover { background: var(--surface-raised); }
+.resetFilters, .backLink, .moreText { padding: 0 10px; border-radius: var(--radius-md); background: transparent; color: var(--accent-text); }
+.resetFilters:hover, .backLink:hover, .moreText:hover { background: var(--surface-raised); }
+.backLink { justify-self: start; padding-left: 0; }
+.filter, .filterActive { padding: 0 16px; border-radius: var(--radius-pill); border-color: var(--line-strong); background: transparent; color: var(--text); text-align: left; overflow-wrap: anywhere; }
+.filter:hover { background: var(--surface-raised); }
+.filterActive, .filter[aria-pressed="true"], .filter[aria-current="true"], .filter[aria-current="page"] { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
+.shell button:disabled { cursor: not-allowed; opacity: .45; }
+.pendingLinkStatus { margin-left: 6px; font-size: 0.75rem; font-weight: 700; }
 
-/* Tool redesign v2 S8: listing. Search first, segmented type, one filters control, photo tiles. */
-.listingState { max-width: 1240px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 32px) 48px; }
-.listing { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "filters" "chips" "results" "foot"; gap: 12px; align-items: start; max-width: 1240px; margin: 0 auto; padding: 16px clamp(16px, 3vw, 32px) 48px; }
-.listing .discoveryControls { grid-area: controls; display: grid; gap: 12px; min-width: 0; }
-.listing .filterPanel { grid-area: filters; position: static; display: block; max-height: none; padding: 0; overflow: visible; border: 0; background: transparent; }
-.listing .filterPanel > .facetContent { display: none; }
-.listing .activeFilters { grid-area: chips; position: relative; flex-wrap: nowrap; min-height: 0; overflow-x: auto; padding: 4px; margin: -4px; scrollbar-width: none; }
-.listing .resultsPanel { grid-area: results; min-width: 0; }
-.listing .browseDisclaimer { grid-area: foot; grid-column: auto; max-width: none; margin: 24px 0 0; padding: 0; border: 0; color: var(--tool-muted); font-size: .8125rem; text-align: center; }
-.count { color: var(--tool-muted); font-size: .75rem; font-variant-numeric: tabular-nums; }
-.typeActive .count { color: inherit; }
+/* Notices and states carry a glyph and a word, never colour alone. */
+.notice { display: flex; gap: var(--space-3); align-items: flex-start; margin: 0; padding: 12px 16px; border-radius: var(--radius-md); background: var(--surface-raised); font: 600 0.875rem/1.25rem var(--font-text); overflow-wrap: anywhere; }
+.notice::before { content: "!"; content: "!" / ""; flex: none; color: var(--warning); font-weight: 800; }
+.noticeOk::before { content: "✓"; content: "✓" / ""; color: var(--success); }
+.stateCard { display: grid; justify-items: center; gap: var(--space-2); max-width: 440px; margin: var(--space-6) auto; padding: var(--space-5) 0; text-align: center; }
+.stateGlyph { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-raised); color: var(--warning); font: 800 1.25rem/1 var(--font-text); }
+.stateCard h2 { font-size: min(1.5rem, 9vw); }
+.stateCard p { margin: 0; color: var(--text-muted); }
+.stateCard .filter, .stateCard .primary { margin-top: var(--space-2); }
+.listingState { max-width: 1240px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
+.card { max-width: 1240px; margin: 0 auto; }
 
-.searchForm .searchField { display: flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 6px 0 16px; border-radius: 14px; background: var(--tool-surface); color: var(--tool-muted); }
-.searchForm .searchField:focus-within { box-shadow: 0 0 0 2px var(--tool-accent); }
-.searchForm .searchField input { flex: 1 1 auto; width: auto; min-width: 0; min-height: 48px; padding: 0; border: 0 !important; background: transparent !important; color: var(--tool-text); font-size: 1rem; outline: none !important; }
-.searchSubmit { display: inline-grid; place-items: center; flex: 0 0 auto; width: 44px; height: 44px; border: 0; border-radius: 10px; background: var(--tool-accent); color: var(--tool-on-accent); font-size: 1.25rem; font-weight: 800; cursor: pointer; }
+/* Entry: four routes. */
+.guide { max-width: 1240px; margin: 0 auto; padding: var(--space-5) 16px var(--space-7); }
+.guideBack { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; margin-bottom: var(--space-4); }
+.guideSetup { display: grid; gap: var(--space-4); max-width: 720px; align-content: start; }
+.entry { display: grid; gap: var(--space-4); }
+.routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-3); }
+.route { display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-5); min-height: 150px; padding: var(--space-4); border: 1.5px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); text-align: left; text-decoration: none; font: inherit; cursor: pointer; transition: background-color .16s ease; }
+.route:hover { background: var(--surface-raised); }
+.routeLead, .routeLead:hover { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
+.routeIcon { font: 800 2rem/1 var(--font-display); }
+.route h2 { font-size: min(1.375rem, 8vw); }
+.route p { margin: var(--space-1) 0 0; font-size: 0.9375rem; line-height: 1.3125rem; }
+.route:not(.routeLead) p { color: var(--text-muted); }
+@media (min-width: 1024px) { .routes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); } .route { min-height: 200px; padding: var(--space-5); } }
 
-.listing .typeControl { display: flex; width: 100%; max-width: 440px; padding: 4px; gap: 2px; border: 0; border-radius: 14px; background: var(--tool-surface); }
-.listing .typeOption, .listing .typeActive { flex: 1 1 0; min-width: 0; gap: 6px; padding: 0 12px; border-radius: 10px; color: var(--tool-text); font-size: .9375rem; font-weight: 700; }
-.listing .typeActive { background: var(--tool-accent); color: var(--tool-on-accent); }
-.listing .typeActive .count { color: var(--tool-on-accent); }
-
-.listing .filterActive, .listing .activeFilters .filterActive { flex: 0 0 auto; min-height: 44px; padding: 6px 14px; border: 0; border-radius: 999px; background: var(--tool-selected); color: var(--tool-text); font-size: .875rem; white-space: nowrap; }
-.listing .resetFilters { flex: 0 0 auto; padding: 0 8px; white-space: nowrap; }
-.listing .mobileFilters { min-height: 48px; gap: 8px; padding: 0 18px; border: 0; border-radius: 12px; background: var(--tool-surface); color: var(--tool-text); font-weight: 700; }
-.listing .filterFallback { border: 0; border-radius: 12px; background: var(--tool-surface); }
-.filterDialog { border: 0; border-radius: 20px 20px 0 0; background: var(--tool-sheet); }
-.filterDialog .filter, .filterDialog .filterActive { border: 0; border-radius: 999px; background: var(--tool-raised); color: var(--tool-text); }
-.filterDialog .filterActive { background: var(--tool-accent); color: var(--tool-on-accent); }
-.facetGroup { padding-top: 12px; }
-.facetGroup .chipLabel { margin: 0 0 8px; color: var(--tool-muted); }
-.facetGroup .categoryStrip { flex-wrap: wrap; overflow: visible; }
-
-.listing .resultsPanel .discovery { gap: 32px; }
-.listing .sectionHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 12px; }
-.listing .sectionHeading h2 { margin: 0; font-size: 1.375rem; font-weight: 800; letter-spacing: -.01em; }
-.pickButton { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--tool-surface); color: var(--tool-text); font-weight: 700; cursor: pointer; }
-.pickButton:hover { background: var(--tool-raised); }
-
-.listing .choiceGrid { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px; margin: -4px; scrollbar-width: none; }
-.listing .choiceGrid > .product { scroll-snap-align: start; }
-.listing .productGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; margin: 0; }
-.listing .product { position: relative; display: block; min-width: 0; padding: 0; overflow: visible; border: 0; border-radius: 14px; background: transparent; scroll-margin-top: 80px; }
-.listing .product:has(a:focus-visible) { outline: 2px solid var(--tool-accent); outline-offset: 4px; }
-.listing .product a:focus-visible { outline: none; }
-.listing .productLink { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 2px; min-height: 0; height: auto; padding: 0; align-content: start; align-items: start; }
-.listing .productLink > img { grid-row: auto; display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; margin: 0 0 8px; padding: 0; border-radius: 14px; object-fit: cover; background: var(--tool-surface); }
-.listing .productLink > img[src$=".svg"] { padding: 12px; object-fit: contain; }
-.listing .cardName { margin: 0; font-size: 1rem; font-weight: 700; line-height: 1.3; }
-.listing .cardName a { display: flex; align-items: center; min-height: 44px; color: var(--tool-text); text-decoration: none; }
-.listing .cardName a::after { content: ""; position: absolute; inset: 0; border-radius: 14px; }
-.listing .productLink .cardMeta, .listing .productLink .cardFacts { grid-column: auto; color: var(--tool-muted); font-size: .8125rem; }
-.listing .productLink .matchReason { grid-column: auto; margin: 4px 0 0; padding: 0; border: 0; color: var(--tool-accent); font-size: .6875rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.listing .choiceGrid .cardName { font-size: 1.1875rem; font-weight: 800; }
-.moreButton { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 48px; margin-top: 20px; border-radius: 12px; background: var(--tool-surface); color: var(--tool-text); font-weight: 700; text-decoration: none; }
-.moreButton:hover { background: var(--tool-raised); }
-.listing .backLink { justify-content: center; width: 100%; }
-
-.pantryToggle { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 0; border-radius: 999px; background: var(--tool-surface); color: var(--tool-text); font-weight: 700; cursor: pointer; }
-.pantryToggle[aria-expanded="true"] { background: var(--tool-selected); box-shadow: inset 0 0 0 1px var(--tool-accent); }
-.listing .pantry { margin-bottom: 20px; }
-.listing .pantryContent { padding: 16px; border: 0; border-radius: 16px; background: var(--tool-surface); }
-.listing .pantryContent h2 { font-size: 1.25rem; margin: 0; }
-.listing .pantryContent h3 { margin: 8px 0 0; font-size: 1.0625rem; font-weight: 800; }
-.listing .pantrySearch { min-height: 48px; border: 0; border-radius: 12px; background: var(--tool-raised); }
-.listing .pantryChecklist { padding: 0; border: 0; gap: 2px 8px; }
-.listing .pantryChecklist label { border-radius: 10px; }
-.listing .pantryMatch { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 12px; padding: 4px 0; border: 0; border-bottom: 1px solid var(--tool-line); border-radius: 0; }
-.listing .pantryMatch a { grid-column: 1; min-height: 44px; font-size: 1rem; }
-.listing .pantryMatch p:not(.srOnly) { grid-column: 1 / -1; margin: 0 0 8px; color: var(--tool-muted); font-size: .8125rem; }
-.missingTag { grid-column: 2; grid-row: 1; padding: 4px 12px; border-radius: 999px; background: var(--tool-selected); color: var(--tool-text); font-size: .8125rem; font-weight: 700; white-space: nowrap; }
-
-@media (min-width: 768px) { .listing .choiceGrid { grid-auto-flow: row; grid-auto-columns: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; } .listing .productGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px 16px; } }
-@media (min-width: 800px) {
-  .listing { grid-template-columns: 240px minmax(0, 1fr); grid-template-areas: "filters controls" "filters chips" "filters results" "foot foot"; column-gap: 32px; }
-  .listing .filterPanel { position: sticky; top: 72px; grid-row: 1 / span 3; max-height: calc(100vh - 88px); overflow-y: auto; }
-  .listing .filterPanel > .facetContent { display: grid; gap: 4px; }
-  .listing .mobileFilters, .listing .filterFallback { display: none; }
-}
-@media (min-width: 1024px) { .listing .productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-@media (prefers-reduced-motion: reduce) { .listing *, .listing *::before { transition-duration: 0s !important; scroll-behavior: auto !important; } }
-.listing .filterPanel .filter, .listing .filterPanel .filterActive { min-height: 44px; padding: 6px 14px; border: 0; border-radius: 999px; background: var(--tool-surface); color: var(--tool-text); font-size: .875rem; }
-.listing .filterPanel .filterActive { background: var(--tool-accent); color: var(--tool-on-accent); }
-.listing .filterPanel .categoryStrip { flex-wrap: wrap; overflow: visible; }
-.listing .activeFilters .filterActive .pendingLinkStatus { color: var(--tool-text); }
-.listing .filterPanel .filterActive .pendingLinkStatus { color: var(--tool-on-accent); }
-/* 200% text: segments and headings wrap instead of overflowing. */
-.listing .typeControl { flex-wrap: wrap; }
-.listing .typeOption, .listing .typeActive { flex: 1 1 auto; min-width: max-content; white-space: nowrap; }
-.listing .sectionHeading { flex-wrap: wrap; }
-.listing .cardName, .listing .cardMeta, .listing .cardFacts, .listing .pantryMatch a { overflow-wrap: anywhere; }
-.listing .searchForm, .listing .searchForm .searchField { min-width: 0; max-width: 100%; }
-.searchForm .searchField input { flex: 1 1 0; width: 0; }
-/* Cards everywhere (listing and the detail rail): the name link covers the whole card. */
-.product { position: relative; }
-.cardName { margin: 0; font-size: 1.05rem; font-weight: 800; line-height: 1.25; }
-.cardName a { display: flex; align-items: center; min-height: 44px; color: var(--tool-text); text-decoration: none; }
-.cardName a::after { content: ""; position: absolute; inset: 0; }
-.cardMeta, .cardFacts { display: block; }
-
-/* Tool redesign v2 S9: recipe detail. Hero + title block, spec chips, make-it columns, cook view dialog, related rail, print. */
-.detailBody { --detail-pad: clamp(16px, 3vw, 32px); max-width: 1240px; margin: 0 auto; padding: 4px var(--detail-pad) 64px; }
-.detailPage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "back" "hero" "title" "make" "source" "related" "foot"; column-gap: 48px; align-items: start; }
-.detailPage .backLink { grid-area: back; width: fit-content; min-height: 44px; color: var(--tool-muted); font-size: .875rem; font-weight: 700; text-decoration: none; }
-.detailPage .backLink:hover { color: var(--tool-text); }
-.detailPage .heroImage { grid-area: hero; display: block; width: calc(100% + 2 * var(--detail-pad)); max-width: none; height: auto; aspect-ratio: 16 / 10; margin: 0 calc(-1 * var(--detail-pad)); border: 0; border-radius: 0; object-fit: cover; background: var(--tool-surface); }
-.detailPage .heroImage[src$=".svg"] { box-sizing: border-box; padding: 20px; object-fit: contain; }
-.detailPage .titleBlock { grid-area: title; display: grid; gap: 12px; margin: 20px 0 0; min-width: 0; }
-.detailPage .typeLine { margin: 0; color: var(--tool-muted); font-size: .9375rem; font-weight: 700; }
-.detailPage .titleBlock h1 { margin: 0; font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); line-height: 1.05; letter-spacing: -.02em; overflow-wrap: anywhere; }
-.descriptionWrap { display: grid; justify-items: start; gap: 0; }
-.detailPage .description { margin: 0; max-width: 56ch; color: var(--tool-text); font-size: 1rem; line-height: 1.6; }
-.moreText { min-height: 44px; padding: 0 2px; border: 0; background: none; color: var(--tool-accent); font-weight: 700; text-decoration: underline; cursor: pointer; }
-.specChips { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 0; padding: 0; list-style: none; }
-.specChip { display: block; min-height: 44px; padding: 7px 14px; border-radius: 12px; background: var(--tool-surface); font-size: .9375rem; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
-.specChip small { display: block; margin-bottom: 1px; color: var(--tool-muted); font-size: .75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-.detailPage .detailJumps { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 0; }
-.detailPage .detailJumps .primary { min-height: 52px; padding: 0 28px; border-radius: 999px; font-size: 1.0625rem; }
-.detailPage .detailJumps .filter { min-height: 52px; padding: 0 22px; border: 0; border-radius: 999px; background: var(--tool-surface); color: var(--tool-text); font-size: 1rem; font-weight: 700; text-decoration: none; }
-.detailPage .detailJumps .filter:hover { background: var(--tool-raised); }
-
-.makeSection { grid-area: make; margin: 40px 0 0; min-width: 0; }
-.detailPage .making { display: grid; grid-template-columns: minmax(0, 1fr); gap: 36px; }
-.makeSection h3 { margin: 0 0 8px; font-size: 1.25rem; }
-.ingredientsBlock { align-content: start; }
-.makeSection .checklist { gap: 6px; }
-.makeSection .checkItem label { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 8px 14px; border: 0; border-radius: 14px; background: var(--tool-surface); }
-.makeSection .checkItem label:has(input:checked) { background: var(--tool-selected); box-shadow: inset 0 0 0 1px var(--tool-accent); }
-.makeSection .checkItem input { flex: 0 0 auto; width: 28px; height: 28px; min-height: 0; margin: 0; accent-color: var(--tool-accent); }
-.ingredientText { min-width: 0; font-size: 1.0625rem; line-height: 1.35; }
-.ingredientText b { font-weight: 800; }
-.checkItem input:checked + .ingredientText { color: var(--tool-muted); }
-.gather { display: grid; gap: 8px; margin-top: 12px; }
-.gather .progressLine { min-height: 0; margin: 0; color: var(--tool-muted); font-size: .875rem; }
-.gatherBar { height: 6px; border-radius: 3px; background: var(--tool-raised); overflow: hidden; }
-.gatherBar span { display: block; height: 100%; background: var(--tool-accent); }
-.quantityNote { margin: 8px 0 0; color: var(--tool-muted); font-size: .8125rem; line-height: 1.4; }
-.makeSection .stepsList { max-width: 60ch; margin: 0; padding: 0; gap: 22px; list-style: none; counter-reset: step; }
-.makeSection .stepsList li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; align-items: start; counter-increment: step; font-size: 1.125rem; line-height: 1.6; }
-.makeSection .stepsList li::before { content: counter(step); display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--tool-selected); color: var(--tool-accent); font-weight: 800; line-height: 1; }
-
-.detailPage .sourceContext { grid-area: source; margin-top: 40px; padding: 0; border-top: 1px solid var(--tool-line); border-bottom: 0; }
-.detailPage .sourceContext summary { display: flex; align-items: center; min-height: 48px; padding: 0; color: var(--tool-muted); }
-.detailPage .related { grid-area: related; margin: 32px 0 0; min-width: 0; }
-.related h2 { margin: 0 0 12px; font-size: 1.25rem; }
-.detailPage .disclaimer { grid-area: foot; margin: 32px 0 0; color: var(--tool-muted); font-size: .8125rem; }
-
-/* Related rail: tiles that scroll sideways on small screens, four across from tablet up. */
-.detailPage .relatedGrid { display: grid; grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 62%; gap: 12px; padding: 4px; margin: -4px; overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: 4px; scrollbar-width: none; }
-.relatedGrid > .product { scroll-snap-align: start; }
-.related .product { position: relative; display: block; min-width: 0; padding: 0; overflow: visible; border: 0; border-radius: 14px; background: transparent; }
-.related .cardName a:focus-visible { outline: 2px solid var(--tool-accent); outline-offset: 2px; }
-.related .productLink { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 2px; min-height: 0; height: auto; padding: 0; align-content: start; align-items: start; }
-.related .productLink > img { grid-row: auto; display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; margin: 0 0 8px; padding: 0; border-radius: 14px; object-fit: cover; background: var(--tool-surface); }
-.related .productLink > img[src$=".svg"] { padding: 12px; object-fit: contain; }
-.related .cardName { margin: 0; font-size: 1rem; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
-.related .cardName a { border-radius: 14px; }
-.related .productLink .cardMeta, .related .productLink .cardFacts { grid-column: auto; color: var(--tool-muted); font-size: .8125rem; overflow-wrap: anywhere; }
-
-/* Cook view: full-screen modal dialog, one step at a time. */
-.cook { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: var(--tool-sheet); color: var(--tool-text); overflow: hidden; }
-.cook[open] { display: flex; flex-direction: column; }
-.cook::backdrop { background: var(--tool-night); }
-:global(html):has(.cook[open]) { overflow: hidden; }
-.cookBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 16px; min-height: 56px; padding: 6px 16px; border-bottom: 1px solid var(--tool-line); }
-.cookName { flex: 1 1 8rem; min-width: 0; margin: 0; font-size: 1rem; font-weight: 800; overflow-wrap: anywhere; }
-.cookTools { display: flex; flex-wrap: wrap; gap: 8px; }
-.cookTool { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 44px; min-height: 44px; padding: 0 14px; border: 0; border-radius: 999px; background: var(--tool-raised); color: inherit; font-size: .875rem; font-weight: 700; cursor: pointer; }
-.cookTool[aria-pressed="true"] { background: var(--tool-accent); color: var(--tool-on-accent); }
-.cookProgress { display: grid; gap: 2px; padding: 12px 16px 0; }
-.cookProgress .stepCounter { margin: 0; color: var(--tool-accent); font-size: .8125rem; }
-.segments { display: flex; gap: 6px; }
-.segment { display: flex; align-items: center; flex: 1 1 0; min-width: 0; min-height: 44px; padding: 0; border: 0; background: none; cursor: pointer; }
-.segment span { display: block; width: 100%; height: 6px; border-radius: 3px; background: var(--tool-control); }
-.segment[data-done="true"] span { background: var(--tool-accent); }
-.cookCentre { display: grid; flex: 1 1 auto; place-content: center; min-height: 0; padding: 24px 20px; overflow-y: auto; }
-.cook .stepStage { max-width: 28ch; padding: 0; border: 0; border-radius: 0; background: none; }
-.cook .stepText { max-width: 28ch; margin: 0; font-size: clamp(1.5rem, 1rem + 2.5vw, 2.25rem); font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
-.nextUp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; max-width: 36ch; margin: 28px 0 0; overflow: hidden; color: var(--tool-muted); font-size: 1rem; line-height: 1.45; }
-.cookIngredients { border-top: 1px solid var(--tool-line); padding: 0 16px; }
-.cookIngredients summary { display: flex; align-items: center; min-height: 48px; font-weight: 800; cursor: pointer; }
-.cookIngredients ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 4px 20px; max-height: 28vh; margin: 0; padding: 0 0 12px; overflow-y: auto; list-style: none; font-size: .9375rem; }
-.cookNav { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 12px; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); border-top: 1px solid var(--tool-line); }
-.cookPrev, .cookNext { min-height: 56px; padding: 0 20px; border: 0; border-radius: 14px; font-size: 1.0625rem; font-weight: 800; cursor: pointer; }
-.cookPrev { background: var(--tool-raised); color: var(--tool-text); }
-.cookPrev:disabled { opacity: .45; cursor: not-allowed; }
-.cookNext { background: var(--tool-accent); color: var(--tool-on-accent); }
-.cookNext:hover { background: var(--tool-accent-hover); }
-
-@media (max-width: 519px) {
-  .cookTool { padding: 0; }
-  .cookTool span { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .detailPage .detailJumps .primary { flex: 1 1 auto; }
-}
-@media (min-width: 520px) { .detailPage .relatedGrid { grid-auto-columns: 40%; } }
-@media (max-width: 1023px) {
-  .descriptionClamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
-}
-@media (min-width: 768px) {
-  .detailPage .relatedGrid { grid-auto-columns: calc((100% - 3 * 12px) / 4); gap: 12px; }
-  .cookNav { grid-template-columns: minmax(max-content, 200px) minmax(0, 360px); justify-content: center; }
-}
-@media (min-width: 1024px) {
-  .moreText { display: none; }
-  .detailPage { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: "back back" "hero title" "make make" "source source" "related related" "foot foot"; }
-  .detailPage .heroImage { width: 100%; margin: 0; border-radius: 20px; }
-  .detailPage .titleBlock { align-self: center; margin: 0; }
-  .detailPage .making { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; }
-  .ingredientsBlock { position: sticky; top: 72px; align-self: start; }
-  .detailPage .relatedGrid { gap: 16px; grid-auto-columns: calc((100% - 3 * 16px) / 4); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .detailPage *, .cook * { transition-duration: 0s !important; animation: none !important; scroll-behavior: auto !important; }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .gatherBar span { transition: width 200ms ease; }
-  .segment span, .cookTool, .cookPrev, .cookNext { transition: background-color 160ms ease; }
-}
-@media print {
-  .cook, .detailPage .backLink, .detailPage .detailJumps, .detailPage .related, .detailPage .sourceContext, .detailPage .heroImage, .detailPage .disclaimer, .moreText, .gather .gatherBar { display: none !important; }
-  .detailBody { padding: 0; }
-  .detailPage, .detailPage .making { display: block; }
-  .descriptionClamp { display: block; overflow: visible; }
-  .detailPage .titleBlock, .makeSection { margin: 0 0 20px; }
-  .specChip { border: 1px solid var(--tool-line); background: none; }
-  .makeSection .checkItem label { min-height: 0; padding: 4px 0; background: none !important; box-shadow: none !important; }
-  .ingredientsBlock { position: static; }
-  .makingBlock { break-inside: avoid; margin-bottom: 20px; }
-  .makeSection .stepsList li::before { background: none; border: 1px solid var(--tool-text); color: var(--tool-text); }
-}
-
-/* Loading placeholders (decorative, no text). Real layout classes supply the grids; these supply the blocks. */
-.skBar, .skBarSm, .skChip, .skPick, .skPantry, .skMobileFilter, .skSearch, .skType, .skCardImage, .skHero, .skSpec, .skTitle, .skPrimary, .skSecondary, .skIngredient, .skDot { display: block; background: var(--tool-surface); }
-.skBar, .skBarSm { background: var(--tool-raised); }
-.skBar { height: 14px; border-radius: 999px; }
-.skBarSm { height: 10px; border-radius: 999px; }
-.skSearch { min-height: 52px; border-radius: 14px; }
-.skType { height: 52px; width: 100%; max-width: 440px; border-radius: 14px; }
-.skMobileFilter { width: 120px; height: 48px; border-radius: 12px; }
-.skFacets { display: none; }
-.skFacetGroup { display: grid; gap: 12px; padding-top: 12px; }
-.skChips { display: flex; flex-wrap: wrap; gap: 8px; }
-.skChip { height: 44px; border-radius: 999px; }
-.skPantry { width: 200px; height: 44px; margin-bottom: 20px; border-radius: 999px; }
-.skHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; margin: 0 0 12px; }
-.skPick { width: 140px; height: 44px; border-radius: 999px; }
-.skCard { display: grid; gap: 10px; align-content: start; min-width: 0; padding-bottom: 8px; }
-.skCardWide { padding-bottom: 59px; }
-.skCardImage { width: 100%; aspect-ratio: 4 / 3; border-radius: 14px; }
-@media (min-width: 800px) { .listing .skMobileFilter { display: none; } .listing .skFacets { display: grid; gap: 4px; } }
-.skBack { display: block; width: 150px; height: 44px; }
-.detailPage .skHero { grid-area: hero; width: calc(100% + 2 * var(--detail-pad)); aspect-ratio: 16 / 10; margin: 0 calc(-1 * var(--detail-pad)); border-radius: 0; }
-.skTitle { height: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); width: 70%; margin-bottom: 6px; border-radius: 12px; background: var(--tool-raised); }
-.skSpec { height: 44px; border-radius: 12px; }
-.skPrimary { width: 168px; height: 52px; border-radius: 999px; }
-.skSecondary { width: 150px; height: 52px; border-radius: 999px; }
-.skRows { display: grid; gap: 6px; }
-.skIngredient { min-height: 56px; border-radius: 14px; }
-.skSteps { display: grid; gap: 22px; }
-.skStep { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 16px; align-items: start; }
-.skDot { width: 40px; height: 40px; border-radius: 50%; }
-.skStepText { display: grid; gap: 10px; padding-top: 8px; }
-@media (min-width: 1024px) { .detailPage .skHero { width: 100%; margin: 0; border-radius: 20px; } }
-@media (prefers-reduced-motion: no-preference) {
-  .skRoot { animation: skPulse 1.8s ease-in-out infinite; }
-  @keyframes skPulse { 0%, 100% { opacity: 1; } 50% { opacity: .62; } }
-}
-.skOverlay { position: fixed; z-index: 4; top: 56px; right: 0; bottom: 0; left: 0; display: block; overflow: hidden; background: var(--tool-night); }
-
-
-/* B12 guided discovery: shared Tool Night tokens, wrapping controls and flow layout. */
-.guide { max-width: 1320px; margin: auto; padding: 20px clamp(16px, 3vw, 32px) 64px; }
-.guideNav, .guideBrowseNav, .guideActions, .guideChoices { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.guideNav { margin-bottom: 24px; }
-.guideBrowseNav { max-width: 1240px; margin: auto; padding: 16px clamp(16px, 3vw, 32px) 0; }
-.guideSetup { max-width: 720px; margin: clamp(12px, 4vw, 48px) auto; padding: clamp(20px, 4vw, 40px); border: 1px solid var(--tool-line); border-radius: 24px; background: var(--tool-surface); }
-.guide h1 { margin: 0 0 16px; font-size: clamp(1.75rem, 3vw, 2.5rem); line-height: 1.15; letter-spacing: -.02em; }
-.guide h2 { margin: 0 0 16px; font-size: 1.35rem; line-height: 1.3; }
-.guide h3 { margin: 20px 0 12px; font-size: 1.125rem; }
-.guide p { overflow-wrap: anywhere; }
-.guide .hint { font-size: .9375rem; line-height: 1.5; }
-.guide :is(.filter, .filterActive, .primary) { min-height: 44px; max-width: 100%; border-radius: 999px; white-space: normal; font-size: .9375rem; text-align: left; overflow-wrap: anywhere; }
-.guide .primary { min-height: 48px; text-align: center; }
-.guide .filterActive, .guideNav [aria-current="page"] { border-color: var(--tool-accent); background: var(--tool-selected); color: var(--tool-text); }
-.guide button:disabled { opacity: .55; cursor: not-allowed; }
-.guideActions { margin-top: 24px; }
-.guideFieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
-.guideFieldset legend { margin-bottom: 10px; font-size: 1rem; font-weight: 800; }
-.guideFieldset .hint { margin: 0 0 12px; }
-.guidePreferences { display: grid; gap: 24px; min-width: 0; }
-.guideLabel { display: grid; gap: 8px; min-width: 0; font-weight: 700; }
-.guideLabel :is(input,select) { width: 100%; min-width: 0; max-width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--tool-control); border-radius: 12px; color: var(--tool-text); background: var(--tool-raised); font: inherit; }
-.guideCheck { display: flex; gap: 12px; align-items: center; min-height: 44px; }
-.guideCheck input { flex-shrink: 0; width: 22px; height: 22px; accent-color: var(--tool-accent); }
-.guideLayout { display: grid; gap: 28px; min-width: 0; }
-.guideResultHeading { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
-.guideResultHeading p { max-width: 65ch; color: var(--tool-muted); }
-.guideResultHeading .eyebrow { color: var(--tool-accent); }
-.guideDesktopPreferences { display: none; }
-.guideResults { min-width: 0; display: grid; gap: 28px; align-content: start; }
-.guideGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
-.guideRecommendation { min-width: 0; }
-.guide .product { border: 0; background: var(--tool-surface); border-radius: 18px; padding: 16px; }
-.guide .productLink { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 8px; min-height: 0; }
-.guide .productLink > img { grid-row: auto; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 12px; }
-.guide .productLink > img[src$=".svg"] { object-fit: contain; padding: 16px; }
-.guide .productLink :is(.cardFacts, .cardMeta, .matchReason, .guideTags) { grid-column: auto; font-size: .875rem; line-height: 1.5; }
-.guide .productLink .matchReason { text-transform: none; letter-spacing: normal; color: var(--tool-accent); background: none; border: 0; padding: 0; }
-.guide .product:has(a:focus-visible) { outline: 2px solid var(--tool-accent); outline-offset: 4px; }
-.guide .product .cardName { font-size: 1.125rem; }
-.guideRandom { display: grid; gap: 16px; margin: 24px 0; }
-.guideRandom .product { max-width: 440px; width: 100%; background: var(--tool-raised); }
+/* Guide me: stage bar, choices, results. */
+.stages { margin: 0 0 var(--space-3); }
+.guideFieldset { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: var(--space-3); }
+.guideFieldset legend { padding: 0; margin-bottom: var(--space-2); font: 700 0.9375rem/1.25rem var(--font-text); }
+.guideChoices, .guideActions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.guideActions { margin-top: var(--space-3); }
+.choiceCards { display: grid; gap: var(--space-2); }
+.choiceCard { display: grid; gap: 2px; min-height: 64px; padding: var(--space-3) var(--space-4); border: 1.5px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; }
+.choiceCard b { font-weight: 700; }
+.choiceCard span { color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
+.choiceCard:hover { background: var(--surface-raised); }
+.choiceCard[aria-pressed="true"] { background: var(--highlight-quiet); border-color: var(--text); }
+.guideLabel { display: grid; gap: 6px; min-width: 0; font: 700 0.9375rem/1.25rem var(--font-text); }
+.guideLabel :is(input, select), .pantrySearch { width: 100%; min-width: 0; min-height: var(--target-primary); padding: 12px 14px; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: 500 1rem/1.375rem var(--font-text); }
+.guideLabel input::placeholder, .pantrySearch::placeholder, .searchField input::placeholder { color: var(--text-muted); opacity: 1; }
+.guideCheck { display: flex; gap: var(--space-3); align-items: center; min-height: var(--target-min); font-weight: 600; }
+.guideCheck input, .pantryChecklist input, .checkItem input { flex: 0 0 auto; accent-color: var(--accent); }
+.guideCheck input { width: 22px; height: 22px; }
+.guidePreferences { display: grid; gap: var(--space-5); min-width: 0; }
 .guideIngredientPicker { min-width: 0; }
-.guideIngredientPicker summary { min-height: 44px; padding: 10px 0; cursor: pointer; font-weight: 700; }
-.guideIngredientPicker .pantryContent { padding: 0; }
-.guideIngredientPicker .pantryChecklist { grid-template-columns: minmax(0, 1fr); max-height: 320px; overflow: auto; }
-.guideIngredientPicker .pantryChecklist label { min-height: 44px; }
-.guideDialog { inset: 0; width: min(720px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: clamp(16px, 4vw, 28px); overflow-y: auto; border: 1px solid var(--tool-control); border-radius: 20px; background: var(--tool-sheet); color: var(--tool-text); }
-.guideDialog::backdrop { background: rgb(0 0 0 / 75%); }
-:global(html):has(.guideDialog[open]) { overflow: hidden; }
-.shell:has(.guide) [data-tool-header] { position: static; }
-@media (min-width: 768px) { .guideGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
+.guideIngredientPicker summary { display: flex; align-items: center; min-height: var(--target-min); font-weight: 700; cursor: pointer; }
+.guideIngredientPicker .pantryContent { padding: 0; background: none; }
+.guideIngredientPicker .pantryChecklist { grid-template-columns: minmax(0, 1fr); max-height: 320px; }
+.guideLayout { display: grid; gap: var(--space-5); min-width: 0; }
+.guideResultHeading { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-4); align-items: flex-start; justify-content: space-between; }
+.guideResultHeading > div { display: grid; gap: var(--space-2); min-width: 0; }
+.guideDesktopPreferences { display: none; }
+.guideResults { display: grid; gap: var(--space-6); align-content: start; min-width: 0; }
+.guideResults section { display: grid; gap: var(--space-3); }
+.resultFacts { margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
+.guideGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--space-3); }
+.guideRecommendation { display: grid; gap: var(--space-2); align-content: start; min-width: 0; }
+.guideRandom { display: grid; gap: var(--space-4); max-width: 440px; }
+.guideRandom .product { width: 100%; }
+.randomActions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.guideDialog, .filterDialog { inset: 0; width: min(720px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: var(--space-4); overflow-y: auto; border: 0; border-radius: var(--radius-lg); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-dialog); }
+.guideDialog::backdrop, .filterDialog::backdrop { background: var(--scrim); }
+:global(html):has(:is(.guideDialog, .filterDialog)[open]) { overflow: hidden; }
+.dialogHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.dialogHeading h2 { font-size: min(1.75rem, 9vw); }
+.dialogClose { display: inline-grid; place-items: center; flex: none; width: var(--target-min); height: var(--target-min); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--text); font-size: 1.25rem; cursor: pointer; }
+.dialogClose:hover { background: var(--surface); }
+.dialogActions { position: sticky; bottom: calc(-1 * var(--space-4)); display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: flex-end; margin: var(--space-4) calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); padding: var(--space-3) var(--space-4); background: var(--surface-raised); border-top: 1px solid var(--line); }
+@media (max-width: 767px) { .guideDialog, .filterDialog { inset: auto 0 0 0; width: 100%; max-height: 92dvh; margin: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; } .guideDialog { inset: 0; max-height: 100dvh; height: 100dvh; border-radius: 0; } .guideDialog .dialogActions { }}
+@media (min-width: 768px) { .guideGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); } }
 @media (min-width: 1024px) {
   .guideLayout { grid-template-columns: minmax(280px, 1fr) minmax(0, 2.4fr); align-items: start; }
   .guideResultHeading { grid-column: 1 / -1; }
-  .guideDesktopPreferences { display: block; min-width: 0; padding: 24px; border-radius: 20px; background: var(--tool-surface); }
+  .guideDesktopPreferences { display: grid; gap: var(--space-4); min-width: 0; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface); }
   .guideEditButton { display: none; }
 }
-@media (prefers-reduced-motion: reduce) { .guide *, .guide *::before { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 
-.guide summary:focus-visible { outline: 2px solid var(--tool-accent); outline-offset: 2px; }
+/* Recipe card: image with a type tag, name, facts. One link per card, the name link covers the card. */
+.product { position: relative; display: block; min-width: 0; scroll-margin-top: 96px; }
+.product:has(a:focus-visible) .imgWrap { outline: 2px solid var(--focus); outline-offset: 2px; }
+.product a:focus-visible { outline: none; box-shadow: none; }
+.productLink { display: grid; gap: var(--space-1); align-content: start; min-width: 0; }
+.imgWrap { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-md); background: radial-gradient(60% 45% at 50% 55%, color-mix(in srgb, var(--highlight) 30%, transparent), transparent 70%), var(--surface-raised); overflow: hidden; margin-bottom: var(--space-2); }
+.imgWrap img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.imgWrap img[src$=".svg"] { box-sizing: border-box; padding: 14px; object-fit: contain; }
+.tag { position: absolute; left: 10px; bottom: 10px; display: inline-flex; padding: 4px 10px; border-radius: var(--radius-pill); background: var(--bg); color: var(--text); font: 700 0.75rem/1rem var(--font-text); }
+.shell .cardName { margin: 0; font-family: var(--font-display); font-size: 1.1875rem; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; overflow-wrap: anywhere; }
+.cardName a { display: flex; align-items: center; min-height: var(--target-min); color: var(--text); text-decoration: none; }
+.cardName a::after { content: ""; position: absolute; inset: 0; }
+.cardMeta, .cardFacts, .guideTags { display: block; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
+.matchReason { display: block; color: var(--accent-text); font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; overflow-wrap: anywhere; }
+.productGrid, .choiceGrid, .relatedGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-3); margin: 0; }
+@media (max-width: 359px) { .productGrid, .choiceGrid { grid-template-columns: minmax(0, 1fr); } }
+@media (min-width: 768px) { .productGrid, .choiceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); } }
+@media (min-width: 1024px) { .productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+/* Browse all. */
+.listing { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "filters" "chips" "results" "foot"; gap: var(--space-3); align-items: start; max-width: 1240px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
+.listingHead { display: grid; gap: var(--space-3); max-width: 1240px; margin: 0 auto; padding: var(--space-5) 16px 0; }
+.listing .discoveryControls { grid-area: controls; display: grid; gap: var(--space-3); min-width: 0; }
+.searchForm { min-width: 0; max-width: 100%; }
+.searchField { display: flex; align-items: center; gap: var(--space-2); min-height: var(--target-primary); padding: 0 4px 0 14px; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-muted); }
+.searchField:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--bg); }
+.searchField input { flex: 1 1 0; width: 0; min-width: 0; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--text); font: 500 1rem/1.375rem var(--font-text); outline: none; }
+.searchSubmit { display: inline-grid; place-items: center; flex: none; width: var(--target-min); height: var(--target-min); border: 0; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); font-size: 1.25rem; font-weight: 800; cursor: pointer; }
+.typeControl { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.typeOption, .typeActive { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-min); padding: 0 16px; border: 1.5px solid var(--line-strong); border-radius: var(--radius-pill); color: var(--text); font: 700 0.9375rem/1.25rem var(--font-text); text-decoration: none; white-space: nowrap; }
+.typeOption:hover { background: var(--surface-raised); }
+.typeActive { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
+.count { font-size: 0.8125rem; font-variant-numeric: tabular-nums lining-nums; opacity: .8; }
+.listing .activeFilters { grid-area: chips; display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.activeFilters .filterActive { background: var(--surface-raised); border-color: transparent; color: var(--text); }
+.listing .resultsPanel { grid-area: results; display: grid; gap: var(--space-5); min-width: 0; }
+.statusLine { margin: 0; color: var(--text-muted); font-size: 0.875rem; }
+.listing .browseDisclaimer { grid-area: foot; max-width: 64ch; margin: var(--space-4) 0 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
+.listing .filterPanel { grid-area: filters; display: block; min-width: 0; }
+.listing .filterPanel > .facetContent, .listing .filterPanel > .filterFallback > .facetContent { display: grid; gap: var(--space-2); }
+.filterFallback { border-radius: var(--radius-md); background: var(--surface); }
+.filterFallback summary { display: flex; align-items: center; min-height: var(--target-min); padding: 0 var(--space-4); font-weight: 700; cursor: pointer; }
+.filterFallback[open] { padding-bottom: var(--space-4); }
+.filterFallback > :not(summary) { margin-inline: var(--space-4); }
+.facetContent { display: grid; gap: var(--space-4); }
+.facetGroup { display: grid; gap: var(--space-2); }
+.chipLabel { margin: 0; color: var(--text-muted); font: 700 0.8125rem/1.125rem var(--font-text); }
+.categoryStrip { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.filterCount { margin: 0 0 var(--space-3); color: var(--text-muted); font-size: 0.875rem; }
+.discovery { display: grid; gap: var(--space-6); }
+.sectionHeading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
+.pickStatus { margin: 0 0 var(--space-3); color: var(--text-muted); font-size: 0.875rem; }
+.moreButton { width: 100%; margin-top: var(--space-4); }
+.listing .backLink { justify-self: center; }
+.filterFallback { display: block; }
+.mobileFilters { justify-self: start; }
+@media (min-width: 800px) {
+  .listing { grid-template-columns: 240px minmax(0, 1fr); grid-template-areas: "filters controls" "filters chips" "filters results" "foot foot"; column-gap: var(--space-6); }
+  .listing .filterPanel { grid-row: 1 / span 3; position: sticky; top: 96px; max-height: calc(100vh - 112px); overflow-y: auto; padding-bottom: var(--space-2); }
+  .listing .mobileFilters, .listing .filterFallback { display: none; }
+}
+@media (max-width: 799px) { .listing .filterPanel > .facetContent { display: none; } }
+@media (max-height: 700px) { .listing .filterPanel { position: static; max-height: none; overflow: visible; } }
+
+/* Use what I have. */
+.pantry { min-width: 0; }
+.pantryToggle { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-min); padding: 0 18px; border: 1.5px solid var(--line-strong); border-radius: var(--radius-md); background: transparent; color: var(--text); font: 700 0.9375rem/1.25rem var(--font-text); cursor: pointer; }
+.pantryToggle:hover { background: var(--surface-raised); }
+.pantryToggle[aria-expanded="true"] { background: var(--highlight-quiet); border-color: var(--text); }
+.pantryContent { display: grid; gap: var(--space-3); margin-top: var(--space-3); padding: var(--space-4); border-radius: var(--radius-lg); background: var(--surface); }
+.pantryContent h2 { font-size: min(1.375rem, 8vw); }
+.pantryContent h3 { margin-top: var(--space-2); font-size: 1.125rem; }
+.pantryContent .hint a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--accent-text); }
+.pantrySelected { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.pantrySelected .filterActive { background: var(--surface-raised); border-color: transparent; color: var(--text); }
+.pantryChecklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px var(--space-3); max-height: 320px; overflow-y: auto; }
+.pantryChecklist label { display: flex; align-items: center; gap: var(--space-3); min-height: var(--target-min); padding: 6px 8px; border-radius: var(--radius-sm); font-size: 0.9375rem; cursor: pointer; overflow-wrap: anywhere; }
+.pantryChecklist label:hover { background: var(--surface-raised); }
+.pantryChecklist input { width: 20px; height: 20px; }
+.pantryChecklist label:focus-within { outline: 2px solid var(--focus); outline-offset: -2px; }
+.pantryMatches { display: grid; }
+.pantryMatch { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 var(--space-3); padding: 4px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
+.pantryMatch a { display: flex; align-items: center; min-height: var(--target-min); color: var(--text); font-weight: 700; overflow-wrap: anywhere; }
+.pantryMatch p { grid-column: 1 / -1; margin: 0 0 var(--space-2); color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
+.missingTag { grid-column: 2; grid-row: 1; padding: 4px 12px; border-radius: var(--radius-pill); background: var(--surface-raised); font-size: 0.875rem; font-weight: 700; }
+.pantryResultStatus { color: var(--text-muted); font-size: 0.875rem; }
+@media (max-width: 649px) { .pantryChecklist { grid-template-columns: minmax(0, 1fr); } .pantryContent { padding: var(--space-3); } }
+
+/* Recipe page. */
+.detailBody { --detail-pad: 16px; max-width: 1240px; margin: 0 auto; padding: var(--space-2) var(--detail-pad) var(--space-7); }
+.detailPage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "back" "hero" "title" "make" "source" "related" "foot"; column-gap: var(--space-8); align-items: start; }
+.detailPage .backLink { grid-area: back; }
+.heroImage { grid-area: hero; display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; border-radius: var(--radius-lg); object-fit: cover; background: var(--surface-raised); }
+.heroImage[src$=".svg"] { box-sizing: border-box; padding: 24px; object-fit: contain; }
+.titleBlock { grid-area: title; display: grid; gap: var(--space-3); margin: var(--space-5) 0 0; min-width: 0; }
+.typeLine { margin: 0; color: var(--text-muted); font-size: 0.9375rem; font-weight: 700; }
+.titleBlock h1 { font-size: min(clamp(2rem, 1.4rem + 2.6vw, 3.25rem), 11vw); }
+.descriptionWrap { display: grid; justify-items: start; }
+.description { margin: 0; max-width: 56ch; font-size: 1.0625rem; line-height: 1.625rem; overflow-wrap: anywhere; }
+.specChips { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-1) 0 0; padding: 0; list-style: none; }
+.specChip { display: block; min-height: var(--target-min); padding: 6px 14px; border-radius: var(--radius-md); background: var(--surface); font-size: 0.9375rem; font-weight: 700; line-height: 1.25rem; overflow-wrap: anywhere; }
+.specChip small { display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.detailJumps { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+.detailJumps .filter { border-radius: var(--radius-md); }
+.makeSection { grid-area: make; margin-top: var(--space-7); min-width: 0; }
+.making { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+.makingBlock { display: grid; gap: var(--space-3); align-content: start; min-width: 0; scroll-margin-top: 96px; }
+.makingBlock h2 { font-size: 1.5rem; }
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.checkItem label { display: flex; align-items: center; gap: var(--space-3); min-height: 56px; padding: 8px 14px; border-radius: var(--radius-md); background: var(--surface); cursor: pointer; overflow-wrap: anywhere; }
+.checkItem label:has(input:checked) { background: var(--highlight-quiet); box-shadow: inset 0 0 0 1.5px var(--text); }
+.checkItem input { width: 24px; height: 24px; margin: 0; }
+.ingredientText { min-width: 0; font-size: 1.0625rem; line-height: 1.5rem; }
+.ingredientText b { font-weight: 800; font-variant-numeric: tabular-nums lining-nums; }
+.checkItem input:checked + .ingredientText { color: var(--text-muted); }
+.gather { display: grid; gap: var(--space-2); }
+.progressLine { margin: 0; color: var(--text-muted); font-size: 0.875rem; }
+.gatherBar { height: 6px; border-radius: 3px; background: var(--surface-raised); overflow: hidden; }
+.gatherBar span { display: block; height: 100%; background: var(--highlight); }
+.quantityNote { margin: 0; }
+.stepsList { max-width: 60ch; margin: 0; padding: 0; display: grid; gap: var(--space-4); list-style: none; counter-reset: step; }
+.stepsList li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-4); align-items: start; counter-increment: step; font-size: 1.125rem; line-height: 1.75rem; overflow-wrap: anywhere; }
+.stepsList li::before { content: counter(step); display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--highlight); color: var(--on-highlight); font: 800 1rem/1 var(--font-display); }
+.sourceContext { grid-area: source; margin-top: var(--space-7); border-top: 1px solid var(--line); color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
+.sourceContext summary { display: flex; align-items: center; min-height: 56px; font-weight: 700; cursor: pointer; }
+.sourceContext p { margin: var(--space-2) 0; overflow-wrap: anywhere; }
+.sourceContext a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--accent-text); }
+.related { grid-area: related; margin-top: var(--space-6); min-width: 0; }
+.related h2 { margin-bottom: var(--space-3); }
+.detailPage .disclaimer { grid-area: foot; margin-top: var(--space-6); }
+@media (max-width: 1023px) { .descriptionClamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; } }
+@media (min-width: 768px) { .relatedGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); } .detailBody { --detail-pad: 32px; } }
+@media (min-width: 1024px) {
+  .moreText { display: none; }
+  .detailPage { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: "back back" "hero title" "make make" "source source" "related related" "foot foot"; }
+  .heroImage { aspect-ratio: 4 / 5; max-height: 640px; }
+  .titleBlock { align-self: center; margin: 0; }
+  .making { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-8); }
+  .ingredientsBlock { position: sticky; top: 96px; align-self: start; }
+}
+
+/* Cook mode: plum in every theme, one step at a time. */
+.cook { position: fixed; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: var(--bar); color: var(--on-bar); overflow: hidden; }
+.cook[open] { display: flex; flex-direction: column; }
+.cook::backdrop { background: var(--bar); }
+:global(html):has(.cook[open]) { overflow: hidden; }
+.cook :is(a, button, summary, input):focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; box-shadow: none; }
+.cookBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-4); min-height: 64px; padding: 8px 16px; }
+.shell .cookName { flex: 1 1 8rem; min-width: 0; margin: 0; font: 800 1.125rem/1.2 var(--font-display); letter-spacing: -.01em; overflow-wrap: anywhere; }
+.cookTools { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.cookTool { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-width: var(--target-min); min-height: var(--target-min); padding: 0 14px; border: 1.5px solid var(--on-bar-muted); border-radius: var(--radius-md); background: transparent; color: var(--on-bar); font: 700 0.875rem/1.25rem var(--font-text); cursor: pointer; }
+.cookTool:hover { background: rgb(255 255 255 / 10%); }
+.cookTool[aria-pressed="true"] { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
+.cookClose { padding: 0; font-size: 1.25rem; }
+.cookProgress { display: grid; gap: 2px; padding: 8px 16px 0; }
+.stepCounter { margin: 0; color: var(--highlight); font: 800 0.8125rem/1.125rem var(--font-text); letter-spacing: .12em; text-transform: uppercase; }
+.segments { display: flex; gap: 6px; }
+.segment { display: flex; align-items: center; flex: 1 1 0; min-width: 0; min-height: var(--target-min); padding: 0; border: 0; background: none; cursor: pointer; }
+.segment span { display: block; width: 100%; height: 6px; border-radius: 3px; background: var(--on-bar-muted); opacity: .5; }
+.segment[data-done="true"] span { background: var(--highlight); opacity: 1; }
+.cookCentre { display: grid; flex: 1 1 auto; place-content: center; min-height: 0; padding: var(--space-5) 20px; overflow-y: auto; }
+.stepStage { max-width: 28ch; }
+.stepText { margin: 0; font: 800 clamp(1.75rem, 1rem + 3.2vw, 3rem)/1.15 var(--font-display); letter-spacing: -.02em; overflow-wrap: anywhere; }
+.nextUp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; max-width: 36ch; margin: var(--space-5) 0 0; overflow: hidden; color: var(--on-bar-muted); font-size: 1rem; line-height: 1.5rem; }
+.cookIngredients { border-top: 1px solid var(--on-bar-muted); padding: 0 16px; }
+.cookIngredients summary { display: flex; align-items: center; min-height: 48px; font-weight: 800; cursor: pointer; }
+.cookIngredients ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 4px 20px; max-height: 28vh; margin: 0; padding: 0 0 12px; overflow-y: auto; list-style: none; font-size: 0.9375rem; }
+.cookNav { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-3); padding: var(--space-3) 16px max(12px, env(safe-area-inset-bottom)); }
+.cookPrev, .cookNext { min-height: var(--target-primary); padding: 0 24px; border-radius: var(--radius-md); font: 800 1.0625rem/1.25rem var(--font-text); cursor: pointer; }
+.cookPrev { border: 1.5px solid var(--on-bar-muted); background: transparent; color: var(--on-bar); }
+.cookNext { border: 0; background: var(--highlight); color: var(--on-highlight); }
+.cookNext:hover { filter: brightness(1.05); }
+@media (max-width: 519px) { .cookTool > span:not([aria-hidden]) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; } .cookTool { padding: 0; } .cookClose { width: var(--target-min); } }
+@media (min-width: 768px) { .cookNav { grid-template-columns: minmax(max-content, 200px) minmax(0, 360px); justify-content: center; } }
+
+/* Loading placeholders (decorative, no text). Same bones as the Planner: a slow sweep, static under reduced motion. */
+.skBar, .skBarSm, .skChip, .skPick, .skPantry, .skMobileFilter, .skSearch, .skType, .skCardImage, .skHero, .skSpec, .skTitle, .skPrimary, .skSecondary, .skIngredient, .skDot { position: relative; display: block; overflow: hidden; background: var(--surface-raised); }
+.skBar::after, .skBarSm::after, .skChip::after, .skPick::after, .skPantry::after, .skMobileFilter::after, .skSearch::after, .skType::after, .skCardImage::after, .skHero::after, .skSpec::after, .skTitle::after, .skPrimary::after, .skSecondary::after, .skIngredient::after, .skDot::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--text) 8%, transparent), transparent); animation: skSweep 1.6s ease-in-out infinite; }
+@keyframes skSweep { to { transform: translateX(100%); } }
+.skBar { height: 14px; border-radius: var(--radius-pill); }
+.skBarSm { height: 10px; border-radius: var(--radius-pill); }
+.skSearch { min-height: var(--target-primary); border-radius: var(--radius-sm); }
+.skType { height: var(--target-min); width: 100%; max-width: 360px; border-radius: var(--radius-pill); }
+.skMobileFilter { width: 120px; height: var(--target-min); border-radius: var(--radius-md); }
+.skFacets { display: none; }
+.skFacetGroup { display: grid; gap: var(--space-3); padding-top: var(--space-3); }
+.skChips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.skChip { height: var(--target-min); border-radius: var(--radius-pill); }
+.skPantry { width: 200px; height: var(--target-min); margin-bottom: var(--space-4); border-radius: var(--radius-md); }
+.skHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--target-min); margin: 0 0 var(--space-3); }
+.skPick { width: 140px; height: var(--target-min); border-radius: var(--radius-md); }
+.skCard { display: grid; gap: var(--space-2); align-content: start; min-width: 0; padding-bottom: var(--space-2); }
+.skCardWide { padding-bottom: 59px; }
+.skCardImage { width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius-md); }
+.skBack { display: block; width: 150px; height: var(--target-min); }
+.skHero { grid-area: hero; width: 100%; aspect-ratio: 16 / 10; border-radius: var(--radius-lg); }
+.skTitle { height: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); width: 70%; margin-bottom: 6px; border-radius: var(--radius-md); }
+.skSpec { height: var(--target-min); border-radius: var(--radius-md); }
+.skPrimary { width: 168px; height: var(--target-primary); border-radius: var(--radius-md); }
+.skSecondary { width: 150px; height: var(--target-min); border-radius: var(--radius-md); }
+.skRows { display: grid; gap: 6px; }
+.skIngredient { min-height: 56px; border-radius: var(--radius-md); }
+.skSteps { display: grid; gap: var(--space-4); }
+.skStep { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.skDot { width: 40px; height: 40px; border-radius: 50%; }
+.skStepText { display: grid; gap: var(--space-3); padding-top: 8px; }
+.skOverlay { position: fixed; z-index: 4; top: 56px; right: 0; bottom: 0; left: 0; display: block; overflow: hidden; background: var(--bg); }
+@media (min-width: 800px) { .listing .skMobileFilter { display: none; } .listing .skFacets { display: grid; gap: var(--space-1); } }
+@media (min-width: 1024px) { .skHero { aspect-ratio: 4 / 5; max-height: 640px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .shell *, .shell *::before, .shell *::after { animation: none !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+}
+@media print {
+  .shell { background: #fff; color: #000; }
+  .cook, .backLink, .detailJumps, .related, .sourceContext, .heroImage, .moreText, .gatherBar, .discoveryControls, .filterPanel { display: none !important; }
+  .detailBody { padding: 0; }
+  .detailPage, .making { display: block; }
+  .descriptionClamp { display: block; overflow: visible; }
+  .specChip { border: 1px solid #000; background: none; }
+  .checkItem label { min-height: 0; padding: 4px 0; background: none !important; box-shadow: none !important; }
+  .ingredientsBlock { position: static; }
+  .makingBlock { break-inside: avoid; margin-bottom: 20px; }
+  .stepsList li::before { background: none; border: 1px solid #000; color: #000; }
+}

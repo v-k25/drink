@@ -97,9 +97,9 @@ export default function Making({ name, ingredients, steps, quantityNote }: { nam
   const gathered = ingredients.length > 0 ? Math.round((checked.size / ingredients.length) * 100) : 0
   return <div className={styles.making}>
     <div id="ingredients" className={`${styles.makingBlock} ${styles.ingredientsBlock}`}>
-      <h3>Ingredients</h3>
+      <h2>Ingredients</h2>
       {ingredients.length === 0
-        ? <p className={styles.hint}>No ingredients are recorded for this recipe.</p>
+        ? <p className={styles.hint}>No ingredients are listed for this recipe.</p>
         : <ul className={styles.checklist}>
             {ingredients.map((ingredient, index) => {
               const [amount, rest] = splitAmount(ingredient)
@@ -112,15 +112,15 @@ export default function Making({ name, ingredients, steps, quantityNote }: { nam
             })}
           </ul>}
       {mounted && ingredients.length > 0 && <div className={styles.gather}>
-        <p className={styles.progressLine} role="status">{checked.size} of {ingredients.length} ingredients gathered</p>
+        <p className={styles.progressLine} role="status">{checked.size} of {ingredients.length} gathered</p>
         <div className={styles.gatherBar} aria-hidden="true"><span style={{ width: `${gathered}%` }} /></div>
       </div>}
       {ingredients.length > 0 && quantityNote && <p className={`${styles.hint} ${styles.quantityNote}`}>{quantityNote}</p>}
     </div>
     <div id="method" className={styles.makingBlock}>
-      <h3>Method</h3>
+      <h2>Method</h2>
       {steps.length === 0
-        ? <p className={styles.hint}>No method steps are recorded for this recipe.</p>
+        ? <p className={styles.hint}>No method steps are listed for this recipe.</p>
         : <ol className={styles.stepsList}>
             {steps.map((text, index) => <li key={index}>{text}</li>)}
           </ol>}

@@ -1,5 +1,47 @@
 # Implementation progress
 
+### Pre-Party R1 foundations, 2026-10-30
+
+**Done (not committed).** Design tokens, themes, fonts and shared primitives added with no visible change to any existing page.
+- **Fonts:** `app/fonts/BricolageGrotesque-latin.woff2` (39 KB, weights 700–800, optical size pinned at 48) and `Manrope-latin.woff2` (23 KB, weights 500–800), each with its OFL text. They were trimmed from the google/fonts repository variable fonts (Latin plus ₹, arrows, dashes) with `scripts/pre-party-fonts.py`, which records the sources and the recipe. Loaded with `next/font/local`, `preload: false`, in `app/layout.tsx`.
+- **Tokens:** `app/tokens.css` is generated from `docs/design/pre-party/tokens.json` by `scripts/pre-party-tokens.cjs` (`--write`, `--check`). Themes `landing`, `tools` (dark under `prefers-color-scheme: dark`) and `tools-dark` apply only under `[data-theme]`; print resolves to the light tools values. Spacing, radius, size and font tokens are on `:root`.
+- **Primitives:** `app/ui.css` holds the `sf-` button, stepper, chip, choice card, field, accordion, tabs, sheet, toast, skeleton, product, recipe, event, summary bar, receipt, age check, stage bar, sticker and arch styles. A `[data-theme] :is(h1, h2, h3, h4) { color: inherit }` rule stops the old global plum heading colour leaking into themed pages.
+- **Not done:** Nunito Sans and Damion are still loaded, because existing pages use them (removal moves to R2 and R4/R5). No Tailwind `@theme` mapping: the app does not import Tailwind in its CSS.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: tokens match; all text and border pairs pass AA in all three themes.
+- `node node_modules/typescript/bin/tsc --noEmit`: exit 0.
+- `corepack pnpm build`: exit 0, 7 routes.
+- `git diff --check`: CRLF warnings only.
+- Production smoke (`next start`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder` and `/robots.txt` all return 200. The page head preloads only the two old fonts.
+- No-regression check: a computed-style fingerprint (font, colour, spacing, size and border of every element, 186/71/21 elements) of `/`, `/party-planner` and `/find-my-drink` at 1440 and 390, taken from the pre-change build and from the new build, is identical. A back-to-back build of the original `layout.tsx` and of the new one in the same browser state also matches.
+- Themes in the production build: the primary button resolves to the right fill and 52px height in all three themes; Bricolage and Manrope load; ₹ and tabular figures render; `tools` flips between `#fff8ee` (plum button) and `#170e1a` (marigold button) with the OS colour scheme.
+
+**Not run.** No Lighthouse, no screen reader, no real device, and the regression scripts under `scripts/` were not re-run (nothing they assert changed). The print override was checked in the generated CSS only, not in a print preview. Fingerprints depend on the browser's pixel ratio, so compare them only at the same ratio (the pane's ratio drifted during testing, which briefly looked like a regression).
+
+**Next.** R2: rebuild `/` to match `docs/design/pre-party/landing-prototype.html`.
+
+### Pre-Party redesign approved, handoff and plan written, 2026-10-30
+
+**Done.**
+- **Design approved.** The owner approved a clean-slate redesign, "Pre-Party (refined)":
+  - Bricolage Grotesque + Manrope.
+  - Plum + marigold, with pink landing-only.
+  - Themes `landing`, `tools` and `tools-dark`.
+  - Minimal layout and plain copy.
+- **Where it lives.** Design system artifact: https://claude.ai/artifact/5ACGtEEdZn8wKknfZzZiUU (14 screen boards at 1440/390, components, brand book).
+- **Handoff files in `docs/design/pre-party/`:** `tokens.json`, `tokens.css`, `components.css` and `landing-prototype.html`. The prototype is the approved responsive landing page and uses the existing `public/images/nightlife/hero-night-mobile*` photo as a stand-in.
+- **Plan.** `docs/pre-party-redesign-plan.md` sets out checkpoints R1–R6 (foundations, landing, tool shell/age check, Party Planner, Find My Drink, regression pass).
+- **AGENTS.md.** "Scope and design" now points to the new plan. It supersedes section 3 of `docs/socifer-product-plan.md`, D6 (magenta) and D14 (script face).
+
+**Unchanged.** Application code, backend, dependencies and lockfile.
+
+**Verification.** None needed beyond `git diff --check`, since only docs and the handoff files changed.
+
+**Open.**
+- Final hero photo (B2/D12).
+- Owner approval at R1 to fetch the two OFL font files.
+
 ### Staging push, Vercel preview verification, field-LCP option and decision brief, 2026-10-30
 
 **Done.** Pushed `socifer/b0-baseline` (11 commits ahead of `main`, head `fdb0809`) to `origin` as a new branch, no force, and opened PR #2 against `main`. Tooling files (`AGENTS.md`, `.opencode/`, `opencode.jsonc`, `.mcp.json`) were not committed. No dependency or lockfile change, no database write, no env value read or printed, nothing promoted to production.

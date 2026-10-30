@@ -2,9 +2,9 @@
 
 ## Repository layout
 
-This is a Next.js 16 App Router + React 19 + Tailwind 4 + TypeScript project. The current public surface is the neutral placeholder in `app/`; the preserved backend action is `app/early-access/actions.ts`.
+This is a Next.js 16 App Router + React 19 + Tailwind 4 + TypeScript project. The product is **Socifer**, a Jaipur-first, pre-launch nightlife site: the landing page (`app/page.tsx`, `app/home.module.css`), Party Planner (`app/party-planner/`, catalogue from `planner_products` via `catalogue-server.ts`) and Find My Drink (`app/find-my-drink/`, on the retained `drinks` recipe table). The preserved backend action is `app/early-access/actions.ts`.
 
-Read `docs/implementation-progress.md` first and update it after every completed checkpoint.
+Read `docs/implementation-progress.md` first and update it after every completed checkpoint. The approved roadmap is `docs/socifer-product-plan.md` (backlog B0–B12).
 
 Persistence uses the existing EkQuarter Supabase project. Preserve the server action’s validation, consent, insert-only behavior, credentials, and environment files. New backend work is outside the current reset scope.
 
@@ -22,17 +22,17 @@ No lint script exists. Do not change package or lockfiles to hide dependency dri
 
 ## Backend note
 
-The existing early-access server action and Supabase persistence are backend surfaces. Preserve their validation, consent and insert-only behavior. New product backend work is outside the current marketing-site phase.
+The existing early-access server action and Supabase persistence are backend surfaces. Preserve their validation, consent and insert-only behavior. New backend work (migrations, new tables) needs explicit owner approval per checkpoint in `docs/socifer-product-plan.md`.
 
 ## Engineering workflow (multi-agent)
 
-Use only native ChatGPT/Codex agents for this project: **Astra** (director, architect and final reviewer), **Luna** (normal implementation), **Terra** (small mechanical work), **Sol** (optional bounded analysis/review). Do not invoke OpenCode or external-provider agents, including Kimi/DeepSeek. `.opencode/` is legacy configuration, not the active workflow. See `docs/agent-workflow.md`.
+Use only native ChatGPT/Codex agents for this project. The model the user selected, including Sol-low, may inspect, implement, verify, and review its own work. Do not switch models or delegate unless the user explicitly asks for it. Do not invoke OpenCode or external-provider agents, including Kimi/DeepSeek. `.opencode/` is legacy configuration, not the active workflow. See `docs/agent-workflow.md` for optional multi-agent work.
 
-1. Astra inspects the problem, freezes scope/interfaces and writes acceptance criteria.
-2. Default to one executor. Get a separate critique only for a concrete unresolved design, security or architecture risk.
-3. In native Codex explicitly select `gpt-5.6-luna` for normal implementation or `gpt-5.6-terra` for mechanical work, with `fork_turns: none` and a self-contained narrow contract. Astra uses `gpt-6-astra`; optional Sol uses `gpt-5.6-sol`. Never silently inherit Astra for routine execution.
+1. The active agent inspects the problem, freezes scope/interfaces, and writes acceptance criteria.
+2. Default to one agent for implementation and review. Get a separate critique only when the user requests delegation for a concrete unresolved design, security, or architecture risk.
+3. If the user requests delegation, give an available native Codex agent a self-contained narrow contract.
 4. Parallelize disjoint files only, normally at most two workers. Workers run focused checks; one designated worker runs the integrated build. Never race builds in the shared checkout.
-5. Astra reviews the diff and verification evidence. Findings return to the same executor; Astra does not silently rewrite their implementation.
+5. The active agent reviews the diff and verification evidence. Findings return to the same executor when delegation is used.
 6. Max two repair cycles; repeated failure triggers scope/architecture reassessment. No recursive delegation unless the contract explicitly permits it.
 
 ### Task contract
@@ -49,7 +49,7 @@ Smallest change that fully solves the requirement. No unrelated rewrites, new de
 
 ### Verification is mandatory
 
-Not done until checks were actually run: `pnpm build` and `node node_modules/typescript/bin/tsc --noEmit` at the repo root (+ production-server smoke test for UI). Current Next config skips build-time type validation, so the separate TypeScript check is required. If pnpm is absent from PATH, use Corepack. The local pnpm 11 installation currently warns about dependency/lockfile drift and ignored package.json overrides; do not silently reinstall or change dependencies to hide this. Never claim a check passed unless executed.
+Not done until checks were actually run: `pnpm build` and `node node_modules/typescript/bin/tsc --noEmit` at the repo root (+ production-server smoke test for UI). Current Next config skips build-time type validation, so the separate TypeScript check is required. If pnpm is absent from PATH, use Corepack. If terminal process creation fails before a command starts, report the environment failure and the unrun checks; do not keep retrying through other shells or change project dependencies. The local pnpm 11 installation currently warns about dependency/lockfile drift and ignored package.json overrides; do not silently reinstall or change dependencies to hide this. Never claim a check passed unless executed.
 
 ### Git safety
 
@@ -57,11 +57,11 @@ Commit only when asked. Never force-push, rewrite history, delete unrelated file
 
 ### Definition of done
 
-Implemented + acceptance criteria met + verification passed + no known blockers + Astra review passed (non-trivial changes) + final response states what changed and what was verified.
+Implemented + acceptance criteria met + verification passed + no known blockers + active-agent review passed (non-trivial changes) + final response states what changed and what was verified.
 
 ## Scope and design
 
-The current page is intentionally neutral: white background, system fonts, no forms, animation, analytics, old fonts, creative assets, sitemap, or inherited brand requirements. Future cream/berry/plum, rounded sans-serif, Jaipur, and togetherness ideas are exploratory only; do not implement them until requested and approved.
+Follow `docs/socifer-product-plan.md` section 3 ("Jaipur After Dark"): dark booking-first landing page, dark warm-gold Tool Night surfaces, Nunito Sans, WCAG 2.2 AA. Do not implement design changes ahead of their approved checkpoint.
 
 ## Graphify
 

@@ -1,7 +1,8 @@
 ---
 description: Sol — independent final engineering reviewer. Read-only. Checks correctness, agreement with the approved plan, architecture consistency, security, error handling, tests, and contract mismatches. Reports BLOCKING / IMPORTANT / OPTIONAL findings.
 mode: subagent
-model: nvidia/z-ai/glm-5.3-flash
+model: openai/gpt-5.6-sol
+effort: medium
 permission:
   edit: deny
 ---

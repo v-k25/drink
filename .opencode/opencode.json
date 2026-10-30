@@ -6,5 +6,12 @@
   "agent": {
     "explore": { "model": "nvidia/moonshotai/kimi-k3" },
     "general": { "model": "nvidia/moonshotai/kimi-k3" }
+  },
+  "mcp": {
+    "supabase": {
+      "type": "remote",
+      "url": "https://mcp.supabase.com/mcp?read_only=true&project_ref=ojptrukzildmkilwponx&features=database,docs",
+      "enabled": true
+    }
   }
 }

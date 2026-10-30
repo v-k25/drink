@@ -1,7 +1,8 @@
 ---
 description: Terra — fast, economical utility engineer. Small isolated fixes, repetitive edits, simple tests, documentation updates, formatting, straightforward config changes, mechanical refactors, low-risk cleanup, and simple investigation.
 mode: subagent
-model: nvidia/z-ai/glm-5.3-flash
+model: openai/gpt-5.6-terra
+effort: low
 steps: 15
 ---
 

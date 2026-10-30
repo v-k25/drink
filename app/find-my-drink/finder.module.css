@@ -44,11 +44,11 @@
 .stateCard :is(h2, h3) { font-size: min(1.5rem, 9vw); }
 .stateCard p { margin: 0; color: var(--text-muted); }
 .stateCard .filter, .stateCard .primary, .stateCard .secondary { margin-top: var(--space-2); }
-.listingState { max-width: 1240px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
+.listingState { max-width: 1272px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
 .card { max-width: 1240px; margin: 0 auto; }
 
 /* Entry: four routes. */
-.guide { max-width: 1240px; margin: 0 auto; padding: var(--space-5) 16px var(--space-7); }
+.guide { max-width: 1272px; margin: 0 auto; padding: var(--space-5) 16px var(--space-7); }
 .guideBack { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; margin-bottom: var(--space-4); }
 .guideSetup { display: grid; gap: var(--space-4); max-width: 720px; align-content: start; }
 .entry { display: grid; gap: var(--space-4); }
@@ -144,8 +144,8 @@
 @media (min-width: 1024px) { .productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* Browse all. */
-.listing { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "filters" "chips" "results" "foot"; gap: var(--space-3); align-items: start; max-width: 1240px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
-.listingHead { display: grid; gap: var(--space-3); max-width: 1240px; margin: 0 auto; padding: var(--space-5) 16px 0; }
+.listing { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "controls" "filters" "chips" "results" "foot"; gap: var(--space-3); align-items: start; max-width: 1272px; margin: 0 auto; padding: var(--space-4) 16px var(--space-7); }
+.listingHead { display: grid; gap: var(--space-3); max-width: 1272px; margin: 0 auto; padding: var(--space-5) 16px 0; }
 .listing .discoveryControls { grid-area: controls; display: grid; gap: var(--space-3); min-width: 0; }
 .searchForm { min-width: 0; max-width: 100%; }
 .searchField { display: flex; align-items: center; gap: var(--space-2); min-height: var(--target-primary); padding: 0 4px 0 14px; border: 1.5px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-muted); }
@@ -213,7 +213,7 @@
 @media (max-width: 649px) { .pantryChecklist { grid-template-columns: minmax(0, 1fr); } .pantryContent { padding: var(--space-3); } }
 
 /* Recipe page. */
-.detailBody { --detail-pad: 16px; max-width: 1240px; margin: 0 auto; padding: var(--space-2) var(--detail-pad) var(--space-7); }
+.detailBody { --detail-pad: 16px; max-width: 1272px; margin: 0 auto; padding: var(--space-2) var(--detail-pad) var(--space-7); }
 .detailPage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "back" "hero" "title" "make" "source" "related" "foot"; column-gap: var(--space-8); align-items: start; }
 .detailPage .backLink { grid-area: back; }
 .heroImage { grid-area: hero; display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; border-radius: var(--radius-lg); object-fit: cover; background: var(--surface-raised); }
@@ -255,7 +255,7 @@
 .related h2 { margin-bottom: var(--space-3); }
 .detailPage .disclaimer { grid-area: foot; margin-top: var(--space-6); }
 @media (max-width: 1023px) { .descriptionClamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; } }
-@media (min-width: 768px) { .relatedGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); } .detailBody { --detail-pad: 32px; } }
+@media (min-width: 768px) { .relatedGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); } }
 @media (min-width: 1024px) {
   .moreText { display: none; }
   .detailPage { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); grid-template-areas: "back back" "hero title" "make make" "source source" "related related" "foot foot"; }

@@ -1,5 +1,7 @@
 /* Themed 404. Colours come from the tools theme tokens; sizes are rem so 200% text scales them. */
-.stage { display: grid; justify-items: start; gap: 12px; max-width: 40rem; margin: 0 auto; padding: clamp(32px, 10vw, 112px) 16px; }
+/* Same 1240px content edge as the tool header (1272px less 16px each side), so the 404 lines up with the wordmark. */
+.stage { display: grid; justify-items: start; gap: 12px; max-width: 1272px; margin: 0 auto; padding: clamp(32px, 10vw, 112px) 16px; }
+.stage > * { max-width: 40rem; }
 .stage:focus { outline: none; }
 .code { margin: 0; color: var(--accent-text); font: 800 min(5rem, 22vw)/1 var(--font-display); letter-spacing: -.04em; }
 .title { margin: 0; color: var(--text); font: 800 min(2.25rem, 10vw)/1.1 var(--font-display); letter-spacing: -.03em; overflow-wrap: anywhere; }

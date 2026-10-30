@@ -1,5 +1,16 @@
 # Implementation progress
 
+### Design review bug fixes, 2026-10-31
+
+**Done (not committed).** The owner asked for the three bugs found in the design review (private design system artifact "Socifer Design Review") to be fixed. CSS only; no markup, copy, tokens or behaviour changed.
+- **Dark 404.** The middle of the 404 was the old `body` cream from `globals.css`, so the near-white heading vanished in dark mode. `.root` in `app/tool-shell.module.css` now has `min-height: 100dvh` and `background: var(--bg)`, so every tool root (both tools and the 404) fills the window in its theme colour.
+- **Box round headings on load.** The shell's focus ring matched `[tabindex]:focus-visible`, which beat the existing `outline: none` rules for headings that get focus by script (Chrome treats focus set by script on a fresh page as `:focus-visible`). The selector now skips `[tabindex="-1"]`. Focus still moves to the headings; keyboard rings on links, buttons and inputs are unchanged.
+- **Left edges.** The header and footer content run 1240px wide; Find My Drink's containers were 1240px including their 16px padding (content at x = 116 at 1440), and the recipe page used 32px padding from 768px (x = 132). `.listingState`, `.guide`, `.listing`, `.listingHead` and `.detailBody` in `finder.module.css` are now 1272px (as the Planner already was), and the recipe page's 32px tablet padding is gone. The 404 content uses the same 1272px container, left-aligned, with its text still capped at 40rem.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `git diff --check` clean (CRLF notices only). Production server: Find My Drink entry, Guide me, Browse all, a recipe page, the Planner and the 404 at 1440, 768 and 390, light and dark: the wordmark and the first content element share the same x (100 at 1440, 16 below), no focused heading has an outline, every tool root fills the window, the 404 heading contrast is 17.2:1 (light) and 17.4:1 (dark), no overflow. Tab order on Find My Drink, the Planner and the 404 still shows the 2px ring on each control. Harnesses `design-polish-check`, `brewlist-tools-style-check`, `planner-tool-shell-check`, `recipe-detail-check`, `recipe-discovery-check` and `recipe-guided-browser-check` pass.
+
+**Not fixed (from the same review, design calls for the owner).** Short pages still leave the footer partway up the window; the other review items (imagery, icons, Build your list warnings, pink venues band, recipe names) are untouched.
+
 ### Find My Drink: Guide me finds your base spirit, 2026-10-31
 
 **Done (not committed).** Owner request: the main goal of Find My Drink is to help someone choose a base spirit; cocktails and mocktails are the extra. Owner choices: ask "Are you drinking?" first, offer more than the six spirits we have recipes for, replace the old Guide me, four questions.

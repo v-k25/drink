@@ -1,5 +1,27 @@
 # Implementation progress
 
+### Pre-Party R3 tool shell and age check, 2026-10-30
+
+**Done (not committed).** Party Planner and Find My Drink now share the Pre-Party header, footer, theme and age check. Details and decisions are in `docs/pre-party-redesign-plan.md` (R3 status).
+- **New:** `app/tool-shell.tsx` and `.module.css` (header, footer, focus ring), `app/age-check.tsx` and `.module.css`. `tool-theme.module.css` now maps the old `--tool-*` names onto the tokens, so tool content takes the light theme (dark under `prefers-color-scheme: dark`) without layout changes.
+- **Changed:** `gate.tsx`, `components/shell.tsx`, `planner.tsx` (root is a `div`, `<main>` around the content, shared header, footer and age check), `finder.module.css` and `planner.module.css` (old header, gate and focus rules removed; font is Manrope), `layout.tsx`, `globals.css`, `fonts.ts`. `components/header.tsx` deleted.
+- **Removed:** Nunito Sans (layout, body font, `app/fonts/NunitoSans-*` and its OFL text); nothing uses it.
+- **Untouched:** `app/early-access/actions.ts`, `model.ts`, `suggest.ts`, `catalogue-server.ts`, the Find My Drink guided contract, package and lock files.
+- **Scripts updated, not run** (Playwright is not installed): `planner-tool-shell-check.cjs` (age-check heading, new nav names, saved note), `brewlist-tools-style-check.cjs` (heading text, fonts, primary button colours), `design-polish-check.cjs` (Manrope instead of Nunito on `/`). All pass `node --check`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder` return 200. `/` and `/party-planner` preload only Bricolage and Manrope (no Nunito).
+- Browser pane, production build: both gates in light and dark (`data-theme="tools"`, background `#fff8ee`, Bricolage mark, Manrope text); one `h1`; no horizontal overflow at 1440, 390 and 320, and at 200% root text at 320 (this found a real overflow: the card grew past its column; fixed with a `minmax(0, 1fr)` track and capped mark size). Touch targets: header and footer links, Continue and the exit link are 44px or more; the checkbox itself is 22px but sits inside a 56px choice card that is the click target.
+- Behaviour: Continue unticked shows "! Tick the box to continue" with a red border, `aria-invalid="true"`, `aria-describedby` and focus on the checkbox. Ticking and continuing in Find My Drink opens the guided entry; the Planner then skips its gate and loads "Set your party" (the cookie is remembered). The focus ring is the design's 2px `--focus` outline with a page-coloured gap (keyboard Tab).
+- Tool pages after the gate (guided entry, Set your party) render correctly in light and dark; their content was not redesigned.
+
+**Not run.** The Playwright scripts, a computed-style back-to-back comparison against the committed build (R3 changes the look of the tool pages on purpose, so an identical fingerprint is not expected), a print preview (header and footer are hidden in print by CSS only), Lighthouse, real devices, screen readers, the full planner flow beyond "Set your party", Find My Drink listing, detail and cook mode in the new theme (R5 restyles them).
+
+**Found, not fixed.** The age check has always needed JavaScript to pass; see the plan's R3 status.
+
+**Next.** R4: Party Planner content (waits for approval of R3).
+
 ### Pre-Party R2 landing page, 2026-10-30
 
 **Done (not committed).** `/` is rebuilt to the approved Pre-Party prototype; R1 was committed first as `e10097c`.

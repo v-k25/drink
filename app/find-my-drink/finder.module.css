@@ -1,5 +1,5 @@
 .shell { composes: toolTheme from "../tool-theme.module.css"; }
-.shell { --cream: var(--tool-raised); --plum: var(--tool-text); --berry: var(--tool-accent); --ink: var(--tool-text); --line: var(--tool-line); --muted: var(--tool-muted); min-height: 100vh; background-color: var(--tool-night); color: var(--ink); font-family: var(--font-nunito-sans), Arial, sans-serif; font-size: 1rem; line-height: 1.55; }
+.shell { --cream: var(--tool-raised); --plum: var(--tool-text); --berry: var(--tool-accent); --ink: var(--tool-text); --line: var(--tool-line); --muted: var(--tool-muted); min-height: 100vh; background-color: var(--tool-night); color: var(--ink); font-family: var(--font-text); font-size: 1rem; line-height: 1.55; }
 .intro { max-width: 1288px; margin: auto; padding: 42px max(24px, calc((100% - 1240px) / 2)) 22px; }
 .intro h1 { font-size: clamp(2.4rem, 4vw, 3.6rem); font-weight: 800; line-height: 1.1; margin: 0; letter-spacing: -.02em; }
 .introLine { margin: 6px 0 0; color: var(--muted); font-size: .95rem; }
@@ -349,26 +349,14 @@
 }
 @media print {
   .shell { background: white; color: black; }
-  .header, .makingBar, .detailJumps, .filterPanel, .discoveryControls, .stepNav { display: none !important; }
+  .makingBar, .detailJumps, .filterPanel, .discoveryControls, .stepNav { display: none !important; }
   .card, .stepStage, .checkItem label { border-color: #cbc5ba; box-shadow: none; }
 }
 
 /* Tool redesign v2 S7: shared tool header, gate card and calm states (same pattern as the Party Planner). */
 .srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-.header { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; flex-wrap: wrap; gap: 0 clamp(12px, 3vw, 32px); min-height: 56px; margin: 0; padding: 0 max(16px, calc((100% - 1240px) / 2)); border-bottom: 1px solid var(--tool-line); background: var(--tool-night); color: var(--tool-text); }
-.logo { display: inline-flex; align-items: center; min-height: 44px; color: inherit; font-size: 1.05rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
-.toolNav { display: flex; flex-wrap: wrap; align-self: stretch; gap: 0 clamp(8px, 2.5vw, 24px); min-width: 0; }
-.toolNav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 2px; border-bottom: 2px solid transparent; color: var(--tool-muted); font-size: .9rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
-.toolNav a:hover { color: var(--tool-text); }
-.toolNav a[aria-current="page"] { border-bottom-color: var(--tool-accent); color: var(--tool-text); }
-:global(html):has(.shell) { scroll-padding-top: 72px; }
+:global(html):has(.shell) { scroll-padding-top: 84px; }
 
-.gateStage { display: grid; place-items: center; padding: clamp(24px, 8vw, 96px) 16px; background: radial-gradient(closest-side, rgb(242 181 68 / 16%), transparent 72%) center / min(640px, 100%) 100% no-repeat; }
-.gateCard { width: 100%; max-width: 440px; padding: clamp(24px, 5vw, 36px); border: 1px solid var(--tool-line); border-radius: 12px; background: var(--tool-night); }
-.gateCard h2 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
-.gateCard .actions { flex-direction: column; align-items: stretch; margin-top: 24px; }
-.gateCard .actions > * { width: 100%; min-height: 44px; justify-content: center; text-align: center; }
-.gateCard .check { margin: 20px 0 0; }
 
 .stateCard { display: grid; justify-items: center; gap: 8px; max-width: 440px; margin: 32px auto; padding: 32px 16px; text-align: center; border: 0; background: none; }
 .stateCard svg { color: var(--tool-muted); }
@@ -697,7 +685,7 @@
 .guideDialog { inset: 0; width: min(720px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: clamp(16px, 4vw, 28px); overflow-y: auto; border: 1px solid var(--tool-control); border-radius: 20px; background: var(--tool-sheet); color: var(--tool-text); }
 .guideDialog::backdrop { background: rgb(0 0 0 / 75%); }
 :global(html):has(.guideDialog[open]) { overflow: hidden; }
-.shell:has(.guide) .header { position: static; }
+.shell:has(.guide) [data-tool-header] { position: static; }
 @media (min-width: 768px) { .guideGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
 @media (min-width: 1024px) {
   .guideLayout { grid-template-columns: minmax(280px, 1fr) minmax(0, 2.4fr); align-items: start; }

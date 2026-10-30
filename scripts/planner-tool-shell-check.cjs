@@ -47,13 +47,13 @@ async function main() {
       await context.route('**/*', route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort())
       // Gate card and tool switcher.
       await page.goto(origin + '/party-planner')
-      await page.getByRole('heading', { name: 'One quick check.' }).waitFor()
+      await page.getByRole('heading', { name: 'One quick check first.' }).waitFor()
       assert.equal(await page.locator('main img[src*="nightlife"]').count(), 0, 'gate has no stock photo')
       const tools = page.getByRole('navigation', { name: 'Tools', exact: true })
-      assert.equal(await tools.getByRole('link', { name: 'Party Planner', exact: true }).getAttribute('aria-current'), 'page')
-      assert.equal(await tools.getByRole('link', { name: 'Find My Drink', exact: true }).getAttribute('aria-current'), null)
-      assert.equal(await tools.getByRole('link', { name: 'Find My Drink', exact: true }).getAttribute('href'), '/find-my-drink')
-      assert.equal(await page.getByText('Jaipur prices').isVisible(), !mobile, 'Jaipur prices note shows from 768px up only')
+      assert.equal(await tools.getByRole('link', { name: 'Plan a party', exact: true }).getAttribute('aria-current'), 'page')
+      assert.equal(await tools.getByRole('link', { name: 'Find a drink', exact: true }).getAttribute('aria-current'), null)
+      assert.equal(await tools.getByRole('link', { name: 'Find a drink', exact: true }).getAttribute('href'), '/find-my-drink')
+      assert.equal(await page.getByText('Saved on this device · no account needed').isVisible(), !mobile, 'saved note shows from 768px up only')
       await shot(page, `gate-${width}`)
       // Required setup stage, then the separate suggestion step.
       await page.getByLabel(/I meet the legal drinking-age/).check(); await page.getByRole('button', { name: 'Continue to planner', exact: true }).click()
@@ -115,7 +115,7 @@ async function main() {
       await context.addCookies([{ name: 'allcheers_eligible', value: '1', url: failOrigin }])
       await page.goto(failOrigin + '/party-planner')
       const heading = page.getByRole('heading', { name: "We couldn't load the drinks catalogue." }); await heading.waitFor()
-      assert.equal(await page.getByRole('heading', { name: 'One quick check.' }).count(), 0, 'gate must not show when only the catalogue failed')
+      assert.equal(await page.getByRole('heading', { name: 'One quick check first.' }).count(), 0, 'gate must not show when only the catalogue failed')
       await page.getByText('Your list is safe on this device.').waitFor()
       await shot(page, `unavailable-${width}`)
       await page.getByRole('button', { name: 'Try again', exact: true }).click()
@@ -124,7 +124,7 @@ async function main() {
       await context.close()
       // Without the cookie the gate (not the unavailable state) shows.
       const bare = await browser.newContext({ viewport: { width, height: 844 } }); const barePage = await bare.newPage()
-      await barePage.goto(failOrigin + '/party-planner'); await barePage.getByRole('heading', { name: 'One quick check.' }).waitFor()
+      await barePage.goto(failOrigin + '/party-planner'); await barePage.getByRole('heading', { name: 'One quick check first.' }).waitFor()
       assert.equal(await barePage.getByRole('heading', { name: "We couldn't load the drinks catalogue." }).count(), 0)
       await bare.close()
     }

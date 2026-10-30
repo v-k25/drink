@@ -1,10 +1,11 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useRef, useState, type DragEvent } from 'react'
 import { formatMoney, parseBudget, planText, PRICE_LABEL, type Plan, type PlannerInput, type Product } from './model'
 import { suggestibleCategories, suggestStartingList, SUGGEST_LABEL, type Suggestion } from './suggest'
 import { confirmEligibility, getCatalogue, validatePlan } from './actions'
+import AgeCheck from '../age-check'
+import { ToolFooter, ToolHeader, toolFonts, toolRoot } from '../tool-shell'
 import styles from './planner.module.css'
 
 const iconProps = { viewBox: '0 0 24 24', width: 20, height: 20, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true, focusable: false }
@@ -514,13 +515,10 @@ export default function Planner() {
   }
 
   return <>
-    <main className={styles.shell} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); draggedId.current = null; setDragOver(false) }}>
+    <div className={`${styles.shell} ${toolRoot}`} data-theme="tools" onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); draggedId.current = null; setDragOver(false) }}>
       <a href="#planner-content" className="skip-link">Skip to planner</a>
-      <header className={styles.header}>
-        <Link href="/" className={styles.logo}>Socifer</Link>
-        <nav className={styles.toolNav} aria-label="Tools"><Link href="/party-planner" aria-current="page">Party Planner</Link><Link href="/find-my-drink">Find My Drink</Link></nav>
-        <span className={styles.priceNote}>Jaipur prices</span>
-      </header>
+      <ToolHeader current="planner" />
+      <main>
       <h1 className={styles.srOnly}>Party Planner</h1>
       <section className={step === 0 && !checkingGate ? styles.frameBare : styles.card} id="planner-content">
         {message && <p className={styles.notice} role="status">{message}</p>}
@@ -533,17 +531,13 @@ export default function Planner() {
             <div className={styles.actions}><button className={styles.primary} disabled={retrying} aria-busy={retrying} onClick={() => void retryCatalogue()}>Try again{retrying && <span className={styles.srOnly}> (trying again…)</span>}</button></div>
           </div></div>}
           {step === 0 && !checkingGate && !unavailable && <>
-            <div className={styles.gateStage}><div className={styles.gateCard}><p className={`${styles.eyebrow} ${styles.srOnly}`}>Before we begin</p><h2 ref={heading} tabIndex={-1}>One quick check.</h2><p className={styles.srOnly}>Please confirm your eligibility before viewing alcoholic products.</p>
-            <label className={styles.check}><input type="checkbox" checked={eligible} onChange={event => setEligible(event.target.checked)} />I meet the legal drinking-age requirements where I live</label>
-            <div className={styles.actions}>
-              <button className={styles.primary} disabled={!eligible} onClick={() => void run(async () => {
-                const confirmation = await confirmEligibility(eligible)
-                if (!confirmation.ok) { setMessage(confirmation.error || 'Please confirm eligibility.'); return }
-                const result = await getCatalogue()
-                if (!result.ok) { setUnavailable(true); setMessage('The drinks catalogue could not load. Try again; your choices are safe.'); return }
-                setProducts(result.products); move(1)
-              })}>{draftRestored ? 'Continue your list' : 'Continue to planner'}{busy && <span className={styles.srOnly}> (loading…)</span>}</button><Link href="/" className={styles.secondary}>No thanks, take me home</Link>
-            </div></div></div>
+            <AgeCheck lines={['Party', 'Planner']} headingRef={heading} checked={eligible} onCheckedChange={setEligible} continueLabel={draftRestored ? 'Continue your list' : 'Continue to planner'} busy={busy} busyLabel="loading…" onContinue={() => void run(async () => {
+              const confirmation = await confirmEligibility(eligible)
+              if (!confirmation.ok) { setMessage(confirmation.error || 'Please confirm eligibility.'); return }
+              const result = await getCatalogue()
+              if (!result.ok) { setUnavailable(true); setMessage('The drinks catalogue could not load. Try again; your choices are safe.'); return }
+              setProducts(result.products); move(1)
+            })} />
           </>}
           {step === 1 && !setupComplete && <section className={styles.setupStage}><h2 ref={heading} tabIndex={-1}>Set your party</h2>{basicsFields('setup')}</section>}
           {step === 1 && setupComplete && suggestionOpen && suggestionFields()}
@@ -627,6 +621,8 @@ export default function Planner() {
         </fieldset>
         {busy && <p role="status" className={`${styles.hint} ${styles.srOnly}`}>Working… Your choices are retained.</p>}
       </section>
+      </main>
+      <ToolFooter />
       <dialog ref={inventoryDialog} className={`${styles.modal} ${styles.inventoryDrawer} ${dragOver ? styles.validDrop : ''}`.trim()} aria-labelledby="inventory-title" onCancel={event => { event.preventDefault(); closeInventory() }} onDragOverCapture={dropZoneOver} onDragLeave={dropZoneLeave} onDropCapture={dropZoneDrop}>
         <button className={styles.close} onClick={closeInventory} aria-label="Close plan">×</button><div className={styles.sheetHead}><h2 id="inventory-title" tabIndex={-1}>Your plan</h2>{infoButton()}</div>
         <p role="status" className={styles.srOnly}>{announcement}</p>{drawerOpen && inventoryContents('drawer')}
@@ -669,7 +665,7 @@ export default function Planner() {
         <div className={styles.actions}><button className={styles.secondary} onClick={resetFilters}>Clear all filters</button><button className={styles.primary} onClick={closeFilters}>Done</button></div>
       </dialog>
       {!drawerOpen && toast && <div className={styles.toast} role="status"><span>{toast.message}</span><button className={styles.toastAction} onClick={() => toast.restore()}>Undo</button></div>}
-    </main>
-    <div className={styles.printOnly}>{exported && <Receipt plan={exported} />}</div>
+    </div>
+    <div className={`${styles.printOnly} ${toolFonts}`} data-theme="tools">{exported && <Receipt plan={exported} />}</div>
   </>
 }

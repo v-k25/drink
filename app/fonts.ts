@@ -2,7 +2,7 @@ import localFont from 'next/font/local'
 
 // Pre-Party faces. A themed page (data-theme) puts `${bricolage.variable} ${manrope.variable}` on its root element;
 // tokens.css maps --font-display and --font-text to these variables. Importing this file from a page is what makes
-// next/font preload the files on that route only. Nunito Sans stays in app/layout.tsx until the tool pages are redesigned.
+// next/font preload the files on that route only.
 export const bricolage = localFont({
   src: './fonts/BricolageGrotesque-latin.woff2',
   weight: '700 800',

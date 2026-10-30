@@ -1,5 +1,33 @@
 # Implementation progress
 
+### Find My Drink: Guide me finds your base spirit, 2026-10-31
+
+**Done (not committed).** Owner request: the main goal of Find My Drink is to help someone choose a base spirit; cocktails and mocktails are the extra. Owner choices: ask "Are you drinking?" first, offer more than the six spirits we have recipes for, replace the old Guide me, four questions.
+- **Flow.** Guide me: "Are you drinking alcohol?" Yes → Which flavours do you like? (up to two, or skip) → How should it feel? (Light and fresh, Smooth and rounded, Rich and warming) → How do you usually drink? (With a mixer, In a cocktail, Neat or on ice) → What's the occasion? (Casual get-together, After dinner, Party). Each question can be skipped and has Back. No → flavours → "Mocktails for you" (reviewed alcohol-free paths only, as before).
+- **Result.** "Your best match" with the name, a one-line description, Why (built from the answers that strongly match) and Try it, a button for the runner-up ("Show vodka instead" / "Back to gin"), Change answers, then "Cocktails with gin": three cards ranked by the chosen flavours, with "Show all n". Wine shows its one champagne recipe; beer and liqueur say "We don't have beer recipes yet" and link to the Party Planner.
+- **New:** `app/find-my-drink/spirit.ts` (nine editorial profiles: gin, vodka, rum, whisky, tequila, brandy, wine, beer, liqueur; score = 2 per flavour weight + 3 × feel + 3 × serve + 2 × occasion; ties keep list order), `scripts/spirit-check.cjs`.
+- **Changed:** `components/guided.tsx` (quiz and result; the old type/taste flow and the Edit preferences sheet are removed), `discovery.ts` (URL state: `feel`, `serve`, `occasion` now also accepts `party`, `spirit` for the runner-up, stages `feel`/`serve`/`occasion`), `finder.module.css` (result card; on narrow screens the six-step bar keeps only the current label so 200% text fits), `scripts/recipe-guided-browser-check.cjs` (Guide me sections rewritten for the quiz), `docs/find-my-drink-guided-plan.md` (superseded note).
+- **Unchanged:** recipe data and reviews, `queries.ts`, Surprise me, Browse all, Use what I have, the recipe page and cook mode, the Planner.
+- **Removed from Guide me** (still available elsewhere): ingredient matching and the "only my ingredients" option (Use what I have on Browse all), name search and method (Browse all), the mixed cocktail-and-mocktail view, and Surprise me's "Refine this choice" link.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0. `spirit-check` (every match reachable over all 1,408 answer combinations, expected matches, why sentence, URL round-trip, legacy URLs), `recipe-guided-check`, `recipe-browse-check`, `recipe-pantry-check`, `recipe-metric-check`, and the Playwright scripts `recipe-guided-browser-check`, `recipe-discovery-check`, `recipe-pantry-browser-check`, `recipe-detail-check`, `brewlist-tools-style-check` all pass. In the pane: the whole quiz at 390, the runner-up switch, Show all, Change answers, browser Back, focus moving to each question and to the match; every step and result at 320, 390, 768, 1024 and 1440, each also at 200% text: no overflow and no control under 44px (the six-step bar overflowed by 225px at 320 and 200% before the fix). Rendered text contrast on the result in light and dark: no failures.
+
+**Needs the owner.** Review the nine descriptions, "Try it" lines and weights in `spirit.ts`: they are general editorial descriptions, not reviewed data. Wine, beer and liqueur have no recipes of their own (wine has one champagne recipe).
+
+### Launch-list form and landing copy audit, 2026-10-31
+
+**Done (not committed).** Owner asked to simplify the launch-list form and audit the other landing sections.
+- **Form.** The "Interested in" chips and the "Drinks" select are gone (both tools are already on the page). The form is now Email, "I'm joining early access for Jaipur" and the consent box. `app/early-access/actions.ts` is **unchanged**: the Jaipur box still supplies the one required interest (`jaipur`), and `preference` is stored as null (the column is nullable). The unused chip and optional styles were removed from `form.module.css`; the Jaipur box now has its own error line.
+- **Privacy note** now says "your email, your Jaipur selection and your consent record", which is what is stored.
+- **Copy audit (landing).**
+  - Hero line: dropped "pay upfront" (payment terms are not decided, D11).
+  - "How it'll work" steps now follow the plan: Pick a night ("See what's on in Jaipur." with "this week" removed because nothing is live), Send a request (choose tickets or a table, price shown upfront), Venue confirms ("The venue says yes before you pay."), Show your pass. The old step 3 was titled "Pay" but described the venue confirming.
+  - Left as they are, on purpose: the "Jaipur nights, booked." headline and the page title (owner decisions), the tool cards, For venues, the FAQ and the Privacy section.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `home-design-check`, `brewlist-home-check`, `design-polish-check` and `early-access-check` pass; in the pane the form shows exactly email, Jaipur and consent, with no overflow at 320 or at 200% text. No live form submission was made.
+
+**Found, not fixed.** Existing rows in `waitlist_subscribers` keep their old interests and preference values; new signups store `interests = {jaipur}` and no preference. Nothing reads those columns.
+
 ### Verification run and reminders, 2026-10-31
 
 **Done (not committed).** Everything that could not run before now has: the Playwright harnesses, Lighthouse mobile and the unit checks.

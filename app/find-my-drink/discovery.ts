@@ -1,6 +1,7 @@
 import audit from './discovery-audit.json'
 import { pantryMatches, pantrySignature, reviewedPantry, type PantryRequirement } from './pantry'
 import type { PreparationMethod, RecipeRow } from './queries'
+import { FEELS, QUIZ_OCCASIONS, SERVES, SPIRITS, type Feel, type QuizOccasion, type Serve, type Spirit } from './spirit'
 
 export const TASTES = ['citrusy', 'fruity', 'sweet', 'bitter', 'herbal', 'creamy'] as const
 export type Taste = typeof TASTES[number]
@@ -20,8 +21,13 @@ export type Preferences = {
   type: DrinkType | null; tastes: Taste[]; cocktailTastes: Taste[] | null; mocktailTastes: Taste[] | null
   base: Base | null; occasion: Occasion | null; method: PreparationMethod | null; q: string; onlyIngredients: boolean
 }
+export const GUIDED_STAGES = ['type', 'taste', 'feel', 'serve', 'occasion', 'results'] as const
+export type GuidedStage = typeof GUIDED_STAGES[number]
 export type DiscoveryState = Preferences & {
-  mode: 'entry' | 'guided' | 'random' | 'browse'; stage: 'type' | 'taste' | 'results'; pick: string | null; randomType: 'cocktail' | 'mocktail' | null
+  mode: 'entry' | 'guided' | 'random' | 'browse'; stage: GuidedStage; pick: string | null; randomType: 'cocktail' | 'mocktail' | null
+  // Spirit quiz answers (Guide me). `occasion` above keeps only the reviewed recipe occasions; `quizOccasion` also allows party.
+  // `spirit` is set when someone switches to the runner-up instead of the best match.
+  feel: Feel | null; serve: Serve | null; quizOccasion: QuizOccasion | null; spirit: Spirit | null
 }
 const methods = ['shake', 'stir', 'blend', 'build', 'batch', 'hot'] as const
 const first = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v
@@ -36,6 +42,8 @@ export function parseDiscovery(params: Record<string, string | string[] | undefi
   const occasion = first(params.occasion)
   const pick = first(params.pick)
   const randomType = first(params.randomDrink)
+  const stage = first(params.stage)
+  const feel = first(params.feel), serve = first(params.serve), spirit = first(params.spirit)
   return {
     mode: mode === 'guided' || mode === 'random' || mode === 'browse' ? mode : ['q','drink','type','method','max','pick','cursor'].some(k => params[k] !== undefined) ? 'browse' : 'entry',
     randomType: randomType === 'cocktail' || randomType === 'mocktail' ? randomType : null,
@@ -45,8 +53,12 @@ export function parseDiscovery(params: Record<string, string | string[] | undefi
     base: type === 'mocktail' ? null : base,
     method: methods.includes(method as PreparationMethod) ? method as PreparationMethod : null,
     occasion: OCCASIONS.includes(occasion as Occasion) ? occasion as Occasion : null,
+    quizOccasion: QUIZ_OCCASIONS.includes(occasion as QuizOccasion) ? occasion as QuizOccasion : null,
+    feel: FEELS.includes(feel as Feel) ? feel as Feel : null,
+    serve: SERVES.includes(serve as Serve) ? serve as Serve : null,
+    spirit: type !== 'mocktail' && SPIRITS.includes(spirit as Spirit) ? spirit as Spirit : null,
     q: (first(params.q) ?? '').slice(0,120), onlyIngredients: first(params.ingredients) === 'only',
-    stage: !type || first(params.stage) === 'type' ? 'type' : first(params.stage) === 'taste' ? 'taste' : 'results',
+    stage: !type || stage === 'type' ? 'type' : GUIDED_STAGES.includes(stage as GuidedStage) ? stage as GuidedStage : 'results',
     pick: pick && /^[A-Za-z0-9._~-]{1,200}$/.test(pick) ? pick : null,
   }
 }
@@ -58,7 +70,10 @@ export function discoveryHref(state: DiscoveryState): string {
   if (state.cocktailTastes !== null) p.set('cocktailTaste', state.cocktailTastes.join(','))
   if (state.mocktailTastes !== null) p.set('mocktailTaste', state.mocktailTastes.join(','))
   if (state.base && state.type !== 'mocktail') p.set('base', state.base)
-  if (state.occasion) p.set('occasion', state.occasion)
+  if (state.quizOccasion ?? state.occasion) p.set('occasion', (state.quizOccasion ?? state.occasion)!)
+  if (state.feel) p.set('feel', state.feel)
+  if (state.serve) p.set('serve', state.serve)
+  if (state.spirit && state.type !== 'mocktail') p.set('spirit', state.spirit)
   if (state.method) p.set('method', state.method)
   if (state.q) p.set('q', state.q)
   if (state.onlyIngredients) p.set('ingredients', 'only')

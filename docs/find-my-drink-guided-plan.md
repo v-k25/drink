@@ -1,5 +1,7 @@
 # Find My Drink guided discovery: B12 contract
 
+> **Superseded for Guide me, 2026-10-31.** The owner made finding the base spirit the main goal of Find My Drink. Guide me is now a spirit quiz (drinking? then flavour, feel, how you drink, occasion) that ends on a best match out of nine (gin, vodka, rum, whisky, tequila, brandy, wine, beer, liqueur) and then suggests its cocktails; not drinking goes from flavour to mocktails. Scoring and profiles are in `app/find-my-drink/spirit.ts`. Acceptance items 1 and 3 below (type then taste, the edit-preferences sheet, mixed sections) no longer apply to Guide me. Surprise me, Browse all, Use what I have, the recipe page, the reviews and the publication rules below still apply.
+
 Approved implementation request: 2026-10-14. Build now; retain drinks and the current dark warm-gold Tool Night design.
 
 ## Scope and interfaces

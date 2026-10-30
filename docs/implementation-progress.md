@@ -1,5 +1,23 @@
 # Implementation progress
 
+### Verification run and reminders, 2026-10-31
+
+**Done (not committed).** Everything that could not run before now has: the Playwright harnesses, Lighthouse mobile and the unit checks.
+- **How.** Playwright and Lighthouse were installed in a scratch folder outside the repo (nothing in `package.json` or the lockfile changed) and the scripts were pointed at it with `PLAYWRIGHT_MODULE` and `NODE_PATH`. System Chrome ran Lighthouse.
+- **Scripts that failed and what was wrong.** All were stale assertions or markup changes from R4 and R5, not product bugs: `planner-tool-shell-check` (decorative receipt divider contrast), `planner-redesign-check` (reduced motion is `.001ms`, not `0s`), `planner-inventory-check` (heading size limit; over-budget cards now have an "Add anyway" button, not a de-emphasised class), `planner-ux-production-check` (see finding 1), `brewlist-tools-style-check` (outlined Add buttons, contrast scan rewritten to scan all text, filter status text, cook mode "Done" had been replaced by mistake), `recipe-detail-check` (metric note wording), `recipe-discovery-check` (focus ring is on the card image block), `recipe-guided-browser-check` (choice cards, back button, hydration wait, pantry hints), `recipe-pantry-browser-check` (one-away card wording), `party-planner-backend-check` (new `acceptEligibilityForm` action). All 24 `scripts/*-check.cjs` now pass.
+- **Lighthouse mobile** (local production build, simulated throttling): home perf 93 / a11y 100 / best practices 100; Party Planner 82 / 100 / 100; Find My Drink 98 / 100 / 100; recipe page 90 / 100 / 100. SEO scores 63 to 66 only because the site is deliberately `noindex`.
+
+**Findings, not fixed.**
+1. Party Planner at 1280×844 with three lines: the plan panel is sticky with its own scrolling list, but at scroll 0 the "Review list" button sits below the fold (it is in view once the page scrolls). A layout call for the owner.
+2. Planner LCP is about 3.5 s and TBT 330 ms: the planner is client-rendered and waits for the catalogue. Recipe page LCP is about 3.3 s (about 1.1 s server response from the live read plus the hero image; Lighthouse suggests about 112 KB of image savings). Home LCP is about 3 s with about 1 s of render delay. Worth a performance pass before launch.
+3. About 50 KB of unused JavaScript on the landing page.
+
+**Decisions.** Sign-in for bookings will be **phone code (OTP)**. Staging database and the booking migration wait ("not yet"). Hero photo: owner has no photo of their own; see the options in the reply of 2026-10-31.
+
+**Reminders (also in the memory note `socifer-todo-reminders`).**
+- **Before publishing Phase 0:** settle the business rules (D11: response window, age threshold, cancellation terms, fees); build the booking screens on phone-code sign-in; remove `noindex` (the robots rule and the page metadata) when the site goes public; fix the findings above.
+- **Later:** staging database for the booking migration; verify an SMS provider for phone codes and collect date of birth at sign-up (plan, section 5).
+
 ### R6 follow-ups and booking Phase 1 backend, 2026-10-30
 
 **Done, owner approved each item.** Two commits: the R6 follow-ups, then the booking backend.

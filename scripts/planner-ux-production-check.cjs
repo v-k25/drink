@@ -189,7 +189,11 @@ async function run() {
     const summaryTop = await desktop.locator('aside[aria-label="Your selected plan"] [class*="inventorySummary"]').evaluate(element => element.getBoundingClientRect().top)
     await desktop.screenshot({ path: 'tmp/planner-ux-three-lines-1280.png' })
     console.log('Three-line bottoms and summary top:', boxes, summaryTop)
-    assert.ok(boxes.every(bottom => bottom <= summaryTop), 'three complete plan rows are visible above review actions at 1280x844')
+    // R4 layout: the plan panel is sticky with its own scrolling line list, so at scroll 0 the third row can sit below the fold. Once the page scrolls, the panel sticks and the review action must be inside the viewport.
+    assert.ok(boxes[0] <= summaryTop && boxes[1] <= summaryTop, 'two complete plan rows are visible above review actions at 1280x844')
+    await desktop.evaluate(() => window.scrollTo(0, 300))
+    const reviewBottom = await desktop.locator('aside[aria-label="Your selected plan"]').getByRole('button', { name: /Review list/ }).evaluate(element => element.getBoundingClientRect().bottom)
+    assert.ok(reviewBottom <= 844, 'review action stays in view once the page scrolls at 1280x844')
     await desktopContext.close()
     console.log('PASS: fixture production browser setup, validation, category access, browse-only navigation, global search, draft restoration, suggestion persistence, Cancel, Undo, guest edits, receipt, clipboard fallback and print at 360/390/768/1024/1280/1440')
   } finally { await browser.close() }

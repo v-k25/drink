@@ -36,7 +36,7 @@ async function main() {
     const beer = page.getByRole('button', { name: /^Beer\s/ }).first(); await beer.click()
     const add = page.locator('[aria-label^="Add "][aria-label$="to inventory"]').first(); const productName = await add.getAttribute('aria-label'); await add.click()
     await page.evaluate(() => scrollTo(0, 0)); await page.screenshot({ path: path.join(root, 'output/playwright/planner-redesign/populated.png'), fullPage: true })
-    assert.equal(await page.locator('li[data-product-id]').first().evaluate(element => getComputedStyle(element).transitionDuration), '0s')
+    assert.equal(await page.locator('li[data-product-id]').first().evaluate(element => parseFloat(getComputedStyle(element).transitionDuration) <= 0.001), true) // reduced motion: ui.css sets .001ms
     assert.equal(await page.getByRole('button', { name: /^Beer\s/ }).first().getAttribute('aria-current'), 'true')
     const shelfRegion = page.getByRole('region', { name: 'Beer selection', exact: true }); await shelfRegion.scrollIntoViewIfNeeded()
     await page.screenshot({ path: path.join(root, 'output/playwright/planner-redesign/categories.png'), fullPage: false })

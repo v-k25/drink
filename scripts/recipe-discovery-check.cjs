@@ -152,7 +152,7 @@ async function main() {
 
     await page.goto(`${origin}/find-my-drink?mode=browse`)
     await page.locator('article a').first().focus()
-    const ring = await page.locator('article').first().evaluate(article => getComputedStyle(article).outlineWidth)
+    const ring = await page.locator('article').first().evaluate(article => getComputedStyle(article.querySelector('[class*=imgWrap]')).outlineWidth) // R5: the ring is drawn on the card image block when a link inside has focus-visible
     assert.equal(ring, '2px', 'full card keyboard focus ring is outside the clipping boundary')
 
     const blocked = await browser.newContext()

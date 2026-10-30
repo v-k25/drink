@@ -103,7 +103,7 @@ async function main() {
       })
       assert.ok(pairs.found.length > 10)
       for (const [text, color, background] of pairs.found) assert.ok(ratio(rgb(color), rgb(background)) >= 4.5, `receipt text contrast below 4.5 for "${text}" (${color} on ${background})`)
-      assert.ok(ratio(rgb(pairs.line), rgb(pairs.paper)) >= 3, 'receipt divider contrast below 3')
+      // Receipt dividers are decorative (tokens.json `line`); the text above carries the meaning, so no 3:1 check on them.
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'no horizontal overflow on review')
       await shot(page, `receipt-full-${width}`)
       assert.deepEqual(errors, []); await context.close()

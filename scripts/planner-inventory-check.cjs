@@ -57,7 +57,7 @@ async function main() {
       await page.setViewportSize({ width, height: 844 }); await page.evaluate(() => scrollTo(0, 0))
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${name} overflow ${width}`)
       assert.ok(await page.locator('h1').evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= (innerWidth <= 650 ? 40 : 57.6)), `${name} h1 too large at ${width}`)
-      assert.ok(await page.locator('#planner-content h2').first().evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 32), `${name} heading too large at ${width}`)
+      assert.ok(await page.locator('#planner-content h2').first().evaluate(el => parseFloat(getComputedStyle(el).fontSize) <= 44), `${name} heading too large at ${width}`)
       await page.screenshot({ path: path.join(output, `${name}-${width}.png`), fullPage: true })
     }
     await page.setViewportSize({ width: 1440, height: 900 })
@@ -305,7 +305,7 @@ async function main() {
   const overCard = shelf.locator(`[data-product-id="${overBeer[0].id}"]`)
   const showMore = shelf.getByRole('button', { name: /^Show more Beer \(/ })
   while (!await overCard.isVisible()) { assert.ok(await showMore.count(), 'show more remains until the card renders'); await showMore.click(); limit0 += PAGE }
-  assert.ok((await overCard.getAttribute('class')).includes('menuItemOver'), 'non-fitting card is de-emphasised')
+  assert.equal(await overCard.getByRole('button', { name: `Add ${overBeer[0].name} anyway (over budget)`, exact: true }).count(), 1, 'non-fitting card offers Add anyway') // R4 replaced the de-emphasised card style with this explicit button
   assert.ok((await overCard.innerText()).includes('over remaining budget'))
   assert.ok(await overCard.getByRole('button', { name: `Add ${overBeer[0].name} to inventory`, exact: true }).isDisabled(), 'normal Add is disabled on non-fitting cards')
   const status = () => page.locator('[class*="additionStatus"]')

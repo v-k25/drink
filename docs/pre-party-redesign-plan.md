@@ -110,6 +110,7 @@ Not built in this pass: the launch state (Upcoming nights, Book a table) and the
 
 ## Open items
 
+- **Reminders (owner, 2026-10-31).** Before publishing Phase 0: decide the D11 business rules, build the booking screens on phone-code sign-in, remove `noindex`. Later: staging database for the booking migration. Details in `docs/implementation-progress.md`.
 - **Hero photo (B2 / D12).** The stand-in is the concert crowd in `public/images/nightlife`. A quieter, licensed photo is still to be chosen: silhouettes, hands with glasses or a backlit doorway, ≤ 200 KB per crop.
 - **Logo.** None. The wordmark is set in type.
 - **Harness scripts.** Several scripts check the current design (for example `home-design-check.cjs` and `brewlist-tools-style-check.cjs`). Each checkpoint updates only the assertions its own pages change; R6 finishes the job.

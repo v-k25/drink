@@ -67,9 +67,10 @@ async function main() {
       assert.deepEqual(small,[],label+' targets')
     }
     await page.goto(origin+'/find-my-drink')
+    await page.waitForTimeout(1500) // let the route cards hydrate before clicking
     await page.getByRole('button',{name:'Guide me'}).click()
     assert.equal(await page.locator('fieldset button[aria-pressed="true"]').count(),0,'no preselected type')
-    await page.getByRole('button',{name:'Both',exact:true}).click()
+    await page.getByRole('button',{name:/Both/}).click()
     await page.getByRole('button',{name:'Creamy',exact:true}).click()
     await page.getByRole('button',{name:'Show drinks',exact:true}).click()
     assert.equal(await cards('cocktail').count(),3)
@@ -116,7 +117,7 @@ async function main() {
     assert.equal(await page.getByText('One ingredient away',{exact:true}).count(),0,'unmeasured ice is not one-away')
 
     await page.goto(origin+'/find-my-drink?mode=guided&drink=mixed&base=beer')
-    await results('cocktail').getByText('We don’t have beer recipes yet.',{exact:true}).waitFor()
+    await results('cocktail').getByText('We don’t have beer recipes yet',{exact:true}).waitFor()
     assert.equal(await cards('mocktail').count(),3)
     await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&base=champagne')
     assert.equal(await cards('cocktail').count(),1)
@@ -134,7 +135,8 @@ async function main() {
     }
     await page.getByRole('button',{name:'Start again',exact:true}).click()
     assert.equal(await page.getByRole('region',{name:'Random recipe'}).locator('article').count(),1)
-    await page.getByRole('button',{name:'Guide me',exact:true}).click()
+    await page.getByRole('button',{name:/All ways to find a drink/}).click()
+    await page.getByRole('button',{name:/^Guide me/}).click()
     assert.equal(new URL(page.url()).searchParams.get('base'),'gin')
     assert.equal(new URL(page.url()).searchParams.get('q'),'no-such-recipe')
 

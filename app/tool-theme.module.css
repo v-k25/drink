@@ -1,0 +1,58 @@
+/* Tool Night: the shared, city-neutral palette for Party Planner and Find My Drink.
+   City accents (for example Jaipur pink) live only in the landing tokens; tools never read them. */
+.toolTheme {
+  --tool-night: #0e0d10;
+  --tool-surface: #18171b;
+  --tool-raised: #232127;
+  --tool-line: #3a3740;
+  --tool-control: #8a8490;
+  --tool-text: #f3eee6;
+  --tool-muted: #b8b1a7;
+  --tool-accent: #f2b544;
+  --tool-accent-hover: #ffc966;
+  --tool-accent-pressed: #d99b2b;
+  --tool-on-accent: #0e0d10;
+  --tool-selected: #2a2417;
+  --tool-danger: #ff8a7a;
+  --tool-success: #5edb9b;
+  --tool-shadow: rgb(0 0 0 / 45%);
+  --tool-backdrop: rgb(5 5 6 / 72%);
+  --tool-sheet: #1d1c21;
+  --tool-danger-soft: #33191a;
+  /* Paper receipt: the same values on screen and in print. */
+  --tool-paper: #fbf8f2;
+  --tool-paper-ink: #1c1b18;
+  --tool-paper-muted: #5c5850;
+  --tool-paper-accent: #8a5a00;
+  --tool-paper-danger: #a30038;
+  --tool-paper-line: #8f897e;
+}
+
+/* Print and PDF stay light. */
+@media print {
+  .toolTheme {
+    --tool-night: #ffffff;
+    --tool-surface: #ffffff;
+    --tool-raised: #ffffff;
+    --tool-line: #cbc5ba;
+    --tool-control: #5c5850;
+    --tool-text: #1c1b18;
+    --tool-muted: #5c5850;
+    --tool-accent: #8a5a00;
+    --tool-accent-hover: #8a5a00;
+    --tool-accent-pressed: #8a5a00;
+    --tool-on-accent: #ffffff;
+    --tool-selected: #ffffff;
+    --tool-danger: #a30038;
+    --tool-success: #17683d;
+    --tool-shadow: transparent;
+    --tool-sheet: #ffffff;
+    --tool-danger-soft: #ffffff;
+    --tool-paper: #ffffff;
+    --tool-paper-ink: #1c1b18;
+    --tool-paper-muted: #5c5850;
+    --tool-paper-accent: #8a5a00;
+    --tool-paper-danger: #a30038;
+    --tool-paper-line: #8f897e;
+  }
+}

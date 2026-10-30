@@ -38,8 +38,9 @@ for (const bad of ['0', '10.001', '1e3', '+10', '1,000', ' 10', '10 ']) assert.e
 const text = planText(result.plan)
 assert.match(text, /Jaipur/)
 assert.match(text, /Shortfall: ₹800\.00/)
-assert.match(text, /price date unknown/i)
-assert.match(text, /not a serving recommendation/i)
+assert.match(text, /Listed price in Jaipur, checked 3 Oct 2026/)
+assert.match(text, /Cost per guest: ₹290.00/)
+assert.match(text, /Quantities are an estimate/)
 const sibling = { ...catalogue[0], id: 'gin-2', name: 'Second Gin', pricePaise: 125000 }
 const multiCatalogue = [...catalogue, sibling]
 const multi = { ...input, lines: [...input.lines, { productId: sibling.id, quantity: 3 }] }
@@ -56,4 +57,8 @@ for (const bad of [
   ...[0, 1001, 1.5, '2', NaN].map(quantity => ({ ...multi, lines: [{ productId: 'gin', quantity }, ...multi.lines.slice(1)] })),
 ]) assert.equal(calculatePlan(bad, multiCatalogue).ok, false)
 assert.equal(calculatePlan({ ...multi, lines: [{ productId: 'gin', quantity: 1000 }, ...multi.lines.slice(1)] }, multiCatalogue).ok, true)
+const eighteenCatalogue = Array.from({ length: 18 }, (_, index) => ({ id: `category-${index}`, category: `category-${index}`, name: `Category ${index}`, brand: 'AllCheers', sizeMl: 750, pricePaise: 10000 }))
+const eighteenInput = { guests: 1, budgetPaise: 500000, categories: eighteenCatalogue.map((product) => product.category), lines: eighteenCatalogue.map((product) => ({ productId: product.id, quantity: 1 })) }
+assert.equal(calculatePlan(eighteenInput, eighteenCatalogue).ok, true, 'all 18 categories are accepted')
+assert.equal(calculatePlan({ ...eighteenInput, categories: [...eighteenInput.categories, 'category-18'] }, [...eighteenCatalogue, { ...eighteenCatalogue[0], id: 'category-18', category: 'category-18' }]).ok, false, 'more than 18 categories are rejected')
 console.log('PASS: multi-product categories, mixed lines, duplicates/empty-category/bounds rejection, legacy shape, trusted prices, safe arithmetic and exports.')

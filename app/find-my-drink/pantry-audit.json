@@ -1,0 +1,846 @@
+[
+  {
+    "recipeId": "dn-white-lady",
+    "sourceSignature": "[\"dn-white-lady\",\"White Lady\",\"Gin, Cointreau and lemon juice, shaken and strained cold.\",\"cocktail\",[\"2 oz. Gin\",\"1.5 oz. Cointreau\",\"1 oz. Lemon Juice\"],[{\"raw\":\"2 oz. Gin\",\"name\":\"Gin\",\"unit\":\"oz\",\"amount\":\"2\"},{\"raw\":\"1.5 oz. Cointreau\",\"name\":\"Cointreau\",\"unit\":\"oz\",\"amount\":\"1.5\"},{\"raw\":\"1 oz. Lemon Juice\",\"name\":\"Lemon Juice\",\"unit\":\"oz\",\"amount\":\"1\"}],[\"Add the gin, Cointreau and lemon juice to a shaker.\",\"Fill the shaker with ice and shake hard.\",\"Strain into the chilled glass.\",\"Garnish with a lemon twist.\"],\"Lemon twist\",\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/white-lady\",\"2026-09-20T20:14:52.247177+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "gin",
+        "label": "Gin",
+        "quantityText": "2 oz. Gin"
+      },
+      {
+        "ingredientId": "cointreau",
+        "label": "Cointreau",
+        "quantityText": "1.5 oz. Cointreau"
+      },
+      {
+        "ingredientId": "lemon-juice",
+        "label": "Lemon Juice",
+        "quantityText": "1 oz. Lemon Juice"
+      },
+      {
+        "ingredientId": "lemon-twist",
+        "label": "Lemon twist",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "dn-cape-codder",
+    "sourceSignature": "[\"dn-cape-codder\",\"Cape Codder\",\"Vodka and cranberry juice served over ice with lime.\",\"cocktail\",[\"1.5 oz. Vodka\",\"3 oz. Cranberry Juice\",\"1 wedge Lime\"],[{\"raw\":\"1.5 oz. Vodka\",\"name\":\"Vodka\",\"unit\":\"oz\",\"amount\":\"1.5\"},{\"raw\":\"3 oz. Cranberry Juice\",\"name\":\"Cranberry Juice\",\"unit\":\"oz\",\"amount\":\"3\"},{\"raw\":\"1 wedge Lime\",\"name\":\"Lime\",\"unit\":\"wedge\",\"amount\":\"1\"}],[\"Fill a highball glass with ice.\",\"Pour in the vodka and cranberry juice.\",\"Finish with the lime wedge.\"],\"Lime wedge\",\"Ice\",\"Highball glass\",\"build\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/cape-codder\",\"2026-09-20T18:36:51.695131+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "vodka",
+        "label": "Vodka",
+        "quantityText": "1.5 oz. Vodka"
+      },
+      {
+        "ingredientId": "cranberry-juice",
+        "label": "Cranberry Juice",
+        "quantityText": "3 oz. Cranberry Juice"
+      },
+      {
+        "ingredientId": "lime-wedge",
+        "label": "Lime wedge",
+        "quantityText": "1 wedge Lime"
+      },
+      {
+        "ingredientId": "ice-cubes",
+        "label": "Ice cubes",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Highball glass"
+    ]
+  },
+  {
+    "recipeId": "dn-margarita",
+    "sourceSignature": "[\"dn-margarita\",\"Margarita\",\"Tequila, orange liqueur and lime juice, shaken and strained.\",\"cocktail\",[\"1.25 oz. White Tequila\",\"0.67 oz. Cointreau\",\"0.5 oz. Lime Juice\"],[{\"raw\":\"1.25 oz. White Tequila\",\"name\":\"White Tequila\",\"unit\":\"oz\",\"amount\":\"1.25\"},{\"raw\":\"0.67 oz. Cointreau\",\"name\":\"Cointreau\",\"unit\":\"oz\",\"amount\":\"0.67\"},{\"raw\":\"0.5 oz. Lime Juice\",\"name\":\"Lime Juice\",\"unit\":\"oz\",\"amount\":\"0.5\"}],[\"Chill a cocktail glass and coat its rim with salt.\",\"Add tequila, Cointreau and lime juice to a shaker with ice.\",\"Shake to chill, then strain into the prepared glass.\"],\"Salt rim\",\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/margarita\",\"2026-09-20T19:24:42.63755+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "white-tequila",
+        "label": "White Tequila",
+        "quantityText": "1.25 oz. White Tequila"
+      },
+      {
+        "ingredientId": "cointreau",
+        "label": "Cointreau",
+        "quantityText": "0.67 oz. Cointreau"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime Juice",
+        "quantityText": "0.5 oz. Lime Juice"
+      },
+      {
+        "ingredientId": "salt-for-rim",
+        "label": "Salt for rim",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "dn-negroni",
+    "sourceSignature": "[\"dn-negroni\",\"Negroni\",\"Equal measures of gin, Campari and sweet vermouth, stirred over ice.\",\"cocktail\",[\"1 oz. Campari\",\"1 oz. Gin\",\"1 oz. Sweet Vermouth\",\"1 slice Oranges\"],[{\"raw\":\"1 oz. Campari\",\"name\":\"Campari\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 oz. Gin\",\"name\":\"Gin\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 oz. Sweet Vermouth\",\"name\":\"Sweet Vermouth\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 slice Oranges\",\"name\":\"Oranges\",\"unit\":\"slice\",\"amount\":\"1\"}],[\"Put ice in an old-fashioned glass.\",\"Add the gin, Campari and sweet vermouth.\",\"Stir until cold and finish with the orange slice.\"],\"Orange slice\",\"Ice\",\"Old-fashioned glass\",\"stir\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/negroni\",\"2026-09-20T19:30:07.905209+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "campari",
+        "label": "Campari",
+        "quantityText": "1 oz. Campari"
+      },
+      {
+        "ingredientId": "gin",
+        "label": "Gin",
+        "quantityText": "1 oz. Gin"
+      },
+      {
+        "ingredientId": "sweet-vermouth",
+        "label": "Sweet Vermouth",
+        "quantityText": "1 oz. Sweet Vermouth"
+      },
+      {
+        "ingredientId": "orange-slice",
+        "label": "Orange slice",
+        "quantityText": "1 slice Oranges"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Old-fashioned glass",
+      "Stirring utensil"
+    ]
+  },
+  {
+    "recipeId": "dn-white-russian",
+    "sourceSignature": "[\"dn-white-russian\",\"White Russian\",\"Vodka and coffee liqueur finished with cream.\",\"cocktail\",[\"0.67 oz. Kahlua\",\"1.67 oz. Vodka\",\"1 oz. Cream\"],[{\"raw\":\"0.67 oz. Kahlua\",\"name\":\"Kahlua\",\"unit\":\"oz\",\"amount\":\"0.67\"},{\"raw\":\"1.67 oz. Vodka\",\"name\":\"Vodka\",\"unit\":\"oz\",\"amount\":\"1.67\"},{\"raw\":\"1 oz. Cream\",\"name\":\"Cream\",\"unit\":\"oz\",\"amount\":\"1\"}],[\"Put ice in an old-fashioned glass.\",\"Pour in the coffee liqueur and vodka.\",\"Float the cream on top, then stir gently.\"],null,\"Ice\",\"Old-fashioned glass\",\"build\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/white-russian\",\"2026-09-20T20:15:02.551638+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "kahlua",
+        "label": "Kahlua",
+        "quantityText": "0.67 oz. Kahlua"
+      },
+      {
+        "ingredientId": "vodka",
+        "label": "Vodka",
+        "quantityText": "1.67 oz. Vodka"
+      },
+      {
+        "ingredientId": "heavy-cream",
+        "label": "Heavy cream",
+        "quantityText": "1 oz. Cream"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Old-fashioned glass",
+      "Stirring utensil"
+    ]
+  },
+  {
+    "recipeId": "mm-virgin-mango-margarita",
+    "sourceSignature": "[\"mm-virgin-mango-margarita\",\"Virgin Mango Margarita\",\"A blended mango, coconut water and lime mocktail.\",\"mocktail\",[\".5 cup frozen mango\",\"3/4 cup coconut water\",\"Juice of 1 lime\"],[{\"raw\":\".5 cup frozen mango\",\"name\":\"frozen mango\",\"unit\":\"cup\",\"amount\":\".5\"},{\"raw\":\"3/4 cup coconut water\",\"name\":\"coconut water\",\"unit\":\"cup\",\"amount\":\"3/4\"},{\"raw\":\"Juice of 1 lime\",\"name\":\"Lime juice\",\"unit\":\"lime\",\"amount\":\"1\"}],[\"Blend the frozen mango, coconut water and lime juice until smooth.\",\"Pour into a salt-rimmed glass and finish with a lime wheel.\"],\"Salt rim and lime wheel\",null,null,\"blend\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/virgin-mango-margarita/\",\"2026-09-20T18:08:28.227897+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "frozen-mango",
+        "label": "frozen mango",
+        "quantityText": ".5 cup frozen mango"
+      },
+      {
+        "ingredientId": "coconut-water",
+        "label": "coconut water",
+        "quantityText": "3/4 cup coconut water"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime juice",
+        "quantityText": "Juice of 1 lime"
+      },
+      {
+        "ingredientId": "salt-for-rim",
+        "label": "Salt for rim",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "lime-wheel",
+        "label": "Lime wheel",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Serving glass (type not specified)",
+      "High-speed blender"
+    ]
+  },
+  {
+    "recipeId": "dn-madras",
+    "sourceSignature": "[\"dn-madras\",\"Madras\",\"Cranberry and orange juice with vodka over ice, finished with a lime wedge.\",\"cocktail\",[\"1.5 oz. Vodka\",\"3 oz. Cranberry Juice\",\"1 oz. Orange Juice\",\"1 wedge Lime\"],[{\"raw\":\"1.5 oz. Vodka\",\"name\":\"Vodka\",\"unit\":\"oz\",\"amount\":\"1.5\"},{\"raw\":\"3 oz. Cranberry Juice\",\"name\":\"Cranberry Juice\",\"unit\":\"oz\",\"amount\":\"3\"},{\"raw\":\"1 oz. Orange Juice\",\"name\":\"Orange Juice\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 wedge Lime\",\"name\":\"Lime\",\"unit\":\"wedge\",\"amount\":\"1\"}],[\"Pour the vodka, cranberry juice and orange juice over ice in a highball glass.\",\"Garnish with the lime wedge.\"],\"Lime wedge\",\"Ice\",\"Highball glass\",\"build\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/madras\",\"2026-09-20T19:23:27.540174+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "vodka",
+        "label": "Vodka",
+        "quantityText": "1.5 oz. Vodka"
+      },
+      {
+        "ingredientId": "cranberry-juice",
+        "label": "Cranberry Juice",
+        "quantityText": "3 oz. Cranberry Juice"
+      },
+      {
+        "ingredientId": "orange-juice",
+        "label": "Orange Juice",
+        "quantityText": "1 oz. Orange Juice"
+      },
+      {
+        "ingredientId": "lime-wedge",
+        "label": "Lime wedge",
+        "quantityText": "1 wedge Lime"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Highball glass"
+    ]
+  },
+  {
+    "recipeId": "dn-vodka-gimlet",
+    "sourceSignature": "[\"dn-vodka-gimlet\",\"Vodka Gimlet\",\"Vodka and lime juice with sugar, shaken and served straight up.\",\"cocktail\",[\"1.5 oz. Vodka\",\"1 oz. Lime Juice\",\"1 tsp. Powdered Sugar\"],[{\"raw\":\"1.5 oz. Vodka\",\"name\":\"Vodka\",\"unit\":\"oz\",\"amount\":\"1.5\"},{\"raw\":\"1 oz. Lime Juice\",\"name\":\"Lime Juice\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 tsp. Powdered Sugar\",\"name\":\"Powdered Sugar\",\"unit\":\"tsp\",\"amount\":\"1\"}],[\"Add the vodka, lime juice and powdered sugar to a shaker with ice.\",\"Shake hard until cold.\",\"Strain into the cocktail glass.\"],null,\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/vodka-gimlet\",\"2026-09-20T20:12:09.253564+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "vodka",
+        "label": "Vodka",
+        "quantityText": "1.5 oz. Vodka"
+      },
+      {
+        "ingredientId": "fresh-lime-juice",
+        "label": "Fresh lime juice",
+        "quantityText": "1 oz. Lime Juice"
+      },
+      {
+        "ingredientId": "powdered-sugar",
+        "label": "Powdered Sugar",
+        "quantityText": "1 tsp. Powdered Sugar"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "dn-apple-martini",
+    "sourceSignature": "[\"dn-apple-martini\",\"Apple Martini\",\"Vodka, Cointreau and sour apple schnapps, stirred and strained cold.\",\"cocktail\",[\"0.5 oz. Sour Apple Schnapps\",\"0.5 oz. Cointreau\",\"1.33 oz. Vodka\"],[{\"raw\":\"0.5 oz. Sour Apple Schnapps\",\"name\":\"Sour Apple Schnapps\",\"unit\":\"oz\",\"amount\":\"0.5\"},{\"raw\":\"0.5 oz. Cointreau\",\"name\":\"Cointreau\",\"unit\":\"oz\",\"amount\":\"0.5\"},{\"raw\":\"1.33 oz. Vodka\",\"name\":\"Vodka\",\"unit\":\"oz\",\"amount\":\"1.33\"}],[\"Stir the schnapps, Cointreau and vodka over ice in a mixing glass.\",\"Strain into the chilled glass.\",\"Garnish with the apple slice.\"],\"Apple slice\",\"Ice\",\"Cocktail glass\",\"stir\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/apple-martini\",\"2026-09-20T18:19:18.810081+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "sour-apple-schnapps",
+        "label": "Sour Apple Schnapps",
+        "quantityText": "0.5 oz. Sour Apple Schnapps"
+      },
+      {
+        "ingredientId": "cointreau",
+        "label": "Cointreau",
+        "quantityText": "0.5 oz. Cointreau"
+      },
+      {
+        "ingredientId": "vodka",
+        "label": "Vodka",
+        "quantityText": "1.33 oz. Vodka"
+      },
+      {
+        "ingredientId": "apple-slice",
+        "label": "Apple slice",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Stirring utensil",
+      "Mixing glass",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "dn-bay-breeze",
+    "sourceSignature": "[\"dn-bay-breeze\",\"Bay Breeze\",\"Vodka, cranberry juice and pineapple juice served over ice with a lime wedge.\",\"cocktail\",[\"1.5 oz. Vodka\",\"3 oz. Cranberry Juice\",\"2 oz. Pineapple Juice\"],[{\"raw\":\"1.5 oz. Vodka\",\"name\":\"Vodka\",\"unit\":\"oz\",\"amount\":\"1.5\"},{\"raw\":\"3 oz. Cranberry Juice\",\"name\":\"Cranberry Juice\",\"unit\":\"oz\",\"amount\":\"3\"},{\"raw\":\"2 oz. Pineapple Juice\",\"name\":\"Pineapple Juice\",\"unit\":\"oz\",\"amount\":\"2\"}],[\"Fill a highball glass with ice.\",\"Pour in the vodka, then the cranberry and pineapple juice.\",\"Garnish with the lime wedge.\"],\"Lime wedge\",\"Ice\",\"Highball glass\",\"build\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/bay-breeze\",\"2026-09-20T18:24:27.324328+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "vodka",
+        "label": "Vodka",
+        "quantityText": "1.5 oz. Vodka"
+      },
+      {
+        "ingredientId": "cranberry-juice",
+        "label": "Cranberry Juice",
+        "quantityText": "3 oz. Cranberry Juice"
+      },
+      {
+        "ingredientId": "pineapple-juice",
+        "label": "Pineapple Juice",
+        "quantityText": "2 oz. Pineapple Juice"
+      },
+      {
+        "ingredientId": "lime-wedge",
+        "label": "Lime wedge",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Highball glass"
+    ]
+  },
+  {
+    "recipeId": "dn-cuba-libre",
+    "sourceSignature": "[\"dn-cuba-libre\",\"Cuba Libre\",\"Light rum, lime juice and cola built over ice.\",\"cocktail\",[\"1.5 oz. Light Rum\",\"4 oz. Cola\",\"0.33 oz. Lime Juice\"],[{\"raw\":\"1.5 oz. Light Rum\",\"name\":\"Light Rum\",\"unit\":\"oz\",\"amount\":\"1.5\"},{\"raw\":\"4 oz. Cola\",\"name\":\"Cola\",\"unit\":\"oz\",\"amount\":\"4\"},{\"raw\":\"0.33 oz. Lime Juice\",\"name\":\"Lime Juice\",\"unit\":\"oz\",\"amount\":\"0.33\"}],[\"Pack a tall glass with ice.\",\"Add the rum and lime juice, then top with the cola.\",\"Garnish with the lime wedge.\"],\"Lime wedge\",\"Ice\",\"Tall glass\",\"build\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/cuba-libre\",\"2026-09-20T18:47:47.331175+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "light-rum",
+        "label": "Light Rum",
+        "quantityText": "1.5 oz. Light Rum"
+      },
+      {
+        "ingredientId": "cola",
+        "label": "Cola",
+        "quantityText": "4 oz. Cola"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime Juice",
+        "quantityText": "0.33 oz. Lime Juice"
+      },
+      {
+        "ingredientId": "lime-wedge",
+        "label": "Lime wedge",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Tall glass"
+    ]
+  },
+  {
+    "recipeId": "dn-last-word",
+    "sourceSignature": "[\"dn-last-word\",\"Last Word\",\"Equal parts gin, green chartreuse, maraschino and lime, shaken and strained cold.\",\"cocktail\",[\"0.75 oz. Green Chartreuse\",\"0.75 oz. Gin\",\"0.75 oz. Maraschino Liqueur\",\"0.75 oz. Lime Juice\"],[{\"raw\":\"0.75 oz. Green Chartreuse\",\"name\":\"Green Chartreuse\",\"unit\":\"oz\",\"amount\":\"0.75\"},{\"raw\":\"0.75 oz. Gin\",\"name\":\"Gin\",\"unit\":\"oz\",\"amount\":\"0.75\"},{\"raw\":\"0.75 oz. Maraschino Liqueur\",\"name\":\"Maraschino Liqueur\",\"unit\":\"oz\",\"amount\":\"0.75\"},{\"raw\":\"0.75 oz. Lime Juice\",\"name\":\"Lime Juice\",\"unit\":\"oz\",\"amount\":\"0.75\"}],[\"Add the four equal measures to a shaker with ice.\",\"Shake hard until cold.\",\"Strain into the cocktail glass.\"],null,\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/last-word\",\"2026-09-20T19:19:56.933309+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "green-chartreuse",
+        "label": "Green Chartreuse",
+        "quantityText": "0.75 oz. Green Chartreuse"
+      },
+      {
+        "ingredientId": "gin",
+        "label": "Gin",
+        "quantityText": "0.75 oz. Gin"
+      },
+      {
+        "ingredientId": "maraschino-liqueur",
+        "label": "Maraschino Liqueur",
+        "quantityText": "0.75 oz. Maraschino Liqueur"
+      },
+      {
+        "ingredientId": "fresh-lime-juice",
+        "label": "Fresh lime juice",
+        "quantityText": "0.75 oz. Lime Juice"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "dn-sidecar",
+    "sourceSignature": "[\"dn-sidecar\",\"Sidecar\",\"Cognac, Triple Sec and lemon juice, shaken and strained cold.\",\"cocktail\",[\"1.67 oz. Cognac\",\"0.67 oz. Triple Sec\",\"0.67 oz. Lemon Juice\"],[{\"raw\":\"1.67 oz. Cognac\",\"name\":\"Cognac\",\"unit\":\"oz\",\"amount\":\"1.67\"},{\"raw\":\"0.67 oz. Triple Sec\",\"name\":\"Triple Sec\",\"unit\":\"oz\",\"amount\":\"0.67\"},{\"raw\":\"0.67 oz. Lemon Juice\",\"name\":\"Lemon Juice\",\"unit\":\"oz\",\"amount\":\"0.67\"}],[\"Add the cognac, triple sec and lemon juice to a shaker with ice.\",\"Shake hard until cold.\",\"Strain into the cocktail glass.\"],null,\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/sidecar\",\"2026-09-20T19:51:36.337461+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "cognac",
+        "label": "Cognac",
+        "quantityText": "1.67 oz. Cognac"
+      },
+      {
+        "ingredientId": "triple-sec",
+        "label": "Triple Sec",
+        "quantityText": "0.67 oz. Triple Sec"
+      },
+      {
+        "ingredientId": "fresh-lemon-juice",
+        "label": "Fresh lemon juice",
+        "quantityText": "0.67 oz. Lemon Juice"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "dn-strawberry-daiquiri",
+    "sourceSignature": "[\"dn-strawberry-daiquiri\",\"Strawberry Daiquiri\",\"Light rum with strawberries, lime and sugar syrup, shaken and strained cold.\",\"cocktail\",[\"2 oz. Light Rum\",\"0.75 oz. Lime Juice\",\"1 oz. Strawberries\",\"0.75 oz. Sugar Syrup\"],[{\"raw\":\"2 oz. Light Rum\",\"name\":\"Light Rum\",\"unit\":\"oz\",\"amount\":\"2\"},{\"raw\":\"0.75 oz. Lime Juice\",\"name\":\"Lime Juice\",\"unit\":\"oz\",\"amount\":\"0.75\"},{\"raw\":\"1 oz. Strawberries\",\"name\":\"Strawberries\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"0.75 oz. Sugar Syrup\",\"name\":\"Sugar Syrup\",\"unit\":\"oz\",\"amount\":\"0.75\"}],[\"Muddle the strawberries with the syrup in a shaker.\",\"Add the rum, lime juice and ice.\",\"Shake hard until cold.\",\"Strain into the cocktail glass.\"],null,\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/strawberry-daiquiri\",\"2026-09-20T19:57:28.593278+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "light-rum",
+        "label": "Light Rum",
+        "quantityText": "2 oz. Light Rum"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime Juice",
+        "quantityText": "0.75 oz. Lime Juice"
+      },
+      {
+        "ingredientId": "fresh-strawberries",
+        "label": "Fresh strawberries",
+        "quantityText": "1 oz. Strawberries"
+      },
+      {
+        "ingredientId": "sugar-syrup",
+        "label": "Sugar Syrup",
+        "quantityText": "0.75 oz. Sugar Syrup"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer",
+      "Muddling tool"
+    ]
+  },
+  {
+    "recipeId": "mm-pina-colada-mocktail-recipe",
+    "sourceSignature": "[\"mm-pina-colada-mocktail-recipe\",\"Piña Colada Mocktail (Non-Alcoholic + 3 Ingredients!)\",\"Frozen pineapple and coconut cream blended with pineapple juice.\",\"mocktail\",[\"1 cup frozen pineapple chunks\",\"1/3 cup coconut cream\",\"1/2 cup pineapple juice\",\"1 oz non-alcoholic rum ((optional))\"],[{\"raw\":\"1 cup frozen pineapple chunks\",\"name\":\"frozen pineapple chunks\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"1/3 cup coconut cream\",\"name\":\"coconut cream\",\"unit\":\"cup\",\"amount\":\"1/3\"},{\"raw\":\"1/2 cup pineapple juice\",\"name\":\"pineapple juice\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"1 oz non-alcoholic rum ((optional))\",\"name\":\"non-alcoholic rum ((optional))\",\"unit\":\"oz\",\"amount\":\"1\"}],[\"Blend the frozen pineapple, coconut cream, pineapple juice and the optional non-alcoholic rum until smooth.\",\"Pour into a glass and garnish with the pineapple wedge.\"],\"Pineapple wedge\",null,null,\"blend\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/pina-colada-mocktail-recipe/\",\"2026-09-20T20:20:22.431221+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "frozen-pineapple-chunks",
+        "label": "frozen pineapple chunks",
+        "quantityText": "1 cup frozen pineapple chunks"
+      },
+      {
+        "ingredientId": "coconut-cream",
+        "label": "coconut cream",
+        "quantityText": "1/3 cup coconut cream"
+      },
+      {
+        "ingredientId": "pineapple-juice",
+        "label": "pineapple juice",
+        "quantityText": "1/2 cup pineapple juice"
+      },
+      {
+        "ingredientId": "pineapple-wedge",
+        "label": "Pineapple wedge",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Serving glass (type not specified)",
+      "Blender"
+    ]
+  },
+  {
+    "recipeId": "dn-brandy-alexander",
+    "sourceSignature": "[\"dn-brandy-alexander\",\"Brandy Alexander\",\"Cognac and chocolate liqueur with cream, shaken and strained cold.\",\"cocktail\",[\"1 oz. Cognac\",\"1 oz. Dark Creme de Cacao\",\"1 oz. (fresh) Cream\",\"1 pinch Nutmeg\"],[{\"raw\":\"1 oz. Cognac\",\"name\":\"Cognac\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 oz. Dark Creme de Cacao\",\"name\":\"Dark Creme de Cacao\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 oz. (fresh) Cream\",\"name\":\"(fresh) Cream\",\"unit\":\"oz\",\"amount\":\"1\"},{\"raw\":\"1 pinch Nutmeg\",\"name\":\"Nutmeg\",\"unit\":\"pinch\",\"amount\":\"1\"}],[\"Put the cognac, chocolate liqueur and cream in a shaker with ice.\",\"Shake hard until cold.\",\"Strain into the chilled glass.\",\"Sprinkle a pinch of nutmeg on top.\"],null,\"Ice\",\"Cocktail glass\",\"shake\",\"1 cocktail\",1,\"drinknation\",\"https://drinknation.com/drink/brandy-alexander\",\"2026-09-20T18:32:02.070202+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "cognac",
+        "label": "Cognac",
+        "quantityText": "1 oz. Cognac"
+      },
+      {
+        "ingredientId": "dark-creme-de-cacao",
+        "label": "Dark Creme de Cacao",
+        "quantityText": "1 oz. Dark Creme de Cacao"
+      },
+      {
+        "ingredientId": "fresh-cream",
+        "label": "Fresh cream",
+        "quantityText": "1 oz. (fresh) Cream"
+      },
+      {
+        "ingredientId": "nutmeg",
+        "label": "Nutmeg",
+        "quantityText": "1 pinch Nutmeg"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Cocktail glass",
+      "Cocktail shaker",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "mm-roy-rogers-drink",
+    "sourceSignature": "[\"mm-roy-rogers-drink\",\"Easy Roy Rogers Drink\",\"Cola and grenadine over ice in a tall glass, garnished with maraschino cherries.\",\"mocktail\",[\"1 cup cola\",\"1 tablespoon grenadine\",\"1-2 Maraschino cherries, to garnish\"],[{\"raw\":\"1 cup cola\",\"name\":\"cola\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"1 tablespoon grenadine\",\"name\":\"grenadine\",\"unit\":\"tablespoon\",\"amount\":\"1\"},{\"raw\":\"1-2 Maraschino cherries, to garnish\",\"name\":\"Maraschino cherries, to garnish\",\"unit\":null,\"amount\":\"1-2\"}],[\"Pack a tall glass with ice.\",\"Add the grenadine, then top with the cola.\",\"Stir the drink well.\",\"Garnish with one or two maraschino cherries.\"],\"Maraschino cherry\",\"Ice\",\"Tall glass\",\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/roy-rogers-drink/\",\"2026-09-20T20:18:29.491361+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "cola",
+        "label": "cola",
+        "quantityText": "1 cup cola"
+      },
+      {
+        "ingredientId": "grenadine",
+        "label": "grenadine",
+        "quantityText": "1 tablespoon grenadine"
+      },
+      {
+        "ingredientId": "maraschino-cherries",
+        "label": "Maraschino cherries",
+        "quantityText": "1-2 Maraschino cherries, to garnish"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Tall glass",
+      "Stirring utensil"
+    ]
+  },
+  {
+    "recipeId": "mm-watermelon-strawberry-mocktail",
+    "sourceSignature": "[\"mm-watermelon-strawberry-mocktail\",\"Watermelon Strawberry Mocktail\",\"Watermelon and strawberries blended with fresh lime juice.\",\"mocktail\",[\"2 cups watermelon\",\"8 strawberries\",\"1/2 cup fresh lime juice\"],[{\"raw\":\"2 cups watermelon\",\"name\":\"watermelon\",\"unit\":\"cups\",\"amount\":\"2\"},{\"raw\":\"8 strawberries\",\"name\":\"strawberries\",\"unit\":\"count\",\"amount\":\"8\"},{\"raw\":\"1/2 cup fresh lime juice\",\"name\":\"fresh lime juice\",\"unit\":\"cup\",\"amount\":\"1/2\"}],[\"Blend the watermelon, strawberries and lime juice together.\",\"Pour over ice to serve.\"],null,\"Ice\",null,\"blend\",\"2\",2,\"mindfulmocktail\",\"https://mindfulmocktail.com/watermelon-strawberry-mocktail/\",\"2026-09-20T20:18:27.494431+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "watermelon",
+        "label": "Watermelon",
+        "quantityText": "2 cups watermelon"
+      },
+      {
+        "ingredientId": "fresh-strawberries",
+        "label": "Fresh strawberries",
+        "quantityText": "8 strawberries"
+      },
+      {
+        "ingredientId": "fresh-lime-juice",
+        "label": "Fresh lime juice",
+        "quantityText": "1/2 cup fresh lime juice"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Blender",
+      "Serving glasses"
+    ]
+  },
+  {
+    "recipeId": "mm-pineapple-coconut-mocktail",
+    "sourceSignature": "[\"mm-pineapple-coconut-mocktail\",\"Pineapple Spritzer Mocktail\",\"Pineapple, coconut milk and lime blended smooth, topped with sparkling water.\",\"mocktail\",[\"1 cup pineapple\",\"1 cup reduced-fat coconut milk\",\"2 tbsp lime juice\",\"2 cups sparkling water\"],[{\"raw\":\"1 cup pineapple\",\"name\":\"pineapple\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"1 cup reduced-fat coconut milk\",\"name\":\"reduced-fat coconut milk\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"2 tbsp lime juice\",\"name\":\"lime juice\",\"unit\":\"tbsp\",\"amount\":\"2\"},{\"raw\":\"2 cups sparkling water\",\"name\":\"sparkling water\",\"unit\":\"cups\",\"amount\":\"2\"}],[\"Blend the pineapple, coconut milk and lime juice until smooth.\",\"Divide between two glasses.\",\"Top with the sparkling water and serve.\"],null,null,null,\"blend\",\"2\",2,\"mindfulmocktail\",\"https://mindfulmocktail.com/pineapple-coconut-mocktail/\",\"2026-09-20T20:18:02.12384+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "pineapple",
+        "label": "Pineapple",
+        "quantityText": "1 cup pineapple"
+      },
+      {
+        "ingredientId": "reduced-fat-coconut-milk",
+        "label": "Reduced-fat coconut milk",
+        "quantityText": "1 cup reduced-fat coconut milk"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime juice",
+        "quantityText": "2 tbsp lime juice"
+      },
+      {
+        "ingredientId": "sparkling-water",
+        "label": "Sparkling water",
+        "quantityText": "2 cups sparkling water"
+      }
+    ],
+    "equipment": [
+      "Blender",
+      "Serving glasses"
+    ]
+  },
+  {
+    "recipeId": "mm-grapefruit-martino-mocktail",
+    "sourceSignature": "[\"mm-grapefruit-martino-mocktail\",\"Grapefruit MartiNO Mocktail\",\"Grapefruit juice and rosemary syrup with aquafaba, shaken and poured cold.\",\"mocktail\",[\".5 cup grapefruit juice\",\".25 cup rosemary syrup\",\"1 tablespoon aquafaba\"],[{\"raw\":\".5 cup grapefruit juice\",\"name\":\"grapefruit juice\",\"unit\":\"cup\",\"amount\":\".5\"},{\"raw\":\".25 cup rosemary syrup\",\"name\":\"rosemary syrup\",\"unit\":\"cup\",\"amount\":\".25\"},{\"raw\":\"1 tablespoon aquafaba\",\"name\":\"aquafaba\",\"unit\":\"tablespoon\",\"amount\":\"1\"}],[\"Add the grapefruit juice, rosemary syrup and aquafaba to a shaker filled with ice.\",\"Shake hard until cold.\",\"Pour into a glass and serve.\"],null,\"Ice\",null,\"shake\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/grapefruit-martino-mocktail/\",\"2026-09-20T20:17:56.044476+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "grapefruit-juice",
+        "label": "Grapefruit juice",
+        "quantityText": ".5 cup grapefruit juice"
+      },
+      {
+        "ingredientId": "rosemary-syrup",
+        "label": "Rosemary syrup",
+        "quantityText": ".25 cup rosemary syrup"
+      },
+      {
+        "ingredientId": "aquafaba",
+        "label": "Aquafaba",
+        "quantityText": "1 tablespoon aquafaba"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Shaker",
+      "Serving glass"
+    ]
+  },
+  {
+    "recipeId": "mm-coconut-water-mocktail",
+    "sourceSignature": "[\"mm-coconut-water-mocktail\",\"Quick Coconut Water Mocktail\",\"Coconut water and citrus shaken with honey, with optional vinegar, Tajín rim and dehydrated citrus.\",\"mocktail\",[\"3 oz coconut water ((no added sugar))\",\"2 oz orange juice ((freshly squeezed is best))\",\"1/2 oz lemon juice\",\"1/2 teaspoon apple cider vinegar ((optional - see note 1) )\",\"1 teaspoon honey ((or your choice of sweetener - see note 2))\",\"Dehydrated citrus for garnish ((optional))\",\"Tajin for rim ((optional))\"],[{\"raw\":\"3 oz coconut water ((no added sugar))\",\"name\":\"coconut water ((no added sugar))\",\"unit\":\"oz\",\"amount\":\"3\"},{\"raw\":\"2 oz orange juice ((freshly squeezed is best))\",\"name\":\"orange juice ((freshly squeezed is best))\",\"unit\":\"oz\",\"amount\":\"2\"},{\"raw\":\"1/2 oz lemon juice\",\"name\":\"lemon juice\",\"unit\":\"oz\",\"amount\":\"1/2\"},{\"raw\":\"1/2 teaspoon apple cider vinegar ((optional - see note 1) )\",\"name\":\"apple cider vinegar ((optional - see note 1) )\",\"unit\":\"teaspoon\",\"amount\":\"1/2\"},{\"raw\":\"1 teaspoon honey ((or your choice of sweetener - see note 2))\",\"name\":\"honey ((or your choice of sweetener - see note 2))\",\"unit\":\"teaspoon\",\"amount\":\"1\"},{\"raw\":\"Dehydrated citrus for garnish ((optional))\",\"name\":\"Dehydrated citrus for garnish ((optional))\",\"unit\":null,\"amount\":null},{\"raw\":\"Tajin for rim ((optional))\",\"name\":\"Tajin for rim ((optional))\",\"unit\":null,\"amount\":null}],[\"Optionally rim a glass with Tajín, then fill it with ice.\",\"Shake the measured liquids and honey with ice for about 10 to 15 seconds; include the optional apple cider vinegar if using.\",\"Strain into the prepared glass, add optional dehydrated citrus, and serve.\"],\"Dehydrated citrus (optional)\",\"Ice\",null,\"shake\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/coconut-water-mocktail/\",\"2026-09-20T20:19:00.201796+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "coconut-water-no-added-sugar",
+        "label": "Coconut water (no added sugar)",
+        "quantityText": "3 oz coconut water ((no added sugar))"
+      },
+      {
+        "ingredientId": "orange-juice",
+        "label": "Orange juice",
+        "quantityText": "2 oz orange juice ((freshly squeezed is best))"
+      },
+      {
+        "ingredientId": "lemon-juice",
+        "label": "Lemon juice",
+        "quantityText": "1/2 oz lemon juice"
+      },
+      {
+        "ingredientId": "honey",
+        "label": "Honey",
+        "quantityText": "1 teaspoon honey"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Shaker",
+      "Serving glass",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "mm-hibiscus-electrolyte-drink",
+    "sourceSignature": "[\"mm-hibiscus-electrolyte-drink\",\"Hibiscus Electrolyte Drink\",\"Chilled hibiscus tea and coconut water over ice, brightened with pineapple and mineral salt.\",\"mocktail\",[\"1/2 cup chilled hibiscus tea\",\"1/2 cup coconut water\",\"Splash of pineapple juice to sweeten ((or to taste))\",\"Pinch of mineral salt\",\"Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))\",\"Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))\"],[{\"raw\":\"1/2 cup chilled hibiscus tea\",\"name\":\"chilled hibiscus tea\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"1/2 cup coconut water\",\"name\":\"coconut water\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"Splash of pineapple juice to sweeten ((or to taste))\",\"name\":\"Splash of pineapple juice to sweeten ((or to taste))\",\"unit\":null,\"amount\":null},{\"raw\":\"Pinch of mineral salt\",\"name\":\"Pinch of mineral salt\",\"unit\":null,\"amount\":null},{\"raw\":\"Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))\",\"name\":\"Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))\",\"unit\":null,\"amount\":null},{\"raw\":\"Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))\",\"name\":\"Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))\",\"unit\":null,\"amount\":null}],[\"Fill a glass with ice.\",\"Pour in the chilled hibiscus tea and coconut water, then add pineapple juice and a pinch of mineral salt.\",\"Add more pineapple juice or a sweetener of choice if wanted, then stir to combine.\",\"Finish with optional pineapple fronds, lime, or hibiscus flowers and serve.\"],\"Pineapple fronds, lime, or hibiscus flowers (optional)\",\"Ice\",null,\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/hibiscus-electrolyte-drink/\",\"2026-09-20T20:19:39.444722+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "chilled-hibiscus-tea",
+        "label": "Chilled hibiscus tea",
+        "quantityText": "1/2 cup chilled hibiscus tea"
+      },
+      {
+        "ingredientId": "coconut-water",
+        "label": "Coconut water",
+        "quantityText": "1/2 cup coconut water"
+      },
+      {
+        "ingredientId": "pineapple-juice",
+        "label": "Pineapple juice",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "mineral-salt",
+        "label": "Mineral salt",
+        "quantityText": "Pinch of mineral salt"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Serving glass",
+      "Spoon"
+    ]
+  },
+  {
+    "recipeId": "mm-lemon-mocktails",
+    "sourceSignature": "[\"mm-lemon-mocktails\",\"Lemon Mocktails\",\"Lemon, mint, coconut water and soda water stirred over ice, with optional honey.\",\"mocktail\",[\"1 tablespoon lemon juice\",\"2 lemon rounds\",\"1 teaspoon honey (optional)\",\"6-8 fresh mint leaves\",\".5 cup coconut water\",\".5 cup soda water\"],[{\"raw\":\"1 tablespoon lemon juice\",\"name\":\"lemon juice\",\"unit\":\"tablespoon\",\"amount\":\"1\"},{\"raw\":\"2 lemon rounds\",\"name\":\"lemon rounds\",\"unit\":null,\"amount\":\"2\"},{\"raw\":\"1 teaspoon honey (optional)\",\"name\":\"honey (optional)\",\"unit\":\"teaspoon\",\"amount\":\"1\"},{\"raw\":\"6-8 fresh mint leaves\",\"name\":\"fresh mint leaves\",\"unit\":null,\"amount\":\"6-8\"},{\"raw\":\".5 cup coconut water\",\"name\":\"coconut water\",\"unit\":\"cup\",\"amount\":\".5\"},{\"raw\":\".5 cup soda water\",\"name\":\"soda water\",\"unit\":\"cup\",\"amount\":\".5\"}],[\"Muddle the lemon rounds and mint in a glass, adding the optional honey if using.\",\"Add plenty of ice, then pour in the coconut water and soda water.\",\"Stir gently and serve.\"],null,\"Ice\",null,\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/lemon-mocktails/\",\"2026-09-20T20:18:06.674378+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "lemon-juice",
+        "label": "Lemon juice",
+        "quantityText": "1 tablespoon lemon juice"
+      },
+      {
+        "ingredientId": "lemon-rounds",
+        "label": "Lemon rounds",
+        "quantityText": "2 lemon rounds"
+      },
+      {
+        "ingredientId": "fresh-mint-leaves",
+        "label": "Fresh mint leaves",
+        "quantityText": "6-8 fresh mint leaves"
+      },
+      {
+        "ingredientId": "coconut-water",
+        "label": "Coconut water",
+        "quantityText": ".5 cup coconut water"
+      },
+      {
+        "ingredientId": "soda-water",
+        "label": "Soda water",
+        "quantityText": ".5 cup soda water"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Muddler",
+      "Serving glass",
+      "Spoon"
+    ]
+  },
+  {
+    "recipeId": "mm-paloma-mocktails",
+    "sourceSignature": "[\"mm-paloma-mocktails\",\"Perfect Paloma Mocktails\",\"Grapefruit and lime with maple, salt and a sharp optional alternative, finished with optional soda.\",\"mocktail\",[\"2 ounce grapefruit juice\",\"1 ounce lime juice ((squeezed fresh is best))\",\"1/2 ounce maple syrup ((or your choice of sweetener - see Note 1))\",\"1/4 teaspoon apple cider vinegar ((or non-alcoholic tequila - see Note 2))\",\"Pinch of sea salt\",\"1/2 cup plain or grapefruit soda ((optional - see Note 3))\",\"Salt or Tajin for rim ((optional))\"],[{\"raw\":\"2 ounce grapefruit juice\",\"name\":\"grapefruit juice\",\"unit\":\"ounce\",\"amount\":\"2\"},{\"raw\":\"1 ounce lime juice ((squeezed fresh is best))\",\"name\":\"lime juice ((squeezed fresh is best))\",\"unit\":\"ounce\",\"amount\":\"1\"},{\"raw\":\"1/2 ounce maple syrup ((or your choice of sweetener - see Note 1))\",\"name\":\"maple syrup ((or your choice of sweetener - see Note 1))\",\"unit\":\"ounce\",\"amount\":\"1/2\"},{\"raw\":\"1/4 teaspoon apple cider vinegar ((or non-alcoholic tequila - see Note 2))\",\"name\":\"apple cider vinegar ((or non-alcoholic tequila - see Note 2))\",\"unit\":\"teaspoon\",\"amount\":\"1/4\"},{\"raw\":\"Pinch of sea salt\",\"name\":\"Pinch of sea salt\",\"unit\":null,\"amount\":null},{\"raw\":\"1/2 cup plain or grapefruit soda ((optional - see Note 3))\",\"name\":\"plain or grapefruit soda ((optional - see Note 3))\",\"unit\":\"cup\",\"amount\":\"1/2\"},{\"raw\":\"Salt or Tajin for rim ((optional))\",\"name\":\"Salt or Tajin for rim ((optional))\",\"unit\":null,\"amount\":null}],[\"Optionally rim a glass with salt or Tajín, then fill it with ice.\",\"Shake the grapefruit juice, lime juice, maple syrup or another sweetener, apple cider vinegar or non-alcoholic tequila, and sea salt with ice until cold.\",\"Strain into the prepared glass.\",\"Top with the optional plain or grapefruit soda, stir gently, and serve.\"],null,\"Ice\",null,\"shake\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/paloma-mocktails/\",\"2026-09-20T20:20:02.568905+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "grapefruit-juice",
+        "label": "Grapefruit juice",
+        "quantityText": "2 ounce grapefruit juice"
+      },
+      {
+        "ingredientId": "lime-juice",
+        "label": "Lime juice",
+        "quantityText": "1 ounce lime juice ((squeezed fresh is best))"
+      },
+      {
+        "ingredientId": "maple-syrup",
+        "label": "Maple syrup",
+        "quantityText": "1/2 ounce maple syrup"
+      },
+      {
+        "ingredientId": "apple-cider-vinegar",
+        "label": "Apple cider vinegar",
+        "quantityText": "1/4 teaspoon apple cider vinegar"
+      },
+      {
+        "ingredientId": "sea-salt",
+        "label": "Sea salt",
+        "quantityText": "Pinch of sea salt"
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Shaker",
+      "Serving glass",
+      "Strainer"
+    ]
+  },
+  {
+    "recipeId": "mm-shirley-temple-mocktail",
+    "sourceSignature": "[\"mm-shirley-temple-mocktail\",\"The Best Shirley Temple Mocktail\",\"A fizzy lime-and-grenadine build over ice, with an optional maraschino cherry.\",\"mocktail\",[\"1 cup ginger ale\",\"1 teaspoon grenadine\",\"1 squeeze of fresh lime juice\",\"Maraschino cherries to garnish (optional)\"],[{\"raw\":\"1 cup ginger ale\",\"name\":\"ginger ale\",\"unit\":\"cup\",\"amount\":\"1\"},{\"raw\":\"1 teaspoon grenadine\",\"name\":\"grenadine\",\"unit\":\"teaspoon\",\"amount\":\"1\"},{\"raw\":\"1 squeeze of fresh lime juice\",\"name\":\"squeeze of fresh lime juice\",\"unit\":null,\"amount\":\"1\"},{\"raw\":\"Maraschino cherries to garnish (optional)\",\"name\":\"Maraschino cherries to garnish (optional)\",\"unit\":null,\"amount\":null}],[\"Fill a glass with ice.\",\"Combine the ginger ale with grenadine and a squeeze of fresh lime, then stir gently.\",\"Add an optional maraschino cherry garnish and serve.\"],\"Maraschino cherry (optional)\",\"Ice\",null,\"build\",\"1\",1,\"mindfulmocktail\",\"https://mindfulmocktail.com/shirley-temple-mocktail/\",\"2026-09-20T20:18:18.584979+00:00\",\"allcheers_original_from_facts\"]",
+    "requirements": [
+      {
+        "ingredientId": "ginger-ale",
+        "label": "Ginger ale",
+        "quantityText": "1 cup ginger ale"
+      },
+      {
+        "ingredientId": "grenadine",
+        "label": "Grenadine",
+        "quantityText": "1 teaspoon grenadine"
+      },
+      {
+        "ingredientId": "fresh-lime-juice",
+        "label": "Fresh lime juice",
+        "quantityText": null
+      },
+      {
+        "ingredientId": "ice",
+        "label": "Ice",
+        "quantityText": null
+      }
+    ],
+    "equipment": [
+      "Serving glass",
+      "Spoon"
+    ]
+  }
+]

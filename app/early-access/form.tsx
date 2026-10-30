@@ -26,7 +26,7 @@ export default function EarlyAccessForm() {
   return (
     <div className="access-form-wrap">
       <div role="status" aria-live="polite" aria-atomic="true">
-        {state.status === 'success' && <p className="form-message success">You&apos;re on the list. We&apos;ll be in touch when AllCheers is ready for Jaipur.</p>}
+        {state.status === 'success' && <p className="form-message success">You&apos;re on the list. We&apos;ll be in touch when Socifer is ready for Jaipur.</p>}
         {state.status === 'duplicate' && <p className="form-message">That email is already on the list.</p>}
         {state.status === 'invalid' && <p className="form-message error">Please check the highlighted fields below.</p>}
         {state.status === 'error' && <p className="form-message error">We couldn&apos;t save that just now. Your entries are still here. Please try again.</p>}
@@ -57,7 +57,7 @@ export default function EarlyAccessForm() {
           </label>
           <label className="check-label">
             <input type="checkbox" name="consent" required checked={consent} onChange={e => setConsent(e.target.checked)} aria-invalid={Boolean(state.fieldErrors?.consent)} aria-describedby="consent-note consent-error" />
-            I agree to receive AllCheers early-access and launch updates by email.
+            I agree to receive Socifer early-access and launch updates by email.
           </label>
           <p id="consent-note" className="fine-print">See how your signup information is used in our <a href="#privacy">early-access privacy information</a>.</p>
           <p id="consent-error" className="error">{state.fieldErrors?.consent}</p>

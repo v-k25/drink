@@ -1,0 +1,3030 @@
+[
+  {
+    "id": "dn-apple-daiquiri",
+    "name": "Apple Daiquiri",
+    "description": "Light rum, apple juice and lime form a crisp shaken sour with a small measure of superfine sugar.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Light Rum",
+      "0.5 oz. Apple Juice",
+      "0.5 oz. Lime Juice",
+      "0.5 tsp. Superfine Sugar"
+    ],
+    "preparation": [
+      "Fill a shaker one-third full with ice.",
+      "Add the light rum, apple juice, lime juice and superfine sugar.",
+      "Shake well, then pass through a strainer into a pre-chilled cocktail glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "0.5 oz. Apple Juice",
+        "name": "Apple Juice",
+        "unit": "oz",
+        "amount": "0.5"
+      },
+      {
+        "raw": "0.5 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.5"
+      },
+      {
+        "raw": "0.5 tsp. Superfine Sugar",
+        "name": "Superfine Sugar",
+        "unit": "tsp",
+        "amount": "0.5"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/apple-daiquiri",
+    "sourceRetrievedAt": "2026-09-20T18:19:05.7408+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-apple-martini",
+    "name": "Apple Martini",
+    "description": "Vodka, Cointreau and sour apple schnapps, stirred and strained cold.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "0.5 oz. Sour Apple Schnapps",
+      "0.5 oz. Cointreau",
+      "1.33 oz. Vodka"
+    ],
+    "preparation": [
+      "Stir the schnapps, Cointreau and vodka over ice in a mixing glass.",
+      "Strain into the chilled glass.",
+      "Garnish with the apple slice."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "0.5 oz. Sour Apple Schnapps",
+        "name": "Sour Apple Schnapps",
+        "unit": "oz",
+        "amount": "0.5"
+      },
+      {
+        "raw": "0.5 oz. Cointreau",
+        "name": "Cointreau",
+        "unit": "oz",
+        "amount": "0.5"
+      },
+      {
+        "raw": "1.33 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.33"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "stir",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": "Apple slice",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/apple-martini",
+    "sourceRetrievedAt": "2026-09-20T18:19:18.810081+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/apple-martini-2392/t1783919133/f377-651-120/1600x800.webp?s=6997fd71a967768f",
+    "imageAlt": "Apple Martini"
+  },
+  {
+    "id": "dn-bay-breeze",
+    "name": "Bay Breeze",
+    "description": "Vodka, cranberry juice and pineapple juice served over ice with a lime wedge.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Vodka",
+      "3 oz. Cranberry Juice",
+      "2 oz. Pineapple Juice"
+    ],
+    "preparation": [
+      "Fill a highball glass with ice.",
+      "Pour in the vodka, then the cranberry and pineapple juice.",
+      "Garnish with the lime wedge."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "3 oz. Cranberry Juice",
+        "name": "Cranberry Juice",
+        "unit": "oz",
+        "amount": "3"
+      },
+      {
+        "raw": "2 oz. Pineapple Juice",
+        "name": "Pineapple Juice",
+        "unit": "oz",
+        "amount": "2"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Highball glass",
+    "garnish": "Lime wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/bay-breeze",
+    "sourceRetrievedAt": "2026-09-20T18:24:27.324328+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/bay-breeze-1516/t1783919133/c0-713-5500-2750/1600x800.webp?s=a7f8dc45e93e5cfd",
+    "imageAlt": "Bay Breeze"
+  },
+  {
+    "id": "dn-black-russian",
+    "name": "Black Russian",
+    "description": "Coffee liqueur and vodka make a brisk, spirit-led drink with a roasted edge.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 parts Coffee Liqueur",
+      "5 parts Vodka"
+    ],
+    "preparation": [
+      "Fill a rocks glass with ice.",
+      "Add the coffee liqueur and vodka in the recorded proportions.",
+      "Stir gently, then serve at once."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 parts Coffee Liqueur",
+        "name": "Coffee Liqueur",
+        "unit": "parts",
+        "amount": "2"
+      },
+      {
+        "raw": "5 parts Vodka",
+        "name": "Vodka",
+        "unit": "parts",
+        "amount": "5"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "stir",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/black-russian",
+    "sourceRetrievedAt": "2026-09-20T18:27:33.261552+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/black-russian-1508/t1783919133/c750-0-3000-3000/1000x1000.webp?s=88fd7fc60f1864b2",
+    "imageAlt": "Black Russian"
+  },
+  {
+    "id": "dn-boulevardier",
+    "name": "Boulevardier",
+    "description": "Bourbon, Campari and red vermouth, stirred over ice.",
+    "category": "Whisky",
+    "baseSpirit": "whisky",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Bourbon",
+      "1 oz. Campari",
+      "1 oz. Red Vermouth"
+    ],
+    "preparation": [
+      "Add the bourbon, Campari and vermouth to a mixing glass with ice.",
+      "Stir until cold.",
+      "Strain into the chilled glass.",
+      "Garnish with citrus zest."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Bourbon",
+        "name": "Bourbon",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "1 oz. Campari",
+        "name": "Campari",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. Red Vermouth",
+        "name": "Red Vermouth",
+        "unit": "oz",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "stir",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": "Orange or lemon zest",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/boulevardier",
+    "sourceRetrievedAt": "2026-09-20T18:31:26.32314+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/boulevardier-10247/t1787075234/f570-505-100/1600x800.webp?s=16f8110575b11254",
+    "imageAlt": "Boulevardier"
+  },
+  {
+    "id": "dn-brandy-alexander",
+    "name": "Brandy Alexander",
+    "description": "Cognac and chocolate liqueur with cream, shaken and strained cold.",
+    "category": "Brandy",
+    "baseSpirit": "brandy",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1 oz. Cognac",
+      "1 oz. Dark Creme de Cacao",
+      "1 oz. (fresh) Cream",
+      "1 pinch Nutmeg"
+    ],
+    "preparation": [
+      "Put the cognac, chocolate liqueur and cream in a shaker with ice.",
+      "Shake hard until cold.",
+      "Strain into the chilled glass.",
+      "Sprinkle a pinch of nutmeg on top."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 oz. Cognac",
+        "name": "Cognac",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. Dark Creme de Cacao",
+        "name": "Dark Creme de Cacao",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. (fresh) Cream",
+        "name": "(fresh) Cream",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 pinch Nutmeg",
+        "name": "Nutmeg",
+        "unit": "pinch",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": [
+      "Milk (cream)"
+    ],
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/brandy-alexander",
+    "sourceRetrievedAt": "2026-09-20T18:32:02.070202+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/brandy-alexander-2900/t1783919133/c0-0-6720-3360/1600x800.webp?s=d76c7f2bcac50280",
+    "imageAlt": "Brandy Alexander"
+  },
+  {
+    "id": "dn-cape-codder",
+    "name": "Cape Codder",
+    "description": "Vodka and cranberry juice served over ice with lime.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Vodka",
+      "3 oz. Cranberry Juice",
+      "1 wedge Lime"
+    ],
+    "preparation": [
+      "Fill a highball glass with ice.",
+      "Pour in the vodka and cranberry juice.",
+      "Finish with the lime wedge."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "3 oz. Cranberry Juice",
+        "name": "Cranberry Juice",
+        "unit": "oz",
+        "amount": "3"
+      },
+      {
+        "raw": "1 wedge Lime",
+        "name": "Lime",
+        "unit": "wedge",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Highball glass",
+    "garnish": "Lime wedge",
+    "abv": null,
+    "featured": true,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/cape-codder",
+    "sourceRetrievedAt": "2026-09-20T18:36:51.695131+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/cape-codder-3393/t1783919133/c0-530-5264-2632/1600x800.webp?s=87434457c3ea4abc",
+    "imageAlt": "Cape Codder"
+  },
+  {
+    "id": "dn-cuba-libre",
+    "name": "Cuba Libre",
+    "description": "Light rum, lime juice and cola built over ice.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Light Rum",
+      "4 oz. Cola",
+      "0.33 oz. Lime Juice"
+    ],
+    "preparation": [
+      "Pack a tall glass with ice.",
+      "Add the rum and lime juice, then top with the cola.",
+      "Garnish with the lime wedge."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "4 oz. Cola",
+        "name": "Cola",
+        "unit": "oz",
+        "amount": "4"
+      },
+      {
+        "raw": "0.33 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.33"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Tall glass",
+    "garnish": "Lime wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/cuba-libre",
+    "sourceRetrievedAt": "2026-09-20T18:47:47.331175+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/cuba-libre-3583/t1783919133/c0-182-5616-2808/1600x800.webp?s=6a9fa218067aa112",
+    "imageAlt": "Cuba Libre"
+  },
+  {
+    "id": "dn-daiquiri",
+    "name": "Daiquiri",
+    "description": "Light rum, lime and sugar syrup, shaken and strained cold.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 oz. Light Rum",
+      "0.25 oz. Gomme Syrup",
+      "0.67 oz. Lime"
+    ],
+    "preparation": [
+      "Add the rum, syrup and lime to a shaker with ice.",
+      "Shake hard until cold.",
+      "Strain into the cocktail glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "0.25 oz. Gomme Syrup",
+        "name": "Gomme Syrup",
+        "unit": "oz",
+        "amount": "0.25"
+      },
+      {
+        "raw": "0.67 oz. Lime",
+        "name": "Lime",
+        "unit": "oz",
+        "amount": "0.67"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/daiquiri",
+    "sourceRetrievedAt": "2026-09-20T18:48:24.007095+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/daiquiri-3591/t1783919133/c0-109-5574-2787/1600x800.webp?s=93ec5ce9b45b6d67",
+    "imageAlt": "Daiquiri"
+  },
+  {
+    "id": "dn-derby-daiquiri",
+    "name": "Derby Daiquiri",
+    "description": "A frozen blend of light rum, lime, orange and sugar, served in a champagne flute.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Light Rum",
+      "1 tbsp. Lime Juice",
+      "1 oz. Orange Juice",
+      "1 tsp. Sugar"
+    ],
+    "preparation": [
+      "Measure the light rum, lime juice, orange juice and sugar into a blender.",
+      "Add the instruction-specified 1/2 cup of shaved ice.",
+      "Process at low speed until icy and combined.",
+      "Pour into a champagne flute and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "1 tbsp. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "tbsp",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. Orange Juice",
+        "name": "Orange Juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 tsp. Sugar",
+        "name": "Sugar",
+        "unit": "tsp",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "blend",
+    "prepTimeMin": null,
+    "iceType": "1/2 cup shaved ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/derby-daiquiri",
+    "sourceRetrievedAt": "2026-09-20T18:50:11.835027+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-frozen-mint-daiquiri",
+    "name": "Frozen Mint Daiquiri",
+    "description": "Rum, lime, mint, ice and sugar make a cooling blended single-serving drink.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 oz. Light Rum",
+      "1 tbsp. Lime Juice",
+      "2 sprigs or leaves Mint",
+      "1 Cup Ice",
+      "1 tsp. Sugar"
+    ],
+    "preparation": [
+      "Place the light rum, lime juice, mint, ice and sugar in a blender.",
+      "Blend to a smooth, frosty texture.",
+      "Pour into a glass and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "1 tbsp. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "tbsp",
+        "amount": "1"
+      },
+      {
+        "raw": "2 sprigs or leaves Mint",
+        "name": "or leaves Mint",
+        "unit": "sprigs",
+        "amount": "2"
+      },
+      {
+        "raw": "1 Cup Ice",
+        "name": "Ice",
+        "unit": "Cup",
+        "amount": "1"
+      },
+      {
+        "raw": "1 tsp. Sugar",
+        "name": "Sugar",
+        "unit": "tsp",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "blend",
+    "prepTimeMin": null,
+    "iceType": "1 Cup Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/frozen-mint-daiquiri",
+    "sourceRetrievedAt": "2026-09-20T18:59:26.287251+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-frozen-pineapple-daiquiri",
+    "name": "Frozen Pineapple Daiquiri",
+    "description": "Light rum, pineapple, lime, ice and sugar blend into a cold, fruit-forward frozen drink.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Light Rum",
+      "1 tbsp. Lime Juice",
+      "4 chunks Pineapple",
+      "1 Cup Ice",
+      "0.5 tsp. Sugar"
+    ],
+    "preparation": [
+      "Add the light rum, lime juice, pineapple chunks, ice and sugar to a blender.",
+      "Blend until smooth.",
+      "Pour into a glass and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "1 tbsp. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "tbsp",
+        "amount": "1"
+      },
+      {
+        "raw": "4 chunks Pineapple",
+        "name": "chunks Pineapple",
+        "unit": null,
+        "amount": "4"
+      },
+      {
+        "raw": "1 Cup Ice",
+        "name": "Ice",
+        "unit": "Cup",
+        "amount": "1"
+      },
+      {
+        "raw": "0.5 tsp. Sugar",
+        "name": "Sugar",
+        "unit": "tsp",
+        "amount": "0.5"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "blend",
+    "prepTimeMin": null,
+    "iceType": "1 Cup Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/frozen-pineapple-daiquiri",
+    "sourceRetrievedAt": "2026-09-20T18:59:38.080275+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-gin-and-tonic",
+    "name": "Gin and Tonic",
+    "description": "Gin meets chilled tonic in a brisk, bitter-leaning long drink finished with lime.",
+    "category": "Gin",
+    "baseSpirit": "gin",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Gin",
+      "Fill with Tonic Water",
+      "1 twist Lime Peel"
+    ],
+    "preparation": [
+      "Fill a highball glass with ice.",
+      "Pour in the gin and top with tonic water.",
+      "Finish with the lime-peel twist and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Gin",
+        "name": "Gin",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "Fill with Tonic Water",
+        "name": "Tonic Water",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "1 twist Lime Peel",
+        "name": "twist Lime Peel",
+        "unit": null,
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "1 lime peel twist",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/gin-and-tonic",
+    "sourceRetrievedAt": "2026-09-20T19:02:37.60648+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/gin-and-tonic-3828/t1783919133/c926-0-4160-4160/1000x1000.webp?s=9ebc09642ae19443",
+    "imageAlt": "Gin and Tonic"
+  },
+  {
+    "id": "dn-gin-fizz",
+    "name": "Gin Fizz",
+    "description": "Gin, lemon and sugar syrup make a bright, lightly sparkling highball finished with club soda.",
+    "category": "Gin",
+    "baseSpirit": "gin",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Gin",
+      "2 oz. Carbonated Water/Club Soda",
+      "1 oz. Lemon Juice",
+      "0.33 oz. Sugar Syrup"
+    ],
+    "preparation": [
+      "Shake the gin, lemon juice and sugar syrup with ice.",
+      "Pour the shaken mixture into a highball glass over two ice cubes.",
+      "Gently add the club soda and stir.",
+      "Use mint, lime and/or nutmeg as an optional garnish, then serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Gin",
+        "name": "Gin",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "2 oz. Carbonated Water/Club Soda",
+        "name": "Carbonated Water/Club Soda",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "1 oz. Lemon Juice",
+        "name": "Lemon Juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "0.33 oz. Sugar Syrup",
+        "name": "Sugar Syrup",
+        "unit": "oz",
+        "amount": "0.33"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "2 ice cubes",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "mint, lime and/or nutmeg (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/gin-fizz",
+    "sourceRetrievedAt": "2026-09-20T19:02:48.373247+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/gin-fizz-3838/t1783919133/f547-639-100/1000x1000.webp?s=6d49bfea6b379c73",
+    "imageAlt": "Gin Fizz"
+  },
+  {
+    "id": "dn-last-word",
+    "name": "Last Word",
+    "description": "Equal parts gin, green chartreuse, maraschino and lime, shaken and strained cold.",
+    "category": "Gin",
+    "baseSpirit": "gin",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "0.75 oz. Green Chartreuse",
+      "0.75 oz. Gin",
+      "0.75 oz. Maraschino Liqueur",
+      "0.75 oz. Lime Juice"
+    ],
+    "preparation": [
+      "Add the four equal measures to a shaker with ice.",
+      "Shake hard until cold.",
+      "Strain into the cocktail glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "0.75 oz. Green Chartreuse",
+        "name": "Green Chartreuse",
+        "unit": "oz",
+        "amount": "0.75"
+      },
+      {
+        "raw": "0.75 oz. Gin",
+        "name": "Gin",
+        "unit": "oz",
+        "amount": "0.75"
+      },
+      {
+        "raw": "0.75 oz. Maraschino Liqueur",
+        "name": "Maraschino Liqueur",
+        "unit": "oz",
+        "amount": "0.75"
+      },
+      {
+        "raw": "0.75 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.75"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/last-word",
+    "sourceRetrievedAt": "2026-09-20T19:19:56.933309+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/last-word-10244/t1783919133/c0-0-6720-3360/1600x800.webp?s=4781f7bc749b4bb0",
+    "imageAlt": "Last Word"
+  },
+  {
+    "id": "dn-madras",
+    "name": "Madras",
+    "description": "Cranberry and orange juice with vodka over ice, finished with a lime wedge.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Vodka",
+      "3 oz. Cranberry Juice",
+      "1 oz. Orange Juice",
+      "1 wedge Lime"
+    ],
+    "preparation": [
+      "Pour the vodka, cranberry juice and orange juice over ice in a highball glass.",
+      "Garnish with the lime wedge."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "3 oz. Cranberry Juice",
+        "name": "Cranberry Juice",
+        "unit": "oz",
+        "amount": "3"
+      },
+      {
+        "raw": "1 oz. Orange Juice",
+        "name": "Orange Juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 wedge Lime",
+        "name": "Lime",
+        "unit": "wedge",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Highball glass",
+    "garnish": "Lime wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/madras",
+    "sourceRetrievedAt": "2026-09-20T19:23:27.540174+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-margarita",
+    "name": "Margarita",
+    "description": "Tequila, orange liqueur and lime juice, shaken and strained.",
+    "category": "Tequila",
+    "baseSpirit": "tequila",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.25 oz. White Tequila",
+      "0.67 oz. Cointreau",
+      "0.5 oz. Lime Juice"
+    ],
+    "preparation": [
+      "Chill a cocktail glass and coat its rim with salt.",
+      "Add tequila, Cointreau and lime juice to a shaker with ice.",
+      "Shake to chill, then strain into the prepared glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.25 oz. White Tequila",
+        "name": "White Tequila",
+        "unit": "oz",
+        "amount": "1.25"
+      },
+      {
+        "raw": "0.67 oz. Cointreau",
+        "name": "Cointreau",
+        "unit": "oz",
+        "amount": "0.67"
+      },
+      {
+        "raw": "0.5 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.5"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": "Salt rim",
+    "abv": null,
+    "featured": true,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/margarita",
+    "sourceRetrievedAt": "2026-09-20T19:24:42.63755+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/margarita-278/t1783919133/c930-718-5790-2895/1600x800.webp?s=b69e0d9c6e6b06d8",
+    "imageAlt": "Margarita"
+  },
+  {
+    "id": "dn-mimosa",
+    "name": "Mimosa",
+    "description": "Chilled orange juice and champagne make a light sparkling pour for a flute.",
+    "category": "Champagne",
+    "baseSpirit": "champagne",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "0.89 oz. Champagne",
+      "0.89 oz. Orange Juice"
+    ],
+    "preparation": [
+      "Pour the chilled orange juice into a champagne flute.",
+      "Ease in the chilled champagne without shaking.",
+      "Serve immediately."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "0.89 oz. Champagne",
+        "name": "Champagne",
+        "unit": "oz",
+        "amount": "0.89"
+      },
+      {
+        "raw": "0.89 oz. Orange Juice",
+        "name": "Orange Juice",
+        "unit": "oz",
+        "amount": "0.89"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": null,
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/mimosa",
+    "sourceRetrievedAt": "2026-09-20T19:27:14.440645+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/mimosa-331/t1786774292/f619-480-100/1000x1000.webp?s=7946af6782024d22",
+    "imageAlt": "Mimosa"
+  },
+  {
+    "id": "dn-mojito",
+    "name": "Mojito",
+    "description": "Light rum, mint, lime and soda create a fresh sparkling highball with a softly sweet edge.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.33 oz. Light Rum",
+      "Fill with Carbonated Water/Club Soda",
+      "0.75 oz. Lime Juice",
+      "2 wedges Lime",
+      "12 pieces (leaves) Mint",
+      "0.67 oz. Sugar Syrup"
+    ],
+    "preparation": [
+      "Press the mint with lime juice and sugar syrup at the base of the glass.",
+      "Pack the glass with ice and add the light rum.",
+      "Top with club soda, stirring gently to lift the mint.",
+      "Use the two lime wedges as an optional garnish, then serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.33 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "1.33"
+      },
+      {
+        "raw": "Fill with Carbonated Water/Club Soda",
+        "name": "Carbonated Water/Club Soda",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "0.75 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.75"
+      },
+      {
+        "raw": "2 wedges Lime",
+        "name": "Lime",
+        "unit": "wedges",
+        "amount": "2"
+      },
+      {
+        "raw": "12 pieces (leaves) Mint",
+        "name": "(leaves) Mint",
+        "unit": "pieces",
+        "amount": "12"
+      },
+      {
+        "raw": "0.67 oz. Sugar Syrup",
+        "name": "Sugar Syrup",
+        "unit": "oz",
+        "amount": "0.67"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "2 lime wedges (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/mojito",
+    "sourceRetrievedAt": "2026-09-20T19:27:55.828074+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/mojito-2256/t1786774091/f797-455-100/1000x1000.webp?s=80e19a7fb9839019",
+    "imageAlt": "Mojito"
+  },
+  {
+    "id": "dn-negroni",
+    "name": "Negroni",
+    "description": "Equal measures of gin, Campari and sweet vermouth, stirred over ice.",
+    "category": "Gin",
+    "baseSpirit": "gin",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1 oz. Campari",
+      "1 oz. Gin",
+      "1 oz. Sweet Vermouth",
+      "1 slice Oranges"
+    ],
+    "preparation": [
+      "Put ice in an old-fashioned glass.",
+      "Add the gin, Campari and sweet vermouth.",
+      "Stir until cold and finish with the orange slice."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 oz. Campari",
+        "name": "Campari",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. Gin",
+        "name": "Gin",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. Sweet Vermouth",
+        "name": "Sweet Vermouth",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 slice Oranges",
+        "name": "Oranges",
+        "unit": "slice",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "stir",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Old-fashioned glass",
+    "garnish": "Orange slice",
+    "abv": null,
+    "featured": true,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/negroni",
+    "sourceRetrievedAt": "2026-09-20T19:30:07.905209+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/negroni-1891/t1786036646/c0-1262-8192-4096/1600x800.webp?s=77a5cd0661f74f8a",
+    "imageAlt": "Negroni"
+  },
+  {
+    "id": "dn-paloma",
+    "name": "Paloma",
+    "description": "Tequila topped with grapefruit soda and lime, served over ice with salt.",
+    "category": "Tequila",
+    "baseSpirit": "tequila",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.67 oz. White Tequila",
+      "0.17 oz. Lime Juice",
+      "1 pinch Salt",
+      "3.33 oz. Grapefruit Soda"
+    ],
+    "preparation": [
+      "Pour the tequila and lime juice over ice in a highball glass.",
+      "Add the salt.",
+      "Top with the grapefruit soda.",
+      "Stir gently and garnish with the lime slice."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.67 oz. White Tequila",
+        "name": "White Tequila",
+        "unit": "oz",
+        "amount": "1.67"
+      },
+      {
+        "raw": "0.17 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.17"
+      },
+      {
+        "raw": "1 pinch Salt",
+        "name": "Salt",
+        "unit": "pinch",
+        "amount": "1"
+      },
+      {
+        "raw": "3.33 oz. Grapefruit Soda",
+        "name": "Grapefruit Soda",
+        "unit": "oz",
+        "amount": "3.33"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Highball glass",
+    "garnish": "Lime slice",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/paloma",
+    "sourceRetrievedAt": "2026-09-20T19:33:41.083274+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/paloma-10252/t1785865662/f388-486-100/1600x800.webp?s=417111bb2c932345",
+    "imageAlt": "Paloma"
+  },
+  {
+    "id": "dn-pina-colada",
+    "name": "Pina Colada",
+    "description": "White rum, cream of coconut and pineapple juice blended with crushed ice.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.7 oz. White Rum",
+      "1 oz. Cream of coconut",
+      "1.7 oz. Pineapple Juice"
+    ],
+    "preparation": [
+      "Blend the rum, cream of coconut and pineapple juice with crushed ice.",
+      "Blend until thick and smooth, adding more ice if needed.",
+      "Pour into a hurricane glass and garnish."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.7 oz. White Rum",
+        "name": "White Rum",
+        "unit": "oz",
+        "amount": "1.7"
+      },
+      {
+        "raw": "1 oz. Cream of coconut",
+        "name": "Cream of coconut",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1.7 oz. Pineapple Juice",
+        "name": "Pineapple Juice",
+        "unit": "oz",
+        "amount": "1.7"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "blend",
+    "prepTimeMin": null,
+    "iceType": "Crushed ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Hurricane glass",
+    "garnish": "Pineapple wedge and/or cherry",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/pina-colada",
+    "sourceRetrievedAt": "2026-09-20T19:36:11.860803+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/pina-colada-505/t1786032674/c0-500-5139-2570/1600x800.webp?s=b1defa743eddc987",
+    "imageAlt": "Pina Colada"
+  },
+  {
+    "id": "dn-rum-and-coke-1",
+    "name": "Rum and Coke",
+    "description": "Light rum and cola make a chilled highball with a lemon accent.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 oz. Light Rum",
+      "Fill with Cola",
+      "1 wedge Lemon"
+    ],
+    "preparation": [
+      "Fill a highball glass with ice.",
+      "Pour in the light rum and top with cola.",
+      "Garnish with the lemon wedge and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "Fill with Cola",
+        "name": "Cola",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "1 wedge Lemon",
+        "name": "Lemon",
+        "unit": "wedge",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "1 lemon wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/rum-and-coke-1",
+    "sourceRetrievedAt": "2026-09-20T19:45:31.595351+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/rum-and-coke-676/t1783919133/c969-0-3495-3495/1000x1000.webp?s=2b95371929f0c3e5",
+    "imageAlt": "Rum and Coke"
+  },
+  {
+    "id": "dn-rum-screwdriver",
+    "name": "Rum Screwdriver",
+    "description": "Light rum and orange juice make an easy chilled highball.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Light Rum",
+      "Fill with Orange Juice"
+    ],
+    "preparation": [
+      "Put ice into a highball glass.",
+      "Pour in the light rum, then fill with orange juice.",
+      "Stir well and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "Fill with Orange Juice",
+        "name": "Orange Juice",
+        "unit": null,
+        "amount": null
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/rum-screwdriver",
+    "sourceRetrievedAt": "2026-09-20T19:45:56.555219+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-salty-dog",
+    "name": "Salty Dog",
+    "description": "Vodka and grapefruit juice over ice in a salt-rimmed glass.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.33 oz. Vodka",
+      "3.33 oz. Grapefruit Juice",
+      "0.25 tsp. Salt"
+    ],
+    "preparation": [
+      "Coat a highball glass rim with salt.",
+      "Fill the glass with ice, then pour in the vodka.",
+      "Top with the grapefruit juice.",
+      "Garnish with a citrus wedge."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.33 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.33"
+      },
+      {
+        "raw": "3.33 oz. Grapefruit Juice",
+        "name": "Grapefruit Juice",
+        "unit": "oz",
+        "amount": "3.33"
+      },
+      {
+        "raw": "0.25 tsp. Salt",
+        "name": "Salt",
+        "unit": "tsp",
+        "amount": "0.25"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Highball glass",
+    "garnish": "Lemon, lime or grapefruit wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/salty-dog",
+    "sourceRetrievedAt": "2026-09-20T19:46:57.991538+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/salty-dog-719/t1783919133/c0-534-6720-3360/1600x800.webp?s=e68b6697d057d9e2",
+    "imageAlt": "Salty Dog"
+  },
+  {
+    "id": "dn-screwdriver",
+    "name": "Screwdriver",
+    "description": "A familiar vodka-and-orange highball built over ice for an easy, citrus-forward serve.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1 part Vodka",
+      "2 parts Orange Juice"
+    ],
+    "preparation": [
+      "Fill a highball glass with ice.",
+      "Add the vodka, then pour in the orange juice in its recorded two-to-one proportion.",
+      "Garnish with the orange slice and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 part Vodka",
+        "name": "Vodka",
+        "unit": "part",
+        "amount": "1"
+      },
+      {
+        "raw": "2 parts Orange Juice",
+        "name": "Orange Juice",
+        "unit": "parts",
+        "amount": "2"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "1 orange slice",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/screwdriver",
+    "sourceRetrievedAt": "2026-09-20T19:48:39.264945+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/screwdriver-772/t1783919133/c596-0-3337-3337/1000x1000.webp?s=2a29d408916ba779",
+    "imageAlt": "Screwdriver"
+  },
+  {
+    "id": "dn-sidecar",
+    "name": "Sidecar",
+    "description": "Cognac, Triple Sec and lemon juice, shaken and strained cold.",
+    "category": "Brandy",
+    "baseSpirit": "brandy",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.67 oz. Cognac",
+      "0.67 oz. Triple Sec",
+      "0.67 oz. Lemon Juice"
+    ],
+    "preparation": [
+      "Add the cognac, triple sec and lemon juice to a shaker with ice.",
+      "Shake hard until cold.",
+      "Strain into the cocktail glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.67 oz. Cognac",
+        "name": "Cognac",
+        "unit": "oz",
+        "amount": "1.67"
+      },
+      {
+        "raw": "0.67 oz. Triple Sec",
+        "name": "Triple Sec",
+        "unit": "oz",
+        "amount": "0.67"
+      },
+      {
+        "raw": "0.67 oz. Lemon Juice",
+        "name": "Lemon Juice",
+        "unit": "oz",
+        "amount": "0.67"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/sidecar",
+    "sourceRetrievedAt": "2026-09-20T19:51:36.337461+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/sidecar-814/t1783919133/c0-1155-8688-4344/1600x800.webp?s=0fc7c18ec2c3095e",
+    "imageAlt": "Sidecar"
+  },
+  {
+    "id": "dn-stinger",
+    "name": "Stinger",
+    "description": "Brandy and white creme de menthe make a cold, mint-accented after-dinner cocktail.",
+    "category": "Brandy",
+    "baseSpirit": "brandy",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Brandy",
+      "0.5 oz. White Creme de Menthe"
+    ],
+    "preparation": [
+      "Add the brandy and white creme de menthe to a shaker with ice.",
+      "Shake until thoroughly chilled.",
+      "Strain into a cocktail glass and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Brandy",
+        "name": "Brandy",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "0.5 oz. White Creme de Menthe",
+        "name": "White Creme de Menthe",
+        "unit": "oz",
+        "amount": "0.5"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": null,
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/stinger",
+    "sourceRetrievedAt": "2026-09-20T19:57:01.026661+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/stinger-931/t1786035333/c804-0-4480-4480/1000x1000.webp?s=df2b0964f2f5dd43",
+    "imageAlt": "Stinger"
+  },
+  {
+    "id": "dn-strawberry-daiquiri",
+    "name": "Strawberry Daiquiri",
+    "description": "Light rum with strawberries, lime and sugar syrup, shaken and strained cold.",
+    "category": "Rum",
+    "baseSpirit": "rum",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 oz. Light Rum",
+      "0.75 oz. Lime Juice",
+      "1 oz. Strawberries",
+      "0.75 oz. Sugar Syrup"
+    ],
+    "preparation": [
+      "Muddle the strawberries with the syrup in a shaker.",
+      "Add the rum, lime juice and ice.",
+      "Shake hard until cold.",
+      "Strain into the cocktail glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 oz. Light Rum",
+        "name": "Light Rum",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "0.75 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "0.75"
+      },
+      {
+        "raw": "1 oz. Strawberries",
+        "name": "Strawberries",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "0.75 oz. Sugar Syrup",
+        "name": "Sugar Syrup",
+        "unit": "oz",
+        "amount": "0.75"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/strawberry-daiquiri",
+    "sourceRetrievedAt": "2026-09-20T19:57:28.593278+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/strawberry-daiquiri-943/t1786049998/c0-266-6591-3296/1600x800.webp?s=f85d3482bd2c29b6",
+    "imageAlt": "Strawberry Daiquiri"
+  },
+  {
+    "id": "dn-tom-collins-2",
+    "name": "Tom Collins #2",
+    "description": "Gin, lemon and sugar syrup form a brisk highball, completed with club soda.",
+    "category": "Gin",
+    "baseSpirit": "gin",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 oz. Gin",
+      "1 oz. Carbonated Water/Club Soda",
+      "1 oz. Lemon Juice",
+      "1 handful Ice",
+      "0.5 oz. Sugar Syrup"
+    ],
+    "preparation": [
+      "Shake the gin, lemon juice and sugar syrup with ice.",
+      "Strain into a serving glass.",
+      "Add the recorded club soda and stir gently.",
+      "Serve immediately."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 oz. Gin",
+        "name": "Gin",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "1 oz. Carbonated Water/Club Soda",
+        "name": "Carbonated Water/Club Soda",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz. Lemon Juice",
+        "name": "Lemon Juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 handful Ice",
+        "name": "Ice",
+        "unit": "handful",
+        "amount": "1"
+      },
+      {
+        "raw": "0.5 oz. Sugar Syrup",
+        "name": "Sugar Syrup",
+        "unit": "oz",
+        "amount": "0.5"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "1 handful Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/tom-collins-2",
+    "sourceRetrievedAt": "2026-09-20T20:07:17.160863+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-vodka-gimlet",
+    "name": "Vodka Gimlet",
+    "description": "Vodka and lime juice with sugar, shaken and served straight up.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Vodka",
+      "1 oz. Lime Juice",
+      "1 tsp. Powdered Sugar"
+    ],
+    "preparation": [
+      "Add the vodka, lime juice and powdered sugar to a shaker with ice.",
+      "Shake hard until cold.",
+      "Strain into the cocktail glass."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "1 oz. Lime Juice",
+        "name": "Lime Juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 tsp. Powdered Sugar",
+        "name": "Powdered Sugar",
+        "unit": "tsp",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/vodka-gimlet",
+    "sourceRetrievedAt": "2026-09-20T20:12:09.253564+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-whiskey-highball",
+    "name": "Whiskey Highball",
+    "description": "Blended whiskey and club soda make a chilled, easy-drinking highball with a lime wedge.",
+    "category": "Whisky",
+    "baseSpirit": "whisky",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Blended Whiskey",
+      "Fill with Carbonated Water/Club Soda",
+      "1 wedge Lime"
+    ],
+    "preparation": [
+      "Fill a highball glass with ice.",
+      "Add the blended whiskey and top with club soda.",
+      "Stir well, garnish with the lime wedge and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Blended Whiskey",
+        "name": "Blended Whiskey",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "Fill with Carbonated Water/Club Soda",
+        "name": "Carbonated Water/Club Soda",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "1 wedge Lime",
+        "name": "Lime",
+        "unit": "wedge",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "1 lime wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/whiskey-highball",
+    "sourceRetrievedAt": "2026-09-20T20:14:25.363088+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-whiskey-sour",
+    "name": "Whiskey Sour",
+    "description": "Bourbon, lemon juice and sugar syrup, shaken and strained with an optional egg white.",
+    "category": "Whisky",
+    "baseSpirit": "whisky",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "1.5 oz. Bourbon",
+      "0.67 oz. Sugar Syrup",
+      "0.83 oz. (fresh) Lemon Juice",
+      "1 dash (egg white (optional)) Eggs"
+    ],
+    "preparation": [
+      "Add the bourbon, syrup, lemon juice and optional egg white to a shaker with ice.",
+      "Shake hard until cold.",
+      "Strain into the sour glass.",
+      "Garnish with an orange slice and a cherry."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1.5 oz. Bourbon",
+        "name": "Bourbon",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "0.67 oz. Sugar Syrup",
+        "name": "Sugar Syrup",
+        "unit": "oz",
+        "amount": "0.67"
+      },
+      {
+        "raw": "0.83 oz. (fresh) Lemon Juice",
+        "name": "(fresh) Lemon Juice",
+        "unit": "oz",
+        "amount": "0.83"
+      },
+      {
+        "raw": "1 dash (egg white (optional)) Eggs",
+        "name": "(egg white (optional)) Eggs",
+        "unit": "dash",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": [
+      "Egg (optional)"
+    ],
+    "hasCaffeine": null,
+    "glassware": "Sour glass",
+    "garnish": "Orange slice and cherry",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/whiskey-sour",
+    "sourceRetrievedAt": "2026-09-20T20:14:29.323611+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/whiskey-sour-1217/t1783919133/c0-513-3464-1732/1600x800.webp?s=121e15c3fce6ce57",
+    "imageAlt": "Whiskey Sour"
+  },
+  {
+    "id": "dn-white-lady",
+    "name": "White Lady",
+    "description": "Gin, Cointreau and lemon juice, shaken and strained cold.",
+    "category": "Gin",
+    "baseSpirit": "gin",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "2 oz. Gin",
+      "1.5 oz. Cointreau",
+      "1 oz. Lemon Juice"
+    ],
+    "preparation": [
+      "Add the gin, Cointreau and lemon juice to a shaker.",
+      "Fill the shaker with ice and shake hard.",
+      "Strain into the chilled glass.",
+      "Garnish with a lemon twist."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 oz. Gin",
+        "name": "Gin",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "1.5 oz. Cointreau",
+        "name": "Cointreau",
+        "unit": "oz",
+        "amount": "1.5"
+      },
+      {
+        "raw": "1 oz. Lemon Juice",
+        "name": "Lemon Juice",
+        "unit": "oz",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Cocktail glass",
+    "garnish": "Lemon twist",
+    "abv": null,
+    "featured": false,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/white-lady",
+    "sourceRetrievedAt": "2026-09-20T20:14:52.247177+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": null,
+    "imageAlt": null
+  },
+  {
+    "id": "dn-white-russian",
+    "name": "White Russian",
+    "description": "Vodka and coffee liqueur finished with cream.",
+    "category": "Vodka",
+    "baseSpirit": "vodka",
+    "alcoholType": "cocktail",
+    "ingredients": [
+      "0.67 oz. Kahlua",
+      "1.67 oz. Vodka",
+      "1 oz. Cream"
+    ],
+    "preparation": [
+      "Put ice in an old-fashioned glass.",
+      "Pour in the coffee liqueur and vodka.",
+      "Float the cream on top, then stir gently."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "0.67 oz. Kahlua",
+        "name": "Kahlua",
+        "unit": "oz",
+        "amount": "0.67"
+      },
+      {
+        "raw": "1.67 oz. Vodka",
+        "name": "Vodka",
+        "unit": "oz",
+        "amount": "1.67"
+      },
+      {
+        "raw": "1 oz. Cream",
+        "name": "Cream",
+        "unit": "oz",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1 cocktail",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": null,
+    "iceType": "Ice",
+    "allergens": [
+      "Milk (cream)"
+    ],
+    "hasCaffeine": null,
+    "glassware": "Old-fashioned glass",
+    "garnish": null,
+    "abv": null,
+    "featured": true,
+    "sourceName": "drinknation",
+    "sourceUrl": "https://drinknation.com/drink/white-russian",
+    "sourceRetrievedAt": "2026-09-20T20:15:02.551638+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://images.drinknation.com/drinks/white-russian-3209/t1783919133/c0-578-6720-3360/1600x800.webp?s=33283080615d057d",
+    "imageAlt": "White Russian"
+  },
+  {
+    "id": "mm-blood-orange-mocktail",
+    "name": "Easy Blood Orange Mocktail",
+    "description": "Blood orange and lime juice with alcohol-free rosé, stirred over ice.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "2 tablespoons blood orange juice (freshly squeezed)",
+      "1 tablespoon lime juice (freshly squeezed)",
+      "1 cup alcohol free Rosé or alternative (see notes)"
+    ],
+    "preparation": [
+      "Fill a wine glass with ice and press in a blood orange slice.",
+      "Add the blood orange juice and lime juice with the alcohol-free rosé (or alternative), then stir gently.",
+      "Garnish with a fresh herb sprig."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 tablespoons blood orange juice (freshly squeezed)",
+        "name": "blood orange juice (freshly squeezed)",
+        "unit": "tablespoons",
+        "amount": "2"
+      },
+      {
+        "raw": "1 tablespoon lime juice (freshly squeezed)",
+        "name": "lime juice (freshly squeezed)",
+        "unit": "tablespoon",
+        "amount": "1"
+      },
+      {
+        "raw": "1 cup alcohol free Rosé or alternative (see notes)",
+        "name": "alcohol free Rosé or alternative (see notes)",
+        "unit": "cup",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "stir",
+    "prepTimeMin": 3,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Wine glass",
+    "garnish": "Sprig of rosemary, thyme or mint",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/blood-orange-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:18:54.409849+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2021/11/blood-orange-mocktail.jpg",
+    "imageAlt": "Easy Blood Orange Mocktail"
+  },
+  {
+    "id": "mm-coconut-water-mocktail",
+    "name": "Quick Coconut Water Mocktail",
+    "description": "Coconut water and citrus shaken with honey, with optional vinegar, Tajín rim and dehydrated citrus.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "3 oz coconut water ((no added sugar))",
+      "2 oz orange juice ((freshly squeezed is best))",
+      "1/2 oz lemon juice",
+      "1/2 teaspoon apple cider vinegar ((optional - see note 1) )",
+      "1 teaspoon honey ((or your choice of sweetener - see note 2))",
+      "Dehydrated citrus for garnish ((optional))",
+      "Tajin for rim ((optional))"
+    ],
+    "preparation": [
+      "Optionally rim a glass with Tajín, then fill it with ice.",
+      "Shake the measured liquids and honey with ice for about 10 to 15 seconds; include the optional apple cider vinegar if using.",
+      "Strain into the prepared glass, add optional dehydrated citrus, and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "3 oz coconut water ((no added sugar))",
+        "name": "coconut water ((no added sugar))",
+        "unit": "oz",
+        "amount": "3"
+      },
+      {
+        "raw": "2 oz orange juice ((freshly squeezed is best))",
+        "name": "orange juice ((freshly squeezed is best))",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "1/2 oz lemon juice",
+        "name": "lemon juice",
+        "unit": "oz",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1/2 teaspoon apple cider vinegar ((optional - see note 1) )",
+        "name": "apple cider vinegar ((optional - see note 1) )",
+        "unit": "teaspoon",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1 teaspoon honey ((or your choice of sweetener - see note 2))",
+        "name": "honey ((or your choice of sweetener - see note 2))",
+        "unit": "teaspoon",
+        "amount": "1"
+      },
+      {
+        "raw": "Dehydrated citrus for garnish ((optional))",
+        "name": "Dehydrated citrus for garnish ((optional))",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "Tajin for rim ((optional))",
+        "name": "Tajin for rim ((optional))",
+        "unit": null,
+        "amount": null
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": 3,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Dehydrated citrus (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/coconut-water-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:19:00.201796+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2025/02/coconut-water-mocktail.jpg",
+    "imageAlt": "Quick Coconut Water Mocktail"
+  },
+  {
+    "id": "mm-fig-mocktail",
+    "name": "Fig Mocktails with Apple",
+    "description": "A still apple-and-fig drink with lemon, ginger, and cinnamon, served after shaking.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1 ripe fresh fig ((plus extra for optional garnish))",
+      "1/2 tablespoon fig jam ((optional but does add a little extra flavor and mouthfeel))",
+      "1 oz lemon juice",
+      "2 oz apple cider",
+      "1/2 tablespoon grated ginger",
+      "1/2 oz cinnamon syrup ((can sub with a pinch of cinnamon powder, see Note 1))"
+    ],
+    "preparation": [
+      "Cut the fresh fig into quarters and put it in a shaker with lemon juice, cinnamon syrup or its cinnamon alternative, and optional fig jam.",
+      "Use a muddler to break the fruit down well.",
+      "Combine the ginger, cider, and ice in the shaker, then shake with the lid on.",
+      "Fine strain into the serving glass; a piece of fig is an optional finish."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 ripe fresh fig ((plus extra for optional garnish))",
+        "name": "ripe fresh fig ((plus extra for optional garnish))",
+        "unit": null,
+        "amount": "1"
+      },
+      {
+        "raw": "1/2 tablespoon fig jam ((optional but does add a little extra flavor and mouthfeel))",
+        "name": "fig jam ((optional but does add a little extra flavor and mouthfeel))",
+        "unit": "tablespoon",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1 oz lemon juice",
+        "name": "lemon juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "2 oz apple cider",
+        "name": "apple cider",
+        "unit": "oz",
+        "amount": "2"
+      },
+      {
+        "raw": "1/2 tablespoon grated ginger",
+        "name": "grated ginger",
+        "unit": "tablespoon",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1/2 oz cinnamon syrup ((can sub with a pinch of cinnamon powder, see Note 1))",
+        "name": "cinnamon syrup ((can sub with a pinch of cinnamon powder, see Note 1))",
+        "unit": "oz",
+        "amount": "1/2"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": 10,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Fresh fig (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/fig-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:19:18.658182+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2025/09/fig-mocktail-recipe.jpg",
+    "imageAlt": "Fig Mocktails with Apple"
+  },
+  {
+    "id": "mm-grapefruit-martino-mocktail",
+    "name": "Grapefruit MartiNO Mocktail",
+    "description": "Grapefruit juice and rosemary syrup with aquafaba, shaken and poured cold.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      ".5 cup grapefruit juice",
+      ".25 cup rosemary syrup",
+      "1 tablespoon aquafaba"
+    ],
+    "preparation": [
+      "Add the grapefruit juice, rosemary syrup and aquafaba to a shaker filled with ice.",
+      "Shake hard until cold.",
+      "Pour into a glass and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": ".5 cup grapefruit juice",
+        "name": "grapefruit juice",
+        "unit": "cup",
+        "amount": ".5"
+      },
+      {
+        "raw": ".25 cup rosemary syrup",
+        "name": "rosemary syrup",
+        "unit": "cup",
+        "amount": ".25"
+      },
+      {
+        "raw": "1 tablespoon aquafaba",
+        "name": "aquafaba",
+        "unit": "tablespoon",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": 5,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/grapefruit-martino-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:17:56.044476+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2020/07/grapefruit-martino-4.jpg",
+    "imageAlt": "Grapefruit MartiNO Mocktail"
+  },
+  {
+    "id": "mm-hibiscus-electrolyte-drink",
+    "name": "Hibiscus Electrolyte Drink",
+    "description": "Chilled hibiscus tea and coconut water over ice, brightened with pineapple and mineral salt.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1/2 cup chilled hibiscus tea",
+      "1/2 cup coconut water",
+      "Splash of pineapple juice to sweeten ((or to taste))",
+      "Pinch of mineral salt",
+      "Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))",
+      "Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))"
+    ],
+    "preparation": [
+      "Fill a glass with ice.",
+      "Pour in the chilled hibiscus tea and coconut water, then add pineapple juice and a pinch of mineral salt.",
+      "Add more pineapple juice or a sweetener of choice if wanted, then stir to combine.",
+      "Finish with optional pineapple fronds, lime, or hibiscus flowers and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1/2 cup chilled hibiscus tea",
+        "name": "chilled hibiscus tea",
+        "unit": "cup",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1/2 cup coconut water",
+        "name": "coconut water",
+        "unit": "cup",
+        "amount": "1/2"
+      },
+      {
+        "raw": "Splash of pineapple juice to sweeten ((or to taste))",
+        "name": "Splash of pineapple juice to sweeten ((or to taste))",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "Pinch of mineral salt",
+        "name": "Pinch of mineral salt",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))",
+        "name": "Something to sweeten if you wish ((either more pineapple juice, honey, maple, your choice of sweetener))",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))",
+        "name": "Pineapple fronds, lime and/or hibiscus flowers ((optional garnishes))",
+        "unit": null,
+        "amount": null
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": 5,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Pineapple fronds, lime, or hibiscus flowers (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/hibiscus-electrolyte-drink/",
+    "sourceRetrievedAt": "2026-09-20T20:19:39.444722+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2025/12/electrolyte-mocktail-recipe.jpg",
+    "imageAlt": "Hibiscus Electrolyte Drink"
+  },
+  {
+    "id": "mm-lemon-mocktails",
+    "name": "Lemon Mocktails",
+    "description": "Lemon, mint, coconut water and soda water stirred over ice, with optional honey.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1 tablespoon lemon juice",
+      "2 lemon rounds",
+      "1 teaspoon honey (optional)",
+      "6-8 fresh mint leaves",
+      ".5 cup coconut water",
+      ".5 cup soda water"
+    ],
+    "preparation": [
+      "Muddle the lemon rounds and mint in a glass, adding the optional honey if using.",
+      "Add plenty of ice, then pour in the coconut water and soda water.",
+      "Stir gently and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 tablespoon lemon juice",
+        "name": "lemon juice",
+        "unit": "tablespoon",
+        "amount": "1"
+      },
+      {
+        "raw": "2 lemon rounds",
+        "name": "lemon rounds",
+        "unit": null,
+        "amount": "2"
+      },
+      {
+        "raw": "1 teaspoon honey (optional)",
+        "name": "honey (optional)",
+        "unit": "teaspoon",
+        "amount": "1"
+      },
+      {
+        "raw": "6-8 fresh mint leaves",
+        "name": "fresh mint leaves",
+        "unit": null,
+        "amount": "6-8"
+      },
+      {
+        "raw": ".5 cup coconut water",
+        "name": "coconut water",
+        "unit": "cup",
+        "amount": ".5"
+      },
+      {
+        "raw": ".5 cup soda water",
+        "name": "soda water",
+        "unit": "cup",
+        "amount": ".5"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": 5,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/lemon-mocktails/",
+    "sourceRetrievedAt": "2026-09-20T20:18:06.674378+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2021/08/healthy-lemon-mocktails.jpg",
+    "imageAlt": "Lemon Mocktails"
+  },
+  {
+    "id": "mm-paloma-mocktails",
+    "name": "Perfect Paloma Mocktails",
+    "description": "Grapefruit and lime with maple, salt and a sharp optional alternative, finished with optional soda.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "2 ounce grapefruit juice",
+      "1 ounce lime juice ((squeezed fresh is best))",
+      "1/2 ounce maple syrup ((or your choice of sweetener - see Note 1))",
+      "1/4 teaspoon apple cider vinegar ((or non-alcoholic tequila - see Note 2))",
+      "Pinch of sea salt",
+      "1/2 cup plain or grapefruit soda ((optional - see Note 3))",
+      "Salt or Tajin for rim ((optional))"
+    ],
+    "preparation": [
+      "Optionally rim a glass with salt or Tajín, then fill it with ice.",
+      "Shake the grapefruit juice, lime juice, maple syrup or another sweetener, apple cider vinegar or non-alcoholic tequila, and sea salt with ice until cold.",
+      "Strain into the prepared glass.",
+      "Top with the optional plain or grapefruit soda, stir gently, and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 ounce grapefruit juice",
+        "name": "grapefruit juice",
+        "unit": "ounce",
+        "amount": "2"
+      },
+      {
+        "raw": "1 ounce lime juice ((squeezed fresh is best))",
+        "name": "lime juice ((squeezed fresh is best))",
+        "unit": "ounce",
+        "amount": "1"
+      },
+      {
+        "raw": "1/2 ounce maple syrup ((or your choice of sweetener - see Note 1))",
+        "name": "maple syrup ((or your choice of sweetener - see Note 1))",
+        "unit": "ounce",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1/4 teaspoon apple cider vinegar ((or non-alcoholic tequila - see Note 2))",
+        "name": "apple cider vinegar ((or non-alcoholic tequila - see Note 2))",
+        "unit": "teaspoon",
+        "amount": "1/4"
+      },
+      {
+        "raw": "Pinch of sea salt",
+        "name": "Pinch of sea salt",
+        "unit": null,
+        "amount": null
+      },
+      {
+        "raw": "1/2 cup plain or grapefruit soda ((optional - see Note 3))",
+        "name": "plain or grapefruit soda ((optional - see Note 3))",
+        "unit": "cup",
+        "amount": "1/2"
+      },
+      {
+        "raw": "Salt or Tajin for rim ((optional))",
+        "name": "Salt or Tajin for rim ((optional))",
+        "unit": null,
+        "amount": null
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": 5,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/paloma-mocktails/",
+    "sourceRetrievedAt": "2026-09-20T20:20:02.568905+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2025/03/paloma-mocktails.jpg",
+    "imageAlt": "Perfect Paloma Mocktails"
+  },
+  {
+    "id": "mm-pina-colada-mocktail-recipe",
+    "name": "Piña Colada Mocktail (Non-Alcoholic + 3 Ingredients!)",
+    "description": "Frozen pineapple and coconut cream blended with pineapple juice.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1 cup frozen pineapple chunks",
+      "1/3 cup coconut cream",
+      "1/2 cup pineapple juice",
+      "1 oz non-alcoholic rum ((optional))"
+    ],
+    "preparation": [
+      "Blend the frozen pineapple, coconut cream, pineapple juice and the optional non-alcoholic rum until smooth.",
+      "Pour into a glass and garnish with the pineapple wedge."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 cup frozen pineapple chunks",
+        "name": "frozen pineapple chunks",
+        "unit": "cup",
+        "amount": "1"
+      },
+      {
+        "raw": "1/3 cup coconut cream",
+        "name": "coconut cream",
+        "unit": "cup",
+        "amount": "1/3"
+      },
+      {
+        "raw": "1/2 cup pineapple juice",
+        "name": "pineapple juice",
+        "unit": "cup",
+        "amount": "1/2"
+      },
+      {
+        "raw": "1 oz non-alcoholic rum ((optional))",
+        "name": "non-alcoholic rum ((optional))",
+        "unit": "oz",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "blend",
+    "prepTimeMin": 5,
+    "iceType": null,
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Pineapple wedge",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/pina-colada-mocktail-recipe/",
+    "sourceRetrievedAt": "2026-09-20T20:20:22.431221+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2021/01/pina-colada-mocktail.jpeg",
+    "imageAlt": "Piña Colada Mocktail (Non-Alcoholic + 3 Ingredients!)"
+  },
+  {
+    "id": "mm-pineapple-coconut-mocktail",
+    "name": "Pineapple Spritzer Mocktail",
+    "description": "Pineapple, coconut milk and lime blended smooth, topped with sparkling water.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1 cup pineapple",
+      "1 cup reduced-fat coconut milk",
+      "2 tbsp lime juice",
+      "2 cups sparkling water"
+    ],
+    "preparation": [
+      "Blend the pineapple, coconut milk and lime juice until smooth.",
+      "Divide between two glasses.",
+      "Top with the sparkling water and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 cup pineapple",
+        "name": "pineapple",
+        "unit": "cup",
+        "amount": "1"
+      },
+      {
+        "raw": "1 cup reduced-fat coconut milk",
+        "name": "reduced-fat coconut milk",
+        "unit": "cup",
+        "amount": "1"
+      },
+      {
+        "raw": "2 tbsp lime juice",
+        "name": "lime juice",
+        "unit": "tbsp",
+        "amount": "2"
+      },
+      {
+        "raw": "2 cups sparkling water",
+        "name": "sparkling water",
+        "unit": "cups",
+        "amount": "2"
+      }
+    ],
+    "recipeYield": "2",
+    "servings": 2,
+    "preparationMethod": "blend",
+    "prepTimeMin": 10,
+    "iceType": null,
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/pineapple-coconut-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:18:02.12384+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2020/08/pineapple-mocktail-recipe.jpg",
+    "imageAlt": "Pineapple Spritzer Mocktail"
+  },
+  {
+    "id": "mm-quick-cranberry-mocktail",
+    "name": "Cranberry Mocktail With 3 Ingredients",
+    "description": "Cranberry and orange juices with ginger beer over ice, with optional alcohol-free rum and garnish choices.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "3 oz cranberry juice",
+      "4 oz ginger beer ((sub with use ginger kombucha for a nourishing twist!))",
+      "1 oz orange juice",
+      "1 oz non-alcoholic rum or spirit of choice ((optional - tastes great without))",
+      "Cranberries, orange, rosemary, thyme ((for optional garnish))"
+    ],
+    "preparation": [
+      "Fill a glass or mug with ice.",
+      "Add the measured cranberry and orange juices with ginger beer; include the optional non-alcoholic rum or spirit if using.",
+      "Stir gently, taste, and adjust with extra juice or ginger beer if wanted.",
+      "Finish with any of the optional cranberry, orange, rosemary or thyme garnishes."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "3 oz cranberry juice",
+        "name": "cranberry juice",
+        "unit": "oz",
+        "amount": "3"
+      },
+      {
+        "raw": "4 oz ginger beer ((sub with use ginger kombucha for a nourishing twist!))",
+        "name": "ginger beer ((sub with use ginger kombucha for a nourishing twist!))",
+        "unit": "oz",
+        "amount": "4"
+      },
+      {
+        "raw": "1 oz orange juice",
+        "name": "orange juice",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "1 oz non-alcoholic rum or spirit of choice ((optional - tastes great without))",
+        "name": "non-alcoholic rum or spirit of choice ((optional - tastes great without))",
+        "unit": "oz",
+        "amount": "1"
+      },
+      {
+        "raw": "Cranberries, orange, rosemary, thyme ((for optional garnish))",
+        "name": "Cranberries, orange, rosemary, thyme ((for optional garnish))",
+        "unit": null,
+        "amount": null
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": 3,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Cranberries, orange, rosemary, or thyme (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/quick-cranberry-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:19:33.72424+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2020/12/cranberry-mocktail-easy-festive.jpg",
+    "imageAlt": "Cranberry Mocktail With 3 Ingredients"
+  },
+  {
+    "id": "mm-roy-rogers-drink",
+    "name": "Easy Roy Rogers Drink",
+    "description": "Cola and grenadine over ice in a tall glass, garnished with maraschino cherries.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1 cup cola",
+      "1 tablespoon grenadine",
+      "1-2 Maraschino cherries, to garnish"
+    ],
+    "preparation": [
+      "Pack a tall glass with ice.",
+      "Add the grenadine, then top with the cola.",
+      "Stir the drink well.",
+      "Garnish with one or two maraschino cherries."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 cup cola",
+        "name": "cola",
+        "unit": "cup",
+        "amount": "1"
+      },
+      {
+        "raw": "1 tablespoon grenadine",
+        "name": "grenadine",
+        "unit": "tablespoon",
+        "amount": "1"
+      },
+      {
+        "raw": "1-2 Maraschino cherries, to garnish",
+        "name": "Maraschino cherries, to garnish",
+        "unit": null,
+        "amount": "1-2"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": 2,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Tall glass",
+    "garnish": "Maraschino cherry",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/roy-rogers-drink/",
+    "sourceRetrievedAt": "2026-09-20T20:18:29.491361+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2022/03/roy-rogers-drink-recipe.jpg",
+    "imageAlt": "Easy Roy Rogers Drink"
+  },
+  {
+    "id": "mm-shirley-temple-mocktail",
+    "name": "The Best Shirley Temple Mocktail",
+    "description": "A fizzy lime-and-grenadine build over ice, with an optional maraschino cherry.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "1 cup ginger ale",
+      "1 teaspoon grenadine",
+      "1 squeeze of fresh lime juice",
+      "Maraschino cherries to garnish (optional)"
+    ],
+    "preparation": [
+      "Fill a glass with ice.",
+      "Combine the ginger ale with grenadine and a squeeze of fresh lime, then stir gently.",
+      "Add an optional maraschino cherry garnish and serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "1 cup ginger ale",
+        "name": "ginger ale",
+        "unit": "cup",
+        "amount": "1"
+      },
+      {
+        "raw": "1 teaspoon grenadine",
+        "name": "grenadine",
+        "unit": "teaspoon",
+        "amount": "1"
+      },
+      {
+        "raw": "1 squeeze of fresh lime juice",
+        "name": "squeeze of fresh lime juice",
+        "unit": null,
+        "amount": "1"
+      },
+      {
+        "raw": "Maraschino cherries to garnish (optional)",
+        "name": "Maraschino cherries to garnish (optional)",
+        "unit": null,
+        "amount": null
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "build",
+    "prepTimeMin": 3,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Maraschino cherry (optional)",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/shirley-temple-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:18:18.584979+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2021/10/shirley-temple-mocktail.jpg",
+    "imageAlt": "The Best Shirley Temple Mocktail"
+  },
+  {
+    "id": "mm-virgin-mango-margarita",
+    "name": "Virgin Mango Margarita",
+    "description": "A blended mango, coconut water and lime mocktail.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      ".5 cup frozen mango",
+      "3/4 cup coconut water",
+      "Juice of 1 lime"
+    ],
+    "preparation": [
+      "Blend the frozen mango, coconut water and lime juice until smooth.",
+      "Pour into a salt-rimmed glass and finish with a lime wheel."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": ".5 cup frozen mango",
+        "name": "frozen mango",
+        "unit": "cup",
+        "amount": ".5"
+      },
+      {
+        "raw": "3/4 cup coconut water",
+        "name": "coconut water",
+        "unit": "cup",
+        "amount": "3/4"
+      },
+      {
+        "raw": "Juice of 1 lime",
+        "name": "Lime juice",
+        "unit": "lime",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "blend",
+    "prepTimeMin": 5,
+    "iceType": null,
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": "Salt rim and lime wheel",
+    "abv": null,
+    "featured": true,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/virgin-mango-margarita/",
+    "sourceRetrievedAt": "2026-09-20T18:08:28.227897+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2020/10/virgin-mango-margarita-3.jpg",
+    "imageAlt": "Virgin Mango Margarita"
+  },
+  {
+    "id": "mm-vodka-mocktail",
+    "name": "Vodka Mocktail",
+    "description": "Apple and lemon juice with alcohol-free vodka, shaken and strained.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "3 ounces cloudy apple juice",
+      "1 ounce freshly squeezed lemon juice",
+      "1 ounce alcohol free vodka or 1 teaspoon apple cider vinegar",
+      "1 teaspoon sugar or sweetener (optional)"
+    ],
+    "preparation": [
+      "Add the apple juice, lemon juice, alcohol-free vodka and the optional sugar or sweetener to a shaker with ice.",
+      "Shake hard until combined.",
+      "Pour into the martini glass.",
+      "Garnish with an apple fan."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "3 ounces cloudy apple juice",
+        "name": "cloudy apple juice",
+        "unit": "ounces",
+        "amount": "3"
+      },
+      {
+        "raw": "1 ounce freshly squeezed lemon juice",
+        "name": "freshly squeezed lemon juice",
+        "unit": "ounce",
+        "amount": "1"
+      },
+      {
+        "raw": "1 ounce alcohol free vodka or 1 teaspoon apple cider vinegar",
+        "name": "alcohol free vodka or 1 teaspoon apple cider vinegar",
+        "unit": "ounce",
+        "amount": "1"
+      },
+      {
+        "raw": "1 teaspoon sugar or sweetener (optional)",
+        "name": "sugar or sweetener (optional)",
+        "unit": "teaspoon",
+        "amount": "1"
+      }
+    ],
+    "recipeYield": "1",
+    "servings": 1,
+    "preparationMethod": "shake",
+    "prepTimeMin": 3,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": "Martini glass",
+    "garnish": "Apple fan or apple slice",
+    "abv": null,
+    "featured": false,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/vodka-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:18:21.351606+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2022/04/vodka-mocktail.jpg",
+    "imageAlt": "Vodka Mocktail"
+  },
+  {
+    "id": "mm-watermelon-strawberry-mocktail",
+    "name": "Watermelon Strawberry Mocktail",
+    "description": "Watermelon and strawberries blended with fresh lime juice.",
+    "category": "Mocktail",
+    "baseSpirit": null,
+    "alcoholType": "mocktail",
+    "ingredients": [
+      "2 cups watermelon",
+      "8 strawberries",
+      "1/2 cup fresh lime juice"
+    ],
+    "preparation": [
+      "Blend the watermelon, strawberries and lime juice together.",
+      "Pour over ice to serve."
+    ],
+    "ingredientDetails": [
+      {
+        "raw": "2 cups watermelon",
+        "name": "watermelon",
+        "unit": "cups",
+        "amount": "2"
+      },
+      {
+        "raw": "8 strawberries",
+        "name": "strawberries",
+        "unit": "count",
+        "amount": "8"
+      },
+      {
+        "raw": "1/2 cup fresh lime juice",
+        "name": "fresh lime juice",
+        "unit": "cup",
+        "amount": "1/2"
+      }
+    ],
+    "recipeYield": "2",
+    "servings": 2,
+    "preparationMethod": "blend",
+    "prepTimeMin": 5,
+    "iceType": "Ice",
+    "allergens": null,
+    "hasCaffeine": null,
+    "glassware": null,
+    "garnish": null,
+    "abv": null,
+    "featured": true,
+    "sourceName": "mindfulmocktail",
+    "sourceUrl": "https://mindfulmocktail.com/watermelon-strawberry-mocktail/",
+    "sourceRetrievedAt": "2026-09-20T20:18:27.494431+00:00",
+    "contentOrigin": "allcheers_original_from_facts",
+    "imageUrl": "https://mindfulmocktail.com/wp-content/uploads/2020/06/strawberry-watermelon-mocktail.jpg",
+    "imageAlt": "Watermelon Strawberry Mocktail"
+  }
+]

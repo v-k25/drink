@@ -32,3 +32,11 @@ next-env.d.ts
 # Local Graphify index (regenerate with the command in AGENTS.md)
 /graphify-out/
 .recovery/
+
+# Local scratch and bulk source material (backed up off-repo)
+/output/
+/tmp/
+/.playwright-mcp/
+__pycache__/
+/EkQuarter_Product_Images/
+/EkQuarter_Drink_Master.xlsx

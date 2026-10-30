@@ -1,0 +1,12 @@
+.env*
+!.env.example
+.opencode/
+.fallow/
+output/
+tmp/
+graphify-out/
+EkQuarter_Drink_Master.xlsx
+EkQuarter_Product_Images/
+node_modules/
+.next/
+*.tsbuildinfo

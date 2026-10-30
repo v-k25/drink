@@ -85,12 +85,12 @@ async function main() {
   assert.equal(await basics.isVisible(), false)
   await page.locator('#setup-guests').fill('12')
   await page.locator('#setup-budget').fill('5000.25')
-  await page.getByRole('button', { name: 'Choose drinks myself', exact: true }).click()
+  await page.getByLabel('Choose drinks myself').check(); await page.getByRole('button', { name: 'Continue', exact: true }).click()
   await page.getByRole('button', { name: 'Edit guests and budget', exact: true }).click(); await basics.waitFor()
   assert.equal(await basics.getByLabel(/^Guests/).inputValue(), '12')
   await basics.getByRole('button', { name: 'Cancel', exact: true }).click()
   await basics.waitFor({ state: 'hidden' })
-  await page.getByRole('heading', { name: 'Build your list.' }).waitFor()
+  await page.getByRole('heading', { name: 'Build your list' }).waitFor()
   await page.getByRole('navigation', { name: 'Categories', exact: true }).getByRole('button', { name: /^Beer\s*\d+ drinks/ }).click()
   const firstBeerCard = page.locator(`[data-product-id="${firstBeer.id}"]`)
   await firstBeerCard.getByRole('button', { name: /^Add .* to inventory/ }).click()
@@ -100,7 +100,7 @@ async function main() {
   await page.getByLabel('Search all drinks', { exact: true }).fill('kept query')
   await page.getByRole('button', { name: 'Review list', exact: true }).filter({ visible: true }).click()
   const receipt = page.locator('#planner-content').locator('[class*="receipt"]').first()
-  await page.getByRole('heading', { name: 'Ready for the shops.' }).waitFor()
+  await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
   const originalReceipt = await receipt.innerText()
   for (const width of [1440, 768, 390, 320]) { await page.setViewportSize({ width, height: 900 }); await fits(page); await shot(page, `guest-list-${width}`) }
   await page.evaluate(() => { window.print = () => { window.__printed = true }; Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { window.__copied = text } } }); Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.__shared = data.text } }) })
@@ -117,13 +117,13 @@ async function main() {
   const confirm = page.locator('dialog[aria-labelledby="confirmation-title"]')
   async function cancelCheck(trigger, method) {
     await trigger.click(); await confirm.waitFor({ state: 'visible' })
-    await focused(confirm.getByRole('button', { name: 'Cancel', exact: true }))
+    await focused(confirm.getByRole('button', { name: /^Keep (this plan|my list)$/ }))
     for (let i = 0; i < 5; i++) {
       await page.keyboard.press('Tab')
       assert.ok(await confirm.evaluate(el => el.contains(document.activeElement) || document.activeElement === document.body), 'Native modal must keep underlying controls inert')
     }
-    await confirm.getByRole('button', { name: 'Cancel', exact: true }).focus()
-    if (method === 'escape') await page.keyboard.press('Escape'); else await confirm.getByRole('button', { name: 'Cancel', exact: true }).click()
+    await confirm.getByRole('button', { name: /^Keep (this plan|my list)$/ }).focus()
+    if (method === 'escape') await page.keyboard.press('Escape'); else await confirm.getByRole('button', { name: /^Keep (this plan|my list)$/ }).click()
     await confirm.waitFor({ state: 'hidden' }); await focused(trigger)
   }
   const newTrigger = page.getByRole('button', { name: 'Start a new plan', exact: true })

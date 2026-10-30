@@ -1,5 +1,24 @@
 # Implementation progress
 
+### Pre-Party R4 Party Planner, 2026-10-30
+
+**Done (not committed, waiting for owner approval).** The Party Planner content is on the Pre-Party tokens and primitives. Decisions and deviations are in `docs/pre-party-redesign-plan.md` (R4 status).
+- **Changed:** `app/party-planner/planner.module.css` (rewritten on the token names; no longer uses `tool-theme.module.css`), `planner.tsx` (markup and copy only: stage indicator, radio start choice with Continue, "Suggest my list", Not drinking / Drinks each, visible "Build your list", empty and no-match states, summary bar, receipt grouped by category, flat action list, dialog copy, "How are quantities chosen?" list, "Drinks are temporarily unavailable"), `app/tool-shell.module.css` (footer links 44px wide, found in the audit).
+- **Untouched:** `model.ts`, `suggest.ts`, `catalogue-server.ts`, `actions.ts`, `early-access/actions.ts`, stored draft shape, package and lock files. `tool-theme.module.css` is kept for Find My Drink.
+- **Scripts updated, not run** (Playwright is not installed): `planner-inventory-check`, `planner-redesign-check`, `planner-retry-production-check`, `planner-tool-shell-check`, `planner-ux-production-check`, `brewlist-tools-style-check`, `design-polish-check`. New strings, the radio plus Continue start, no "More options", "Keep my list" / "Keep this plan" on the confirmations. All pass `node --check`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke (`next start -p 3200`): `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder` return 200.
+- Browser pane, production build, against the live catalogue (read only; no database writes): the whole flow (setup, suggest, build, plan sheet, receipt) at 1440, 1024, 768, 390, 360 and 320, and at 200% root text on each: no horizontal overflow (clientWidth equals scrollWidth) and no control under 44px (the footer "Home" link was 42px wide; fixed). Error states for guests, budget and the suggest step show "!" text, a red border, `aria-invalid` and focus on the first field. Confirmation dialog: Escape closes and returns focus to its trigger; Filters opens from the keyboard and Escape returns focus to the button. Dark (`prefers-color-scheme`) checked on setup-to-build and the receipt. Focus ring is the 2px token ring with the page-colour gap.
+- Print: the `@media print` rules were applied to the screen and checked: the print-only receipt is black on white with the brand line, grouped lines, total, caveat and the adults line, and the app shell is hidden. A real print preview was not run.
+
+**Not run.** The Playwright scripts above, Lighthouse, real devices, screen readers, a real print preview, the catalogue-unavailable state (styled, not triggered: it needs the catalogue read to fail), drag and drop onto the plan panel, and the early-access form.
+
+**Found, not fixed.** None new.
+
+**Next.** R5: Find My Drink (waits for approval of R4). `tool-theme.module.css` can be deleted when R5 no longer uses it.
+
 ### Pre-Party R3 tool shell and age check, 2026-10-30
 
 **Done (not committed).** Party Planner and Find My Drink now share the Pre-Party header, footer, theme and age check. Details and decisions are in `docs/pre-party-redesign-plan.md` (R3 status).

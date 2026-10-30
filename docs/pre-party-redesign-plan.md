@@ -1,6 +1,6 @@
 # Pre-Party redesign: implementation plan
 
-Status: **design approved by the owner, 2026-10-30. Implementation not started.**
+Status: **design approved by the owner, 2026-10-30. R1–R4 built; R5 and R6 pending.**
 
 ## What this replaces
 
@@ -83,6 +83,12 @@ This is a restyle and copy pass, not new backend work.
   - **Not true yet: "works without JavaScript".** The gate has always needed JavaScript to pass (a client-side button calling the `confirmEligibility` server action; the Planner is a client-side step machine). R3 did not change that. Once passed, the cookie is read on the server, so Find My Drink's list, detail and no-JS browse work without JavaScript. Making the gate itself a plain form needs a form-action wrapper around `setEligibility`; that is a small backend-adjacent change and is left for the owner to approve.
   - **Nunito Sans removed.** Nothing uses it any more: the layout font, `globals.css` body font (now Arial for unthemed pages such as the 404) and `app/fonts/NunitoSans-*` with its OFL text are gone.
   - **Old rules removed.** The tool-header, logo, tool-nav, gate-card and old focus-ring rules in `finder.module.css` and `planner.module.css`. Content styles are untouched except the font family, which is now Manrope.
+
+- **R4: done, 2026-10-30** (not committed). Party Planner content on the tokens and `sf-` primitives. `planner.module.css` is rewritten and no longer composes or reads `tool-theme.module.css` (Find My Drink still does until R5). Things R5 and R6 rely on:
+  - **Structure.** New `Stages` indicator (Set your party, Build your list, Ready for the shops; Party, List, Shops under 768px) above each step. Setup is guests, budget, then a "How do you want to start?" radio pair and one Continue (same `finishSetup` call as the old two buttons). Visible step headings are h2s; the sr-only h1 "Party Planner" stays. Receipt, dialogs and states follow the boards. Under 1024px the category index is the existing picker and sheet, the plan is a sheet behind the summary bar; from 1024px the index, shelf and plan panel are three columns.
+  - **Copy changed from the boards, on purpose.** (1) Not drinking and Drinks each stay on the Suggest step, not on Set your party, because they are only needed for a suggestion and the validation order is unchanged. (2) Field errors keep their real limits ("Enter a whole number from 1 to 1,000.", the ₹0.01–₹10,00,000 range) instead of the board's shorter "Up to 1,000 guests". (3) The receipt keeps the full price caveat ("Estimated from our Jaipur catalogue. Store prices and availability may differ.") next to the board's "Listed price in Jaipur, checked 3 Oct 2026. Not a guaranteed price.", and shows "Over budget by ₹X" when it applies. (4) The Replace dialog says "You can undo right after", which is true (the toast has Undo). (5) The category sheet is kept on mobile instead of the board's chip rail; the board shows both. (6) The party card ("24 guests · 4 not drinking") is not built; the budget card has an Edit button for guests and budget, and a not-drinking count is not part of the plan.
+  - **Receipt.** Prices show whole rupees (₹11,520) and keep paise when they exist. The paper-receipt colours are gone: the receipt is a surface card, and the print-only copy is forced to black on white. Copy, Share, Print / Save as PDF, Edit list and Start a new plan are all visible now (the "More options" disclosure is gone).
+  - **Not done.** The estimate chip and the party card are not rendered. The unavailable state and the print preview were checked as CSS only (see the progress log).
 
 Not built in this pass: the launch state (Upcoming nights, Book a table) and the booking flow. Both are designed and wait for Phase 1 (B11).
 

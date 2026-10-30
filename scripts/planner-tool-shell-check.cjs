@@ -61,11 +61,11 @@ async function main() {
       assert.equal(await page.getByRole('dialog', { name: 'Guests & budget' }).isVisible(), false)
       await shot(page, `setup-${width}`)
       await page.locator('#setup-guests').fill('20'); await page.locator('#setup-budget').fill('10000')
-      await page.getByRole('button', { name: 'Suggest my list', exact: true }).click()
-      await page.getByLabel('Estimated servings per drinking guest').fill('4')
+      await page.getByLabel('Suggest my list').check(); await page.getByRole('button', { name: 'Continue', exact: true }).click()
+      await page.getByLabel('Drinks each').fill('4')
       await page.getByRole('group', { name: /What would your guests like/ }).getByRole('button').first().click()
       await page.getByRole('button', { name: 'Generate list', exact: true }).click()
-      const sheet = page.getByRole('dialog', { name: 'Your plan' })
+      const sheet = page.getByRole('dialog', { name: 'Your list' })
       if (mobile) {
         await sheet.waitFor()
         await page.waitForFunction(() => document.activeElement && document.activeElement.id === 'inventory-title')
@@ -81,7 +81,7 @@ async function main() {
       if (mobile) await page.getByRole('button', { name: 'View plan', exact: true }).click()
       await page.getByRole('button', { name: 'Edit guests and budget', exact: true }).click()
       const basics = page.getByRole('dialog', { name: 'Guests & budget' }); await basics.waitFor()
-      await basics.getByLabel('Drinks budget (INR)').fill('9000'); await basics.getByRole('button', { name: 'Save changes', exact: true }).click(); await basics.waitFor({ state: 'hidden' })
+      await basics.getByLabel('Drinks budget').fill('9000'); await basics.getByRole('button', { name: 'Save changes', exact: true }).click(); await basics.waitFor({ state: 'hidden' })
       if (mobile) { await shot(page, `plan-sheet-over-budget-${width}`); await page.getByRole('button', { name: 'Close plan', exact: true }).click() }
       await page.evaluate(() => scrollTo(0, 0)); await shot(page, `over-budget-${width}`)
       await page.getByRole('button', { name: /^Filters/ }).click(); const filters = page.getByRole('dialog', { name: /filters/i }); await filters.waitFor(); await shot(page, `filters-sheet-${width}`)
@@ -89,11 +89,11 @@ async function main() {
       // Review receipt: contrast of every text pair on the paper, and UI line contrast.
       if (mobile) await page.getByRole('button', { name: 'View plan', exact: true }).click()
       await page.getByRole('button', { name: 'Review list', exact: true }).filter({ visible: true }).first().click()
-      await page.getByRole('heading', { name: 'Ready for the shops.' }).waitFor()
+      await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
       await page.evaluate(() => scrollTo(0, 0)); await shot(page, `receipt-${width}`)
       const receipt = page.locator('#planner-content [class*="receipt"]').first()
       assert.match(await receipt.innerText(), /Over budget by/)
-      assert.equal(await page.getByText('Your list is kept on this device.').count(), 1)
+      assert.equal(await page.getByText('Saved on this device only.').count(), 1)
       const pairs = await page.evaluate(() => {
         const rootEl = document.querySelector('#planner-content [class*="receipt"]'); const found = []
         const bgOf = el => { for (let e = el; e; e = e.parentElement) { const c = getComputedStyle(e).backgroundColor; if (!/rgba?\(.*, 0\)$/.test(c) && c !== 'transparent') return c } return 'rgb(255, 255, 255)' }
@@ -114,9 +114,9 @@ async function main() {
       const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message))
       await context.addCookies([{ name: 'allcheers_eligible', value: '1', url: failOrigin }])
       await page.goto(failOrigin + '/party-planner')
-      const heading = page.getByRole('heading', { name: "We couldn't load the drinks catalogue." }); await heading.waitFor()
+      const heading = page.getByRole('heading', { name: 'Drinks are temporarily unavailable' }); await heading.waitFor()
       assert.equal(await page.getByRole('heading', { name: 'One quick check first.' }).count(), 0, 'gate must not show when only the catalogue failed')
-      await page.getByText('Your list is safe on this device.').waitFor()
+      await page.getByText('Your plan is still saved on this device.').waitFor()
       await shot(page, `unavailable-${width}`)
       await page.getByRole('button', { name: 'Try again', exact: true }).click()
       await page.getByText('Still unavailable. Please try again in a moment.').waitFor()
@@ -125,7 +125,7 @@ async function main() {
       // Without the cookie the gate (not the unavailable state) shows.
       const bare = await browser.newContext({ viewport: { width, height: 844 } }); const barePage = await bare.newPage()
       await barePage.goto(failOrigin + '/party-planner'); await barePage.getByRole('heading', { name: 'One quick check first.' }).waitFor()
-      assert.equal(await barePage.getByRole('heading', { name: "We couldn't load the drinks catalogue." }).count(), 0)
+      assert.equal(await barePage.getByRole('heading', { name: 'Drinks are temporarily unavailable' }).count(), 0)
       await bare.close()
     }
     assert.deepEqual(errors, [])

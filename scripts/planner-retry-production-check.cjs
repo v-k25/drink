@@ -14,7 +14,7 @@ async function run() {
       const page = await context.newPage()
       await context.route('**/*', route => new URL(route.request().url()).origin === origin ? route.continue() : route.abort())
       await page.goto(origin + '/party-planner')
-      const heading = page.getByRole('heading', { name: "We couldn't load the drinks catalogue." })
+      const heading = page.getByRole('heading', { name: 'Drinks are temporarily unavailable' })
       await heading.waitFor()
       await page.getByRole('button', { name: 'Try again' }).click()
       await page.getByText('Still unavailable. Please try again in a moment.').waitFor()

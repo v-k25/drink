@@ -33,8 +33,11 @@ function build() {
   lines.push(`[data-theme="${toolsDark}"] {\n  color-scheme: dark;\n${declare(toolsDark)}\n}`)
   lines.push(`/* Print is always the light tools theme: black on white. */\n@media print {\n  [data-theme="${landing}"], [data-theme="${tools}"], [data-theme="${toolsDark}"] {\n    color-scheme: light;\n${declare(tools, '    ')}\n  }\n}`)
   const plain = ['spacing', 'radius', 'size'].flatMap(group => tokens[group].tokens.map(token => `  --${token.name}: ${token.value};`))
+  lines.push(`:root {\n${plain.join('\n')}\n}`)
+  // Font stacks sit on [data-theme], not :root: --font-bricolage and --font-manrope come from next/font classes that a themed
+  // page applies on the same element (see app/fonts.ts), so only pages that use the fonts load them.
   const fonts = Object.entries(tokens.type.families).map(([key, stack]) => `  --font-${key}: ${family(stack)};`)
-  lines.push(`:root {\n${plain.join('\n')}\n${fonts.join('\n')}\n}`)
+  lines.push(`[data-theme] {\n${fonts.join('\n')}\n}`)
   return lines.join('\n') + '\n'
 }
 

@@ -165,6 +165,8 @@
   --content-max: 1200px;
   --tool-max: 1120px;
   --summary-bar-h: 76px;
+}
+[data-theme] {
   --font-display: var(--font-bricolage), system-ui, sans-serif;
   --font-text: var(--font-manrope), system-ui, -apple-system, "Segoe UI", sans-serif;
 }

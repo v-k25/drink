@@ -34,7 +34,7 @@ async function main() {
       assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0, 'reduced motion must be static')
       await page.screenshot({ path: path.join(output, `home-${width}.png`), fullPage: true })
       await page.evaluate(() => window.scrollTo(0, 0))
-      if (width <= 390) {
+      if (width < 1024) {
         const menu = page.locator('header details')
         await menu.locator('summary').click()
         assert.ok(await menu.locator('a[href="/find-my-drink"]').isVisible())
@@ -44,12 +44,12 @@ async function main() {
       await question.click()
       assert.ok(await question.evaluate(el => el.parentElement.open))
       await question.click()
-      const email = page.getByLabel('Email address', { exact: true })
+      const email = page.getByLabel('Email', { exact: true })
       await email.fill('not-an-email')
       assert.equal(await email.evaluate(el => el.checkValidity()), false)
       assert.equal(await page.locator('input[name="consent"]').isChecked(), false)
       assert.equal(await page.locator('input[value="jaipur"]').isChecked(), false)
-      console.log(`PASS: ${width}px layout, images, anchors, FAQ, signup validation${width <= 390 ? ', mobile menu' : ''}`)
+      console.log(`PASS: ${width}px layout, images, anchors, FAQ, signup validation${width < 1024 ? ', mobile menu' : ''}`)
     }
     await page.goto(origin)
     await page.keyboard.press('Tab')

@@ -1,5 +1,29 @@
 # Implementation progress
 
+### Pre-Party R2 landing page, 2026-10-30
+
+**Done (not committed).** `/` is rebuilt to the approved Pre-Party prototype; R1 was committed first as `e10097c`.
+- **Page:** `app/page.tsx` and `app/home.module.css` rewritten (sticky header and ≡ menu below 1024px, hero with the arch photo, How it'll work, Free tools, For venues, launch-list form, Questions, Privacy, footer). Anchors kept: `#how-it-works`, `#for-venues`, `#early-access`, `#faq`, `#privacy`, `#responsible-use`, `#top`, `#main`.
+- **Form:** `app/early-access/form.tsx` restyled (new `form.module.css`); fields, validation call, honeypot, consent wording and `consent_version` untouched. `actions.ts` not modified.
+- **Fonts:** new `app/fonts.ts`; the display and text faces now load only on routes that import it. Damion removed from the layout and its files deleted (`git rm`); Nunito Sans stays for the tool pages.
+- **Tokens/styles:** `scripts/pre-party-tokens.cjs` now writes the font stacks on `[data-theme]` instead of `:root`; `app/tokens.css` regenerated. Font sizes and line heights in `ui.css`, `home.module.css` and `form.module.css` converted from `px` to `rem` (R1 had them in `px`). `globals.css`: only the landing-only `#privacy, #responsible-use` scroll rule removed.
+- **Scripts updated, not run:** `home-design-check.cjs`, `brewlist-home-check.cjs`, `design-polish-check.cjs` and `brewlist-tools-style-check.cjs` now assert the new heading, hero CTA ("Join the list"), one hero image, the `#tools` links and the new form selectors. Playwright is not installed in the repo, so none of them were run (only `node --check` for syntax).
+- **Copy deviations from the prototype** (honesty and consent): cost answer, "The venue will", original privacy note and original consent sentence are kept. Details in `docs/pre-party-redesign-plan.md`.
+
+**Checks actually run.**
+- `node scripts/pre-party-tokens.cjs --check`: ok. `tsc --noEmit`: exit 0. `corepack pnpm build`: exit 0, 7 routes. `git diff --check`: CRLF warnings only.
+- Production smoke: `/`, `/party-planner`, `/find-my-drink`, `/find-my-drink/dn-cape-codder`, `/robots.txt` all 200. `/` preloads the two new fonts plus Nunito Sans; `/party-planner` preloads only Nunito Sans.
+- In the browser pane on the production build, at 1440, 1024, 768, 390, 360 and 320: no horizontal overflow, one `h1`, every in-page anchor resolves, no touch target under 44px (header, menu, footer links, FAQ rows, form chips, choice cards and button), fonts Bricolage Grotesque and Manrope in use, no running animations.
+- At 200% root text size at 360, 390 and 320: no overflow and the hero stays inside the screen. This test caught a real overflow (the headline at 112px was wider than the screen), fixed by capping headline size with `vw`.
+- Mobile menu: opens, closes on link tap, closes on Escape and returns focus to the button. FAQ opens and closes. Anchor offsets under the sticky header are 80px (mobile) and 96px.
+- Form error state: submitted with an invalid email and nothing ticked (native validation turned off so the server action ran): summary note, field errors with "!", red borders, `aria-invalid`, entries kept, and no request reached Supabase.
+- Focus ring on the landing page is the design's cream ring with the background gap (not the old orange).
+- Tool pages unchanged: a computed-style fingerprint of `/party-planner` and `/find-my-drink` at 1440 and 390 is identical between the committed R1 build and the R2 build in the same browser state (back-to-back builds).
+
+**Not run.** Real form submissions (success, "already on the list" and the server-error state were not triggered, to avoid writing to the live waitlist; they were checked on the design board only), Lighthouse and LCP (the hidden browser pane does not report LCP), real devices, screen readers, the Playwright scripts above, and a print preview. The design brief's 768px header breakpoint was moved to 1024px because the link row does not fit at 768.
+
+**Next.** R3: tool header and footer, theme switching on tool routes, and the age check.
+
 ### Pre-Party R1 foundations, 2026-10-30
 
 **Done (not committed).** Design tokens, themes, fonts and shared primitives added with no visible change to any existing page.

@@ -1,4 +1,4 @@
-// B3 "Jaipur After Dark" landing: hero containment (incl. 200% text), 44px targets, local imagery,
+// Pre-Party landing (R2; was the B3 "Jaipur After Dark" landing): hero containment (incl. 200% text), 44px targets, local imagery,
 // keyboard menu/FAQ, skip link and routes. Complements home-design-check.cjs, which covers layout,
 // anchors, reduced motion and signup validation. Starts its own production server unless
 // BREWLIST_HOME_ORIGIN points at one already running; requires a completed `pnpm build`.
@@ -60,11 +60,12 @@ async function main() {
       await page.setViewportSize({ width, height: 900 })
       assert.equal((await page.goto(origin)).status(), 200)
       assert.equal(await page.locator('h1').count(), 1)
-      assert.ok(await page.getByRole('heading', { name: 'Book the night.', level: 1 }).isVisible())
-      assert.equal(await page.getByRole('link', { name: 'Get launch updates', exact: true }).first().getAttribute('href'), '#early-access', 'waitlist-only CTA')
+      assert.ok(await page.getByRole('heading', { name: 'Jaipur nights, booked.', level: 1 }).isVisible())
+      assert.equal(await page.getByRole('link', { name: 'Join the list', exact: true }).first().getAttribute('href'), '#early-access', 'waitlist-only CTA')
+      if (width >= 1024) assert.equal(await page.locator('header').getByRole('link', { name: 'Get launch updates', exact: true }).getAttribute('href'), '#early-access', 'header CTA')
       const localImages = page.locator('main img')
-      assert.equal(await localImages.count(), 3, 'expected local hero and tool images')
-      // Tool images are lazy-loaded: scroll each into view before expecting it to have loaded.
+      assert.equal(await localImages.count(), 1, 'expected only the local hero image')
+      // Scroll each image into view before expecting it to have loaded.
       for (const image of await localImages.all()) {
         await image.scrollIntoViewIfNeeded()
         await image.evaluate(element => element.complete && element.naturalWidth ? undefined : new Promise((resolve, reject) => { element.addEventListener('load', resolve, { once: true }); element.addEventListener('error', () => reject(new Error('image failed to load')), { once: true }) }))
@@ -79,7 +80,7 @@ async function main() {
       await assertHeroContentFits(page, `${width}px`)
       const faq = page.locator('#faq summary').first()
       await faq.focus(); await page.keyboard.press('Enter'); assert.equal(await faq.evaluate(el => el.parentElement.open), true)
-      for (const target of await page.locator('header a, header summary, footer nav a, #faq summary, .access-form .button, .check-label').all()) {
+      for (const target of await page.locator('header a, header summary, footer nav a, #faq summary, #early-access form button, #early-access form label[class]').all()) {
         if (await target.isVisible()) {
           const box = await target.boundingBox()
           const tag = await target.evaluate(element => element.tagName.toLowerCase())

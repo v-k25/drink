@@ -16,9 +16,9 @@ const navLinks = [
 
 // Each step carries one of the four planned benefits. Copy describes the plan, under a "How it'll work" heading.
 const steps = [
-  ['Pick a night', 'See what’s on in Jaipur this week.'],
-  ['Choose tickets', 'The price is shown upfront.'],
-  ['Pay', 'The venue confirms it.'],
+  ['Pick a night', 'See what’s on in Jaipur.'],
+  ['Send a request', 'Choose tickets or a table. The price is shown upfront.'],
+  ['Venue confirms', 'The venue says yes before you pay.'],
   ['Show your pass', 'It’s on your phone. No calls or DMs.'],
 ]
 
@@ -45,7 +45,7 @@ export default function Home() {
           <div className={styles.heroCopy}>
             <span className="sf-sticker">Coming soon</span>
             <h1 id="hero-title" className={styles.h1}>Jaipur nights,{' '}<br />booked.</h1>
-            <p className={styles.lede}>Book clubs and tables, pay upfront, walk in with a pass. <b>We’re not taking bookings yet.</b></p>
+            <p className={styles.lede}>Book clubs and tables in Jaipur, then walk in with a pass. <b>We’re not taking bookings yet.</b></p>
             <div className={styles.cta}>
               <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
               <a className={`sf-btn sf-btn--secondary ${styles.secondary}`} href="#how-it-works">How it works</a>
@@ -105,7 +105,7 @@ export default function Home() {
 
         <section className={styles.privacy} id="privacy" aria-labelledby="privacy-title">
           <h2 id="privacy-title" className={styles.h3}>Privacy</h2>
-          <p>We store your email, selected interests, drinks preference, Jaipur selection and consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
+          <p>We store your email, your Jaipur selection and your consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
         </section>
       </main>
 

@@ -1,5 +1,19 @@
 # Implementation progress
 
+### Launch-list form and landing copy audit, 2026-10-31
+
+**Done (not committed).** Owner asked to simplify the launch-list form and audit the other landing sections.
+- **Form.** The "Interested in" chips and the "Drinks" select are gone (both tools are already on the page). The form is now Email, "I'm joining early access for Jaipur" and the consent box. `app/early-access/actions.ts` is **unchanged**: the Jaipur box still supplies the one required interest (`jaipur`), and `preference` is stored as null (the column is nullable). The unused chip and optional styles were removed from `form.module.css`; the Jaipur box now has its own error line.
+- **Privacy note** now says "your email, your Jaipur selection and your consent record", which is what is stored.
+- **Copy audit (landing).**
+  - Hero line: dropped "pay upfront" (payment terms are not decided, D11).
+  - "How it'll work" steps now follow the plan: Pick a night ("See what's on in Jaipur." with "this week" removed because nothing is live), Send a request (choose tickets or a table, price shown upfront), Venue confirms ("The venue says yes before you pay."), Show your pass. The old step 3 was titled "Pay" but described the venue confirming.
+  - Left as they are, on purpose: the "Jaipur nights, booked." headline and the page title (owner decisions), the tool cards, For venues, the FAQ and the Privacy section.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `home-design-check`, `brewlist-home-check`, `design-polish-check` and `early-access-check` pass; in the pane the form shows exactly email, Jaipur and consent, with no overflow at 320 or at 200% text. No live form submission was made.
+
+**Found, not fixed.** Existing rows in `waitlist_subscribers` keep their old interests and preference values; new signups store `interests = {jaipur}` and no preference. Nothing reads those columns.
+
 ### Verification run and reminders, 2026-10-31
 
 **Done (not committed).** Everything that could not run before now has: the Playwright harnesses, Lighthouse mobile and the unit checks.

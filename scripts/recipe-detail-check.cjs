@@ -38,7 +38,7 @@ async function main() {
       // Metric-first checklist: converted lines lead with the metric quantity
       // and do not repeat the source-unit amount; the wedge stays verbatim; the
       // note labels the approximations; old note wordings are gone.
-      for (const text of ['Cape Codder', 'Yield: 1 cocktail', 'Glass: Highball glass', 'Allergens: not specified', 'Caffeine: not specified', '~44 mL Vodka', '~89 mL Cranberry Juice', '1 wedge Lime', 'Approximate metric conversions; source quantities retained internally. Where conversion is unclear, original unit shown.']) assert.ok(body.includes(text), text)
+      for (const text of ['Cape Codder', 'Yield: 1 cocktail', 'Glass: Highball glass', 'Allergens: not specified', 'Caffeine: not specified', '~44 mL Vodka', '~89 mL Cranberry Juice', '1 wedge Lime', 'Metric amounts are approximate. Where a conversion is unclear, the original unit is shown.']) assert.ok(body.includes(text), text)
       assert.ok(!body.includes('1.5 oz. Vodka'), 'converted lines must not repeat the source-unit amount')
       assert.ok(!body.includes('3 oz. Cranberry Juice'), 'converted lines must not repeat the source-unit amount')
       assert.ok(!body.includes('Quantities are shown in the units the recipe was imported with'), 'the old imported-units note must be replaced')

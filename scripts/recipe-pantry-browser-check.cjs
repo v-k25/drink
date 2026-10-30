@@ -46,10 +46,10 @@ async function main() {
       for(const label of ['Vodka','Cranberry Juice','Lime wedge','Ice']) await page.getByLabel(label,{exact:true}).check()
       const bay = page.locator('#pantry-recipe-dn-bay-breeze')
       await bay.waitFor()
-      assert.match(await bay.innerText(), /Add Pineapple Juice: 2 oz\. Pineapple Juice/)
+      assert.match(await bay.innerText(), /Add 2 oz\. Pineapple Juice\./)
       assert.match(await bay.innerText(), /Equipment: Highball glass/)
       await page.getByLabel('Pineapple Juice',{exact:true}).check()
-      assert.match(await bay.innerText(), /Check every quantity/)
+      assert.doesNotMatch(await bay.innerText(), /Missing/) // ticking the missing item moves the recipe to Ready to make
       const ids=await page.locator('[id^="recipe-"],[id^="pantry-recipe-"]').evaluateAll(nodes=>nodes.map(n=>n.id))
       assert.equal(ids.length,new Set(ids).size,'unique recipe DOM anchors')
       const badTargets = await page.locator('button, a, [class*=pantryChecklist] label').evaluateAll(nodes=>nodes.filter(n=>n.closest('[class*="pantry"]')).filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&r.height<43.9}).map(n=>({text:n.textContent,height:n.getBoundingClientRect().height})))

@@ -64,7 +64,7 @@ global.fetch = async (url, init = {}) => {
   assert.equal(cookieJar.last.name, 'allcheers_eligible')
   assert.equal(cookieJar.last.options.httpOnly, true)
   assert.equal(cookieJar.last.options.secure, true)
-  assert.deepEqual(Object.keys(actions).sort(), ['confirmEligibility', 'getCatalogue', 'validatePlan'], 'no sign-in actions remain')
+  assert.deepEqual(Object.keys(actions).sort(), ['acceptEligibilityForm', 'confirmEligibility', 'getCatalogue', 'validatePlan'], 'no sign-in actions remain')
   assert.deepEqual(Object.keys(session).sort(), ['eligibilityAccepted', 'setEligibility'], 'no session token helpers remain')
   const failedRead = catalogueRows[catalogueRows.length - 1]
   catalogueRows[catalogueRows.length - 1] = { ...failedRead, price_paise: 0 } // malformed row: catalogue must fail closed

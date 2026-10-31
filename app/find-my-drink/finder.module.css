@@ -40,7 +40,7 @@
 .notice::before { content: "!"; content: "!" / ""; flex: none; color: var(--warning); font-weight: 800; }
 .noticeOk::before { content: "✓"; content: "✓" / ""; color: var(--success); }
 .stateCard { display: grid; justify-items: center; gap: var(--space-2); max-width: 440px; margin: var(--space-6) auto; padding: var(--space-5) 0; text-align: center; }
-.stateGlyph { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-raised); color: var(--warning); font: 800 1.25rem/1 var(--font-text); }
+.stateGlyph { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--surface-raised); color: var(--warning); }
 .stateCard :is(h2, h3) { font-size: min(1.5rem, 9vw); }
 .stateCard p { margin: 0; color: var(--text-muted); }
 .stateCard .filter, .stateCard .primary, .stateCard .secondary { margin-top: var(--space-2); }
@@ -53,10 +53,11 @@
 .guideSetup { display: grid; gap: var(--space-4); max-width: 720px; align-content: start; }
 .entry { display: grid; gap: var(--space-4); }
 .routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-3); }
-.route { display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-5); min-height: 150px; padding: var(--space-4); border: 1.5px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); text-align: left; text-decoration: none; font: inherit; cursor: pointer; transition: background-color .16s ease; }
+.route { display: flex; flex-direction: column; justify-content: flex-start; gap: var(--space-4); min-height: 150px; padding: var(--space-4); border: 1.5px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); text-align: left; text-decoration: none; font: inherit; cursor: pointer; transition: background-color .16s ease; }
 .route:hover { background: var(--surface-raised); }
 .routeLead, .routeLead:hover { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
-.routeIcon { font: 800 2rem/1 var(--font-display); }
+.routeIcon { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: var(--radius-md); background: var(--surface-raised); }
+.routeLead .routeIcon { background: color-mix(in srgb, var(--on-highlight) 10%, transparent); }
 .route h2 { font-size: min(1.375rem, 8vw); }
 .route p { margin: var(--space-1) 0 0; font-size: 0.9375rem; line-height: 1.3125rem; }
 .route:not(.routeLead) p { color: var(--text-muted); }
@@ -98,11 +99,18 @@
 .guideGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--space-3); }
 .guideRecommendation { display: grid; gap: var(--space-2); align-content: start; min-width: 0; }
 /* Spirit quiz result (Guide me): the match is the main answer, its cocktails follow. */
-.spiritResult { display: grid; gap: var(--space-3); max-width: 720px; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface); }
+.spiritResult { --focus: var(--on-bar); --bg: var(--bar); display: grid; gap: var(--space-3); max-width: 720px; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--bar); color: var(--on-bar); }
+/* The match is the payoff of the quiz, so it gets the same dark block as the Planner's budget meter. */
+.spiritResult .eyebrow { color: var(--highlight); }
+.spiritResult .lede { color: var(--on-bar); }
+.spiritResult .secondary { border-color: var(--on-bar-muted); background: transparent; color: var(--on-bar); }
+.spiritResult .secondary:hover { background: color-mix(in srgb, var(--on-bar) 10%, transparent); }
+.spiritResult .backLink { color: var(--highlight); }
+.spiritResult .backLink:hover { background: color-mix(in srgb, var(--on-bar) 10%, transparent); }
 .spiritResult h1 { font-size: min(clamp(2.5rem, 1.6rem + 3.6vw, 4rem), 16vw); line-height: 1; }
 .spiritFacts { display: grid; gap: var(--space-3); margin: 0; }
 .spiritFacts div { display: grid; gap: 2px; }
-.spiritFacts dt { color: var(--text-muted); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
+.spiritFacts dt { color: var(--on-bar-muted); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
 .spiritFacts dd { margin: 0; font-size: 1rem; line-height: 1.5rem; }
 .guideRandom { display: grid; gap: var(--space-4); max-width: 440px; }
 .guideRandom .product { width: 100%; }
@@ -131,15 +139,16 @@
 .productLink { display: grid; gap: var(--space-1); align-content: start; min-width: 0; }
 .imgWrap { position: relative; aspect-ratio: 4 / 3; border-radius: var(--radius-md); background: radial-gradient(60% 45% at 50% 55%, color-mix(in srgb, var(--highlight) 30%, transparent), transparent 70%), var(--surface-raised); overflow: hidden; margin-bottom: var(--space-2); }
 .imgWrap img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.imgWrap img[src$=".svg"] { box-sizing: border-box; padding: 14px; object-fit: contain; }
 .tag { position: absolute; left: 10px; bottom: 10px; display: inline-flex; padding: 4px 10px; border-radius: var(--radius-pill); background: var(--bg); color: var(--text); font: 700 0.75rem/1rem var(--font-text); }
 .shell .cardName { margin: 0; font-family: var(--font-display); font-size: 1.1875rem; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; overflow-wrap: anywhere; }
 .cardName a { display: flex; align-items: center; min-height: var(--target-min); color: var(--text); text-decoration: none; }
 .cardName a::after { content: ""; position: absolute; inset: 0; }
-.cardMeta, .cardFacts, .guideTags { display: block; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
+.cardMeta, .cardFacts { display: block; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
 .matchReason { display: block; color: var(--accent-text); font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; overflow-wrap: anywhere; }
 .productGrid, .choiceGrid, .relatedGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-3); margin: 0; }
 @media (max-width: 359px) { .productGrid, .choiceGrid { grid-template-columns: minmax(0, 1fr); } }
+/* Three picks in two columns would leave the last one alone on its row: the first spans the row instead. */
+@media (max-width: 767px) { .choiceGrid > :first-child:nth-last-child(3) { grid-column: 1 / -1; } }
 @media (min-width: 768px) { .productGrid, .choiceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); } }
 @media (min-width: 1024px) { .productGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
@@ -208,7 +217,7 @@
 .pantryMatch { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0 var(--space-3); padding: 4px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 96px; }
 .pantryMatch a { display: flex; align-items: center; min-height: var(--target-min); color: var(--text); font-weight: 700; overflow-wrap: anywhere; }
 .pantryMatch p { grid-column: 1 / -1; margin: 0 0 var(--space-2); color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
-.missingTag { grid-column: 2; grid-row: 1; padding: 4px 12px; border-radius: var(--radius-pill); background: var(--surface-raised); font-size: 0.875rem; font-weight: 700; }
+.missingTag { display: inline-flex; align-items: center; gap: 4px; grid-column: 2; grid-row: 1; padding: 4px 12px; border-radius: var(--radius-pill); background: var(--surface-raised); font-size: 0.875rem; font-weight: 700; }
 .pantryResultStatus { color: var(--text-muted); font-size: 0.875rem; }
 @media (max-width: 649px) { .pantryChecklist { grid-template-columns: minmax(0, 1fr); } .pantryContent { padding: var(--space-3); } }
 
@@ -217,7 +226,6 @@
 .detailPage { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "back" "hero" "title" "make" "source" "related" "foot"; column-gap: var(--space-8); align-items: start; }
 .detailPage .backLink { grid-area: back; }
 .heroImage { grid-area: hero; display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; border-radius: var(--radius-lg); object-fit: cover; background: var(--surface-raised); }
-.heroImage[src$=".svg"] { box-sizing: border-box; padding: 24px; object-fit: contain; }
 .titleBlock { grid-area: title; display: grid; gap: var(--space-3); margin: var(--space-5) 0 0; min-width: 0; }
 .typeLine { margin: 0; color: var(--text-muted); font-size: 0.9375rem; font-weight: 700; }
 .titleBlock h1 { font-size: min(clamp(2rem, 1.4rem + 2.6vw, 3.25rem), 11vw); }
@@ -248,7 +256,11 @@
 .stepsList li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-4); align-items: start; counter-increment: step; font-size: 1.125rem; line-height: 1.75rem; overflow-wrap: anywhere; }
 .stepsList li::before { content: counter(step); display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--highlight); color: var(--on-highlight); font: 800 1rem/1 var(--font-display); }
 .sourceContext { grid-area: source; margin-top: var(--space-7); border-top: 1px solid var(--line); color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
-.sourceContext summary { display: flex; align-items: center; min-height: 56px; font-weight: 700; cursor: pointer; }
+.sourceContext summary { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 56px; color: var(--text); font-weight: 700; cursor: pointer; list-style: none; }
+.sourceContext summary::-webkit-details-marker { display: none; }
+/* A plus that turns into a minus, as in the landing page's questions, so it reads as something to open. */
+.sourceContext summary::after { content: "+"; color: var(--accent-text); font: 700 1.5rem/1 var(--font-text); }
+.sourceContext[open] summary::after { content: "2"; }
 .sourceContext p { margin: var(--space-2) 0; overflow-wrap: anywhere; }
 .sourceContext a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--accent-text); }
 .related { grid-area: related; margin-top: var(--space-6); min-width: 0; }

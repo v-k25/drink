@@ -7,6 +7,7 @@ import RecipeCard from './recipe-card'
 import Shell from './shell'
 import { capitalize, typeLabel, safeResultsHref } from '../recipe'
 import RecipeImage from './recipe-image'
+import { ArrowLeftIcon } from '../../icons'
 import { metricIngredients } from '../metric'
 import type { RecipeRow } from '../queries'
 import { Unavailable } from './states'
@@ -15,7 +16,7 @@ import styles from '../finder.module.css'
 export function DetailUnavailable() {
   return <Shell>
     <div className={styles.detailBody}>
-      <Link href="/find-my-drink" className={styles.backLink}>← All ways to find a drink</Link>
+      <Link href="/find-my-drink" className={styles.backLink}><ArrowLeftIcon size={18} />All ways to find a drink</Link>
       <Unavailable />
     </div>
   </Shell>
@@ -50,7 +51,7 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   return <Shell>
     <div className={styles.detailBody}>
       <article className={styles.detailPage}>
-        <Link href={resultsHref} className={styles.backLink}>← Back to results<ListingPending /></Link>
+        <Link href={resultsHref} className={styles.backLink}><ArrowLeftIcon size={18} />Back to results<ListingPending /></Link>
         <div className={styles.titleBlock}>
           <p className={styles.typeLine}>{typeLabel(recipe.alcoholType, recipe.baseSpirit)}</p>
           <h1>{recipe.name}</h1>
@@ -77,7 +78,6 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
           <h2 id="related-title">More like this</h2>
           <div className={styles.relatedGrid}>{related.map(row => <RecipeCard key={row.id} row={row} returnTo={resultsHref} preserveAnchor />)}</div>
         </section>}
-        <p className={styles.disclaimer}>Cocktail recipes are for adults of legal drinking age. Please drink responsibly.</p>
       </article>
     </div>
   </Shell>

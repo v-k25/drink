@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import styles from '../finder.module.css'
+import { CloseIcon } from '../../icons'
 
 export type CookClose = 'dismiss' | 'method'
 
@@ -61,7 +62,7 @@ export default function CookView({ name, steps, ingredients, wakeSupported, wake
       <div className={styles.cookTools}>
         {wakeSupported && <button type="button" className={styles.cookTool} aria-pressed={wakeHeld} onClick={onToggleWake}>{sun}<span>Keep screen awake</span></button>}
         <button type="button" className={styles.cookTool} onClick={() => close('method')}>{list}<span>View all steps</span></button>
-        <button type="button" className={`${styles.cookTool} ${styles.cookClose}`} aria-label="Close" onClick={() => close('dismiss')}><span aria-hidden="true">✕</span></button>
+        <button type="button" className={`${styles.cookTool} ${styles.cookClose}`} aria-label="Close" onClick={() => close('dismiss')}><CloseIcon size={22} /></button>
       </div>
     </div>
     <div className={styles.cookProgress}>

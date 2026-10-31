@@ -112,7 +112,7 @@ async function run() {
     await page.getByRole('button', { name: 'Undo' }).click()
     await page.getByRole('button', { name: 'Edit suggestion' }).click()
     assert.equal(await page.getByLabel('Drinks each').inputValue(), '4')
-    await page.getByRole('button', { name: 'Back to drinks' }).click()
+    await page.getByRole('button', { name: 'Choose drinks myself' }).click()
     await page.getByRole('button', { name: 'View plan' }).click()
     await page.getByRole('button', { name: 'Edit guests and budget' }).click()
     const edit = page.getByRole('dialog', { name: 'Guests & budget' }); await edit.waitFor()

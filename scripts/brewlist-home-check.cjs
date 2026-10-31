@@ -62,7 +62,7 @@ async function main() {
       assert.equal(await page.locator('h1').count(), 1)
       assert.ok(await page.getByRole('heading', { name: 'Jaipur nights, booked.', level: 1 }).isVisible())
       assert.equal(await page.getByRole('link', { name: 'Join the list', exact: true }).first().getAttribute('href'), '#early-access', 'waitlist-only CTA')
-      if (width >= 1024) assert.equal(await page.locator('header').getByRole('link', { name: 'Get launch updates', exact: true }).getAttribute('href'), '#early-access', 'header CTA')
+      if (width >= 1024) assert.equal(await page.locator('header').getByRole('link', { name: 'Join the list', exact: true }).getAttribute('href'), '#early-access', 'header CTA')
       const localImages = page.locator('main img')
       assert.equal(await localImages.count(), 1, 'expected only the local hero image')
       // Scroll each image into view before expecting it to have loaded.

@@ -1,3 +1,4 @@
+import { AlertIcon } from '../../icons'
 import styles from '../finder.module.css'
 
 // Honest empty state while zero recipes are editorially approved (the
@@ -14,7 +15,7 @@ export function NothingPublished() {
 // legacy or draft rows, never a fabricated substitute.
 export function Unavailable() {
   return <div className={styles.stateCard} role="alert">
-    <span className={styles.stateGlyph} aria-hidden="true">!</span>
+    <span className={styles.stateGlyph}><AlertIcon size={28} /></span>
     <h2>Recipes are temporarily unavailable</h2>
     <p>Check your connection, then try again.</p>
     <a href="" className={styles.primary}>Try again</a>

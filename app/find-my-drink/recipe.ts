@@ -3,28 +3,12 @@
 // plain functions run in server components and the making client component
 // alike, always over validated data.
 
-// The existing hand-authored category SVGs (no rights-cleared photography
-// exists). Mapped from the stored base_spirit column only — never inferred;
-// unknown values fall back to the placeholder.
-const SPIRIT_ART: Record<string, string> = {
-  vodka: '/images/drinks/vodka.svg',
-  gin: '/images/drinks/gin.svg',
-  rum: '/images/drinks/rum.svg',
-  whisky: '/images/drinks/whisky.svg',
-  whiskey: '/images/drinks/whisky.svg',
-  tequila: '/images/drinks/tequila.svg',
-  brandy: '/images/drinks/brandy.svg',
-  scotch: '/images/drinks/scotch.svg',
-  champagne: '/images/drinks/champagne.svg',
-  sake: '/images/drinks/sake.svg',
-}
-
-export function artFor(baseSpirit: string | null): string {
-  if (baseSpirit) {
-    const art = SPIRIT_ART[baseSpirit.toLowerCase()]
-    if (art) return art
-  }
-  return '/images/drink-placeholder.svg'
+// One on-brand placeholder (public/images/recipe-placeholder.svg) for every
+// recipe without a stored photo. It replaced the per-spirit bottle drawings,
+// whose mixed colours looked broken next to real photos. The base spirit is
+// still shown in text on the card.
+export function artFor(_baseSpirit: string | null): string {
+  return '/images/recipe-placeholder.svg'
 }
 
 export function capitalize(value: string): string {

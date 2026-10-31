@@ -1,5 +1,6 @@
 import EarlyAccessForm from './early-access/form'
 import MobileMenu from './mobile-menu'
+import { ArrowRightIcon } from './icons'
 import { bricolage, manrope } from './fonts'
 import styles from './home.module.css'
 
@@ -32,36 +33,40 @@ export default function Home() {
           <nav className={styles.desktopNav} aria-label="Main navigation">
             {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
           </nav>
-          <a className={`sf-btn sf-btn--primary ${styles.navCta}`} href="#early-access">Get launch updates</a>
+          <a className={`sf-btn sf-btn--primary ${styles.navCta}`} href="#early-access">Join the list</a>
           <MobileMenu className={styles.mobileMenu}>
             {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
-            <a className="sf-btn sf-btn--primary" href="#early-access">Get launch updates</a>
+            <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
           </MobileMenu>
         </div>
       </header>
 
-      <main id="main" tabIndex={-1} className={styles.wrap}>
+      <main id="main" tabIndex={-1}>
+        {/* Full-screen hero: the photo fills the first screen behind the copy. Wide crop from 768px, portrait crop below;
+            a plum gradient (left on desktop, bottom on phones) keeps the text on a near-solid ground. */}
         <section className={styles.hero} aria-labelledby="hero-title">
-          <div className={styles.heroCopy}>
-            <span className="sf-sticker">Coming soon</span>
-            <h1 id="hero-title" className={styles.h1}>Jaipur nights,{' '}<br />booked.</h1>
-            <p className={styles.lede}>Book clubs and tables in Jaipur, then walk in with a pass. <b>We’re not taking bookings yet.</b></p>
-            <div className={styles.cta}>
-              <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
-              <a className={`sf-btn sf-btn--secondary ${styles.secondary}`} href="#how-it-works">How it works</a>
+          <picture className={styles.heroMedia}>
+            <source media="(min-width: 768px)" type="image/avif" srcSet="/images/nightlife/hero-night-desktop-1600.avif 1600w, /images/nightlife/hero-night-desktop.avif 2400w" sizes="100vw" />
+            <source media="(min-width: 768px)" type="image/webp" srcSet="/images/nightlife/hero-night-desktop-1600.webp 1600w, /images/nightlife/hero-night-desktop.webp 2400w" sizes="100vw" />
+            <source type="image/avif" srcSet="/images/nightlife/hero-night-mobile-800.avif 800w, /images/nightlife/hero-night-mobile.avif 1280w" sizes="100vw" />
+            <source type="image/webp" srcSet="/images/nightlife/hero-night-mobile-800.webp 800w, /images/nightlife/hero-night-mobile.webp 1280w" sizes="100vw" />
+            <img src="/images/nightlife/hero-night-mobile-800.webp" alt="" width={800} height={1000} fetchPriority="high" decoding="async" />
+          </picture>
+          <div className={`${styles.wrap} ${styles.heroInner}`}>
+            <div className={styles.heroCopy}>
+              <span className="sf-sticker">Coming soon</span>
+              <h1 id="hero-title" className={styles.h1}>Jaipur nights,{' '}<br />booked.</h1>
+              <p className={styles.lede}>Book clubs and tables in Jaipur, then walk in with a pass. <b>We’re not taking bookings yet.</b></p>
+              <div className={styles.cta}>
+                <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
+                <a className={`sf-btn sf-btn--secondary ${styles.secondary}`} href="#how-it-works">How it works</a>
+              </div>
             </div>
-          </div>
-          <div>
-            <div className={styles.arch}>
-              <picture>
-                <source type="image/avif" srcSet="/images/nightlife/hero-night-mobile-800.avif 800w, /images/nightlife/hero-night-mobile.avif 1200w" sizes="(max-width: 767px) 100vw, (max-width: 1023px) 340px, 420px" />
-                <source type="image/webp" srcSet="/images/nightlife/hero-night-mobile-800.webp 800w, /images/nightlife/hero-night-mobile.webp 1200w" sizes="(max-width: 767px) 100vw, (max-width: 1023px) 340px, 420px" />
-                <img src="/images/nightlife/hero-night-mobile-800.webp" alt="" width={800} height={1200} fetchPriority="high" decoding="async" />
-              </picture>
-            </div>
-            <p className={styles.credit}>Stock imagery; not listed Jaipur venues</p>
+            <p className={styles.credit}>Stock photo, not a Socifer venue</p>
           </div>
         </section>
+
+        <div className={styles.wrap}>
 
         <section className={styles.section} id="how-it-works" aria-labelledby="how-title">
           <h2 id="how-title" className={styles.h2}>How it’ll work</h2>
@@ -71,8 +76,25 @@ export default function Home() {
         <section className={styles.section} id="tools" aria-labelledby="tools-title">
           <h2 id="tools-title" className={styles.h2}>Free tools, no sign-up</h2>
           <div className={styles.tools}>
-            <a className={`${styles.tool} ${styles.toolYellow}`} href="/party-planner"><div><h3>Party Planner</h3><p>Work out the drinks and the cost for a house party.</p></div><span className={styles.go}>Plan a party <span aria-hidden="true">→</span></span></a>
-            <a className={`${styles.tool} ${styles.toolPlum}`} href="/find-my-drink"><div><h3>Find My Drink</h3><p>50 cocktails and mocktails you can make at home.</p></div><span className={styles.go}>Find a drink <span aria-hidden="true">→</span></span></a>
+            {/* Each card shows a small, static preview of what the tool gives you. Decorative: the heading and line carry the meaning. */}
+            <a className={`${styles.tool} ${styles.toolYellow}`} href="/party-planner">
+              <div><h3>Party Planner</h3><p>Work out the drinks and the cost for a house party.</p></div>
+              <div className={styles.preview} aria-hidden="true">
+                <span className={styles.previewHead}>20 guests · ₹8,000</span>
+                <span className={styles.previewLine}><span>16× Lager, 330 ml</span><b>₹1,920</b></span>
+                <span className={styles.previewLine}><span>2× Blended Scotch</span><b>₹3,060</b></span>
+                <span className={`${styles.previewLine} ${styles.previewTotal}`}><span>Estimated total</span><b>₹4,980</b></span>
+              </div>
+              <span className={styles.go}>Plan a party <ArrowRightIcon size={18} /></span>
+            </a>
+            <a className={`${styles.tool} ${styles.toolPlum}`} href="/find-my-drink">
+              <div><h3>Find My Drink</h3><p>Find the spirit that suits you, then 50 cocktails and mocktails to make at home.</p></div>
+              <div className={`${styles.preview} ${styles.previewQuiz}`} aria-hidden="true">
+                <span className={styles.previewHead}>How should it feel?</span>
+                <span className={styles.previewChips}><span>Light and fresh</span><span className={styles.previewPicked}>Smooth and rounded</span><span>Rich and warming</span></span>
+              </div>
+              <span className={styles.go}>Find a drink <ArrowRightIcon size={18} /></span>
+            </a>
           </div>
         </section>
 
@@ -86,9 +108,11 @@ export default function Home() {
           </div>
         </section>
 
-        <section className={`${styles.section} ${styles.join}`} id="early-access" aria-labelledby="early-title">
-          <div><h2 id="early-title" className={styles.h2}>Get launch updates</h2><p className={`${styles.lede} ${styles.joinLede}`}>One email when bookings open in Jaipur.</p></div>
-          <div className={styles.card}><EarlyAccessForm /></div>
+        <section className={styles.section} id="early-access" aria-labelledby="early-title">
+          <div className={styles.join}>
+            <div><h2 id="early-title" className={styles.h2}>Get launch updates</h2><p className={`${styles.lede} ${styles.joinLede}`}>One email when bookings open in Jaipur.</p></div>
+            <EarlyAccessForm />
+          </div>
         </section>
 
         <section className={styles.section} id="faq" aria-labelledby="faq-title">
@@ -105,15 +129,16 @@ export default function Home() {
 
         <section className={styles.privacy} id="privacy" aria-labelledby="privacy-title">
           <h2 id="privacy-title" className={styles.h3}>Privacy</h2>
-          <p>We store your email, your Jaipur selection and your consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
+          <p>We store your email, the city you joined for (Jaipur) and your consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
         </section>
+        </div>
       </main>
 
       <footer className={styles.footer}>
         <div className={styles.wrap}>
           <a className={styles.wordmark} href="#top" aria-label="Socifer, back to top">socifer</a>
           <nav aria-label="Footer navigation"><a href="/party-planner">Plan a party</a><a href="/find-my-drink">Find a drink</a><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
-          <p>For adults. Drink responsibly and never drink and drive.<br />Stock imagery; not listed Jaipur venues. Photo: <a href="https://www.pexels.com/photo/1190298/">Wendy Wei / Pexels</a>.</p>
+          <p>For adults. Drink responsibly and never drink and drive.<br />Stock photo, not a Socifer venue. Photo: <a href="https://unsplash.com/photos/people-jamming-while-man-singing-on-stage-KoKAXLKJwhk">Edward Cisneros / Unsplash</a>.</p>
         </div>
       </footer>
     </div>

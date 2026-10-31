@@ -307,7 +307,7 @@ async function main() {
   while (!await overCard.isVisible()) { assert.ok(await showMore.count(), 'show more remains until the card renders'); await showMore.click(); limit0 += PAGE }
   assert.equal(await overCard.getByRole('button', { name: `Add ${overBeer[0].name} anyway (over budget)`, exact: true }).count(), 1, 'non-fitting card offers Add anyway') // R4 replaced the de-emphasised card style with this explicit button
   assert.ok((await overCard.innerText()).includes('over remaining budget'))
-  assert.ok(await overCard.getByRole('button', { name: `Add ${overBeer[0].name} to inventory`, exact: true }).isDisabled(), 'normal Add is disabled on non-fitting cards')
+  assert.equal(await overCard.getByRole('button', { name: `Add ${overBeer[0].name} to inventory`, exact: true }).count(), 0, 'non-fitting cards have one Add, named as over budget')
   const status = () => page.locator('[class*="additionStatus"]')
   const withinChip = () => filters.getByRole('group', { name: 'Within budget', exact: true }).getByRole('button', { name: /^Within budget \(\d+\)$/ })
   await openFilters(); assert.equal(await withinChip().count(), 1); await closeFilters()

@@ -5,6 +5,7 @@ import Pantry from './pantry'
 import { NothingPublished, Unavailable } from './states'
 import Shell from './shell'
 import { SearchIcon } from './icons'
+import { ArrowLeftIcon, ArrowRightIcon, CloseIcon } from '../../icons'
 import { capitalize } from '../recipe'
 import type { ListingData, ListingFilters, RecipeRow } from '../queries'
 import styles from '../finder.module.css'
@@ -35,7 +36,7 @@ export default function Browse({ state, data, filters, cursor, eligibleRows }: {
   </div>
   return <Shell>
     <div className={styles.listingHead}>
-      <Link className={styles.backLink} href="/find-my-drink">← All ways to find a drink</Link>
+      <Link className={styles.backLink} href="/find-my-drink"><ArrowLeftIcon size={18} />All ways to find a drink</Link>
       <h1>{hasLibrary && data ? `All ${data.eligibleTotal} recipes` : 'All recipes'}</h1>
     </div>
     {state === 'unavailable' && <div className={styles.listingState}><div className={styles.card}><Unavailable /></div></div>}
@@ -46,11 +47,11 @@ export default function Browse({ state, data, filters, cursor, eligibleRows }: {
           <form method="get" action="/find-my-drink" className={styles.searchForm} role="search">
             <input type="hidden" name="mode" value="browse" />
             {filters.drinkType !== 'all' && <input type="hidden" name="drink" value={filters.drinkType} />}{filters.types.map(type => <input key={type} type="hidden" name="type" value={type} />)}{filters.method && <input type="hidden" name="method" value={filters.method} />}{filters.maxIngredients !== null && <input type="hidden" name="max" value={String(filters.maxIngredients)} />}
-            <label className={styles.srOnly} htmlFor="recipe-search">Search by name or ingredient</label><div className={styles.searchField}><SearchIcon /><input id="recipe-search" type="search" name="q" defaultValue={filters.q} placeholder="Search by name or ingredient" /><button type="submit" className={styles.searchSubmit}><span className={styles.srOnly}>Search</span><span aria-hidden="true">→</span></button></div>
+            <label className={styles.srOnly} htmlFor="recipe-search">Search by name or ingredient</label><div className={styles.searchField}><SearchIcon /><input id="recipe-search" type="search" name="q" defaultValue={filters.q} placeholder="Search by name or ingredient" /><button type="submit" className={styles.searchSubmit}><span className={styles.srOnly}>Search</span><ArrowRightIcon size={20} /></button></div>
           </form>
           <nav className={styles.typeControl} aria-label="Drink type">{data.typeChips.map(chip => <FilterChoice key={chip.value} href={hrefWith(filters, { drinkType: chip.value })} className={filters.drinkType === chip.value ? styles.typeActive : styles.typeOption} current={filters.drinkType === chip.value}>{chip.value === 'all' ? 'All' : chip.value === 'mocktail' ? 'Mocktails' : 'Cocktails'} <span className={styles.count} aria-hidden="true">{chip.count}</span><span className={styles.srOnly}>({chip.count})</span></FilterChoice>)}</nav>
         </section>
-        {activeCount > 0 && <div className={styles.activeFilters} aria-label="Active filters">{filters.q && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { q: '' })}>Search: {filters.q} ✕</FilterChoice>}{filters.drinkType !== 'all' && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { drinkType: 'all' })}>{filters.drinkType === 'mocktail' ? 'Mocktails' : 'Cocktails'} ✕</FilterChoice>}{filters.types.map(type => <FilterChoice key={type} className={styles.filterActive} href={hrefWith(filters, { types: filters.types.filter(value => value !== type) })}>{capitalize(type)} ✕</FilterChoice>)}{filters.method && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { method: null })}>{capitalize(filters.method)} ✕</FilterChoice>}{filters.maxIngredients !== null && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { maxIngredients: null })}>Up to {filters.maxIngredients} ingredients ✕</FilterChoice>}{activeCount > 0 && <FilterChoice className={styles.resetFilters} href="/find-my-drink?mode=browse">Clear all</FilterChoice>}</div>}
+        {activeCount > 0 && <div className={styles.activeFilters} aria-label="Active filters">{filters.q && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { q: '' })}>Search: {filters.q}<CloseIcon size={16} /></FilterChoice>}{filters.drinkType !== 'all' && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { drinkType: 'all' })}>{filters.drinkType === 'mocktail' ? 'Mocktails' : 'Cocktails'}<CloseIcon size={16} /></FilterChoice>}{filters.types.map(type => <FilterChoice key={type} className={styles.filterActive} href={hrefWith(filters, { types: filters.types.filter(value => value !== type) })}>{capitalize(type)}<CloseIcon size={16} /></FilterChoice>)}{filters.method && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { method: null })}>{capitalize(filters.method)}<CloseIcon size={16} /></FilterChoice>}{filters.maxIngredients !== null && <FilterChoice className={styles.filterActive} href={hrefWith(filters, { maxIngredients: null })}>Up to {filters.maxIngredients} ingredients<CloseIcon size={16} /></FilterChoice>}{activeCount > 0 && <FilterChoice className={styles.resetFilters} href="/find-my-drink?mode=browse">Clear all</FilterChoice>}</div>}
         <aside className={styles.filterPanel} aria-label="Recipe refinement"><FilterSheet count={activeCount} resultCount={data.total}>{facets}</FilterSheet>{facets}</aside>
         <div className={styles.resultsPanel}>
           <Pantry eligibleRows={eligibleRows} matchingRows={data.matchingRows} returnTo={returnTo} />
@@ -58,7 +59,6 @@ export default function Browse({ state, data, filters, cursor, eligibleRows }: {
           {data.total === 0 ? <div className={styles.stateCard}><h2>No matches just yet</h2><p>Try fewer filters or another word.</p><Link className={styles.primary} href="/find-my-drink?mode=browse">Clear all</Link></div> : <Discovery key={returnTo} pool={data.matchingRows} initial={data.recommendations} pageRows={data.pageRows} query={filters.q} returnTo={returnTo} />}
           {data.nextCursor && <Link className={styles.moreButton} href={hrefWith(filters, {}, data.nextCursor)}>Next recipes ({data.total - data.shownTotal} more)</Link>}{cursor && <Link className={styles.backLink} href={hrefWith(filters)}>Back to first matches</Link>}</div>
         </div>
-        <p className={styles.browseDisclaimer}>For adults of legal drinking age. Please drink responsibly.</p>
       </>
     </div>}
   </Shell>

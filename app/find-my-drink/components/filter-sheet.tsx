@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link, { useLinkStatus } from 'next/link'
 import { FilterIcon } from './icons'
 import styles from '../finder.module.css'
+import { CloseIcon } from '../../icons'
 
 function PendingLinkStatus() {
   const { pending } = useLinkStatus()
@@ -38,7 +39,7 @@ export default function FilterSheet({ children, count, resultCount }: { children
   return <>
     <button type="button" ref={trigger} className={styles.mobileFilters} aria-haspopup="dialog" aria-expanded={open} aria-controls="finder-filter-dialog" onClick={() => setOpen(true)}>{<FilterIcon />}Filters{count ? ' · ' + count : ''}</button>
     <dialog ref={dialog} className={styles.filterDialog} id="finder-filter-dialog" aria-labelledby="filter-sheet-title" onClose={() => { setOpen(false); trigger.current?.focus() }} onKeyDown={keepTabInside}>
-      <div className={styles.dialogHeading}><h2 id="filter-sheet-title">Filters</h2><button type="button" className={styles.dialogClose} aria-label="Close filters" onClick={() => setOpen(false)}><span aria-hidden="true">✕</span></button></div>
+      <div className={styles.dialogHeading}><h2 id="filter-sheet-title">Filters</h2><button type="button" className={styles.dialogClose} aria-label="Close filters" onClick={() => setOpen(false)}><CloseIcon size={22} /></button></div>
       {children}<div className={styles.dialogActions}><FilterChoice className={styles.resetFilters} href="/find-my-drink?mode=browse">Clear all</FilterChoice><button type="button" className={styles.primary} onClick={() => setOpen(false)}>Show {resultCount} {resultCount === 1 ? 'recipe' : 'recipes'}</button></div><p className={styles.srOnly} role="status" aria-live="polite">{resultCount} {resultCount === 1 ? 'recipe' : 'recipes'}</p>
     </dialog>
   </>

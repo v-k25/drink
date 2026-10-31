@@ -17,7 +17,8 @@ export function ToolHeader({ current }: { current?: ToolName }) {
       <Link href="/party-planner" aria-current={current === 'planner' ? 'page' : undefined}>Plan a party</Link>
       <Link href="/find-my-drink" aria-current={current === 'finder' ? 'page' : undefined}>Find a drink</Link>
     </nav>
-    <span className={styles.saved}>Saved on this device · no account needed</span>
+    {/* Only the Planner saves something you can see (your list), so only its header says so. */}
+    {current === 'planner' && <span className={styles.saved}>Saved on this device · no account needed</span>}
   </header>
 }
 

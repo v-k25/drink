@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { TASTES, discoveryHref, parseDiscovery, rankRecipes, reasonText, recommendationPool, reviewedDiscovery, type DiscoveryState, type GuidedStage, type Taste } from '../discovery'
 import { capitalize, pickRecipeIds, safeResultsHref } from '../recipe'
 import { FEELS, FEEL_LABELS, OCCASION_LABELS, QUIZ_OCCASIONS, SERVES, SERVE_LABELS, answered, profileFor, rankSpirits, reasonSentence, type SpiritProfile } from '../spirit'
+import { ArrowLeftIcon, BasketIcon, CompassIcon, DiceIcon, GridIcon } from '../../icons'
 import RecipeCard from './recipe-card'
 import type { RecipeRow } from '../queries'
 import styles from '../finder.module.css'
@@ -13,8 +14,8 @@ const drinkLabels = { cocktail: 'Cocktail', mocktail: 'Mocktail', mixed: 'Both' 
 
 function TasteChoices({ label, value, supported, onChange }: { label: string; value: Taste[]; supported: readonly Taste[]; onChange: (value: Taste[]) => void }) {
   if (!supported.length) return <p className={styles.hint}>No taste choices for this selection.</p>
-  return <fieldset className={styles.guideFieldset}><legend>{label}</legend>
-    <p className={styles.hint}>Up to two. Or skip it.</p>
+  return <fieldset className={styles.guideFieldset}><legend className={styles.srOnly}>{label}</legend>
+    <p className={styles.hint}>Pick up to two, or leave it at Any.</p>
     <div className={styles.guideChoices}>
       {supported.map(taste => <button key={taste} type="button" aria-pressed={value.includes(taste)} className={styles.filter} disabled={!value.includes(taste) && value.length >= 2} onClick={() => onChange(value.includes(taste) ? value.filter(t => t !== taste) : [...value, taste])}>{capitalize(taste)}</button>)}
       <button type="button" className={styles.filter} aria-pressed={!value.length} onClick={() => onChange([])}>Any</button>
@@ -60,7 +61,7 @@ function RandomRecipe({ rows, type, requested, onPick, returnTo }: { rows: Recip
   const kind = type === 'mocktail' ? 'mocktail' : 'cocktail'
   return <section className={styles.guideRandom} aria-label="Random recipe">
     <p className={styles.hint} role="status">{!pool.length ? `No ${kind} recipes are available for Surprise me.` : pool.length === 1 ? `This is the only ${kind} recipe.` : exhausted ? `You’ve seen all ${pool.length} ${kind}s.` : 'No repeats until you start again.'}</p>
-    {row && <><RecipeCard row={row} returnTo={returnTo} asHeading tags={reviewedDiscovery(row)?.tastes} reviewedBase={reviewedDiscovery(row)?.primaryBase} />{reviewedDiscovery(row)?.pathNote && type === 'mocktail' && <p className={styles.hint}>{reviewedDiscovery(row)?.pathNote}</p>}</>}
+    {row && <><RecipeCard row={row} returnTo={returnTo} asHeading reviewedBase={reviewedDiscovery(row)?.primaryBase} showType={false} />{reviewedDiscovery(row)?.pathNote && type === 'mocktail' && <p className={styles.hint}>{reviewedDiscovery(row)?.pathNote}</p>}</>}
     <div className={styles.randomActions}>
       {row && <Link className={styles.primary} href={`/find-my-drink/${encodeURIComponent(row.id)}?from=${encodeURIComponent(safeResultsHref(returnTo))}`}>View recipe</Link>}
       {ready && pool.length > 0 && <button className={styles.secondary} type="button" onClick={() => choose(exhausted)}>{exhausted ? 'Start again' : 'Pick for me'}</button>}
@@ -81,7 +82,7 @@ function RecipeList({ items, returnTo, label }: { items: ReturnType<typeof rankR
   return <>
     <p className={styles.srOnly} role="status" aria-live="polite">{shown.length} {label} shown.</p>
     <div className={styles.guideGrid}>{shown.map(item => <div key={item.row.id} className={styles.guideRecommendation}>
-      <RecipeCard row={item.row} returnTo={returnTo} asHeading tags={item.review?.tastes} reviewedBase={item.review?.primaryBase} reason={item.reasons.some(reason => reason.code !== 'base') ? item.reasons.filter(reason => reason.code !== 'base').slice(0, 2).map(reasonText).join(' ') : undefined} />
+      <RecipeCard row={item.row} returnTo={returnTo} asHeading reviewedBase={item.review?.primaryBase} showType={false} reason={item.reasons.some(reason => reason.code !== 'base') ? item.reasons.filter(reason => reason.code !== 'base').slice(0, 2).map(reasonText).join(' ') : undefined} />
       {item.review?.nonAlcoholicPath === 'reviewed' && item.review.pathNote && <p className={styles.hint}>{item.review.pathNote}</p>}
     </div>)}</div>
     {items.length > 3 && <div className={styles.guideActions}><button type="button" className={styles.secondary} aria-expanded={all} onClick={() => setAll(value => !value)}>{all ? 'Show fewer' : `Show all ${items.length}`}</button></div>}
@@ -121,7 +122,7 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
   const go = (patch: Partial<DiscoveryState>, from: GuidedStage) => navigate({ ...view, ...patch, stage: order[order.indexOf(from) + 1] ?? 'results', pick: null })
   const backTo = (from: GuidedStage) => navigate({ ...view, stage: order[Math.max(0, order.indexOf(from) - 1)] })
   const stages = <ol className={styles.stages + ' sf-stages'} aria-label="Steps">{labels.map((label, index) => <li key={label} className={index < stageIndex ? 'done' : undefined} aria-current={index === stageIndex ? 'step' : undefined}>{label}</li>)}</ol>
-  const back = <div className={styles.guideBack}><button type="button" className={styles.backLink} onClick={() => navigate({...view,mode:'entry',stage:'type',pick:null})}>← All ways to find a drink</button></div>
+  const back = <div className={styles.guideBack}><button type="button" className={styles.backLink} onClick={() => navigate({...view,mode:'entry',stage:'type',pick:null})}><ArrowLeftIcon size={18} />All ways to find a drink</button></div>
   const skipBack = (stage: GuidedStage, patch: Partial<DiscoveryState>) => <div className={styles.guideActions}>
     <button type="button" className={styles.secondary} onClick={() => go(patch, stage)}>Skip</button>
     <button type="button" className={styles.backLink} onClick={() => backTo(stage)}>Back</button>
@@ -145,10 +146,10 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
       <h1 id="entry-title" ref={heading} tabIndex={-1}>Your next recipe starts here</h1>
       <p className={styles.lede}>{rows.length} cocktails and mocktails.</p>
       <div className={styles.routes}>
-        <button type="button" className={`${styles.route} ${styles.routeLead}`} onClick={() => navigate({...view,mode:'guided',stage:'type'})}><span className={styles.routeIcon} aria-hidden="true">→</span><span><h2>Guide me</h2><p>Find the spirit for you.</p></span></button>
-        <button type="button" className={styles.route} onClick={() => navigate({...view,mode:'random',randomType:null})}><span className={styles.routeIcon} aria-hidden="true">?</span><span><h2>Surprise me</h2><p>Get one at random.</p></span></button>
-        <Link className={styles.route} href="/find-my-drink?mode=browse"><span className={styles.routeIcon} aria-hidden="true">≡</span><span><h2>Browse all</h2><p>See all {rows.length}.</p></span></Link>
-        <Link className={styles.route} href="/find-my-drink?mode=browse#use-what-i-have"><span className={styles.routeIcon} aria-hidden="true">✓</span><span><h2>Use what I have</h2><p>Tick what’s in your kitchen.</p></span></Link>
+        <button type="button" className={`${styles.route} ${styles.routeLead}`} onClick={() => navigate({...view,mode:'guided',stage:'type'})}><span className={styles.routeIcon}><CompassIcon size={28} /></span><span><h2>Guide me</h2><p>Find the spirit for you.</p></span></button>
+        <button type="button" className={styles.route} onClick={() => navigate({...view,mode:'random',randomType:null})}><span className={styles.routeIcon}><DiceIcon size={28} /></span><span><h2>Surprise me</h2><p>Get one at random.</p></span></button>
+        <Link className={styles.route} href="/find-my-drink?mode=browse"><span className={styles.routeIcon}><GridIcon size={28} /></span><span><h2>Browse all</h2><p>See all {rows.length}.</p></span></Link>
+        <Link className={styles.route} href="/find-my-drink?mode=browse#use-what-i-have"><span className={styles.routeIcon}><BasketIcon size={28} /></span><span><h2>Use what I have</h2><p>Tick what’s in your kitchen.</p></span></Link>
       </div>
     </section>}
     {view.mode !== 'entry' && back}
@@ -166,7 +167,6 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
         <TasteChoices label="Flavours" supported={drinking ? TASTES : mocktailTastes} value={view.tastes} onChange={tastes => navigate({...view,tastes,cocktailTastes:null,mocktailTastes:null,spirit:null},true)} />
         <div className={styles.guideActions}>
           <button type="button" className={styles.primary} onClick={() => go({}, 'taste')}>{drinking ? 'Next' : 'Show mocktails'}</button>
-          <button type="button" className={styles.secondary} onClick={() => go({ tastes: [], spirit: null }, 'taste')}>Skip</button>
           <button type="button" className={styles.backLink} onClick={() => backTo('taste')}>Back</button>
         </div>
       </>}

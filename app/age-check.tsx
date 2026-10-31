@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRef, useState, type Ref } from 'react'
 import styles from './age-check.module.css'
+import { AlertIcon } from './icons'
 
 // The age check card for Party Planner and Find My Drink. Presentation only: each tool keeps its own confirm call and what happens after it.
 // Continue stays enabled. Pressing it unticked shows the inline error and moves focus to the checkbox.
@@ -25,7 +26,7 @@ export default function AgeCheck({ lines, checked, onCheckedChange, onContinue, 
   const fields = <>
     <label className={`sf-choice ${showError ? styles.invalid : ''}`.trim()}>
       <input ref={box} type="checkbox" name={form ? 'eligible' : undefined} checked={checked} aria-labelledby="age-check-label" aria-describedby={showError ? 'age-check-error' : undefined} aria-invalid={showError || undefined} onChange={event => { onCheckedChange(event.target.checked); if (event.target.checked) setMissing(false) }} />
-      <span><b id="age-check-label">I meet the legal drinking-age requirements for Jaipur</b>{showError && <small id="age-check-error" role="alert" className={styles.error}>! Tick the box to continue</small>}</span>
+      <span><b id="age-check-label">I meet the legal drinking-age requirements for Jaipur</b>{showError && <small id="age-check-error" role="alert" className={styles.error}><AlertIcon size={18} />Tick the box to continue</small>}</span>
     </label>
     <div className={styles.actions}>
       <button type={form ? 'submit' : 'button'} className="sf-btn sf-btn--primary sf-btn--block" aria-busy={busy || undefined} onClick={form ? undefined : () => {

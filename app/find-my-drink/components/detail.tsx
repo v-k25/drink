@@ -28,10 +28,6 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   const resultsHref = safeResultsHref(returnTo)
   // Metric display lines: each source line rewritten metric-first where it can be safely converted; stored quantities are never rewritten.
   const metric = metricIngredients(recipe.ingredients)
-  // The note labels the approximations near the checklist whenever any line converted or stayed ambiguous.
-  const quantityNote = metric.convertedCount > 0 || metric.ambiguousCount > 0
-    ? 'Metric amounts are approximate. Where a conversion is unclear, the original unit is shown.'
-    : null
   const allergens = recipe.allergens === null ? 'not specified' : recipe.allergens.length > 0 ? recipe.allergens.join(', ') : 'none listed'
   const caffeine = recipe.hasCaffeine === null ? 'not specified' : recipe.hasCaffeine ? 'contains' : 'none reported'
   // Spec chips: tiny label over the value. The plain "Label: value" string stays
@@ -63,7 +59,7 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
         </div>
         <section className={styles.makeSection} aria-labelledby="making-title">
           <h2 id="making-title" className={styles.srOnly}>Make it</h2>
-          <Making name={recipe.name} ingredients={metric.lines.map(line => line.display)} steps={recipe.preparation} quantityNote={quantityNote} />
+          <Making name={recipe.name} ingredients={metric.lines.map(line => line.display)} steps={recipe.preparation} />
         </section>
         <RecipeImage key={`${recipe.id}:${recipe.imageUrl}`} row={recipe} width={1200} height={750} className={styles.heroImage} />
         <details className={styles.sourceContext}>

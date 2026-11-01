@@ -189,7 +189,7 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
     </section>}
 
     {view.mode === 'guided' && view.stage === 'results' && drinking && <div className={styles.guideLayout}>
-      <section className={styles.spiritResult} aria-labelledby="spirit-title">
+      <section className={`${styles.spiritResult} sf-glow-once`} aria-labelledby="spirit-title">
         <p className={styles.eyebrow}>{shown.spirit === top.spirit ? 'Your best match' : 'Also a good match'}</p>
         <h1 id="spirit-title" ref={heading} tabIndex={-1}>{shown.name}</h1>
         <p className={styles.lede}>{shown.note}</p>

@@ -1,6 +1,8 @@
 /* Party Planner (Pre-Party R4, Black Tie BT5). Plain CSS on the design tokens (app/tokens.css) and the sf- primitives (app/ui.css).
    The root carries data-theme="tools" (dark, Black Tie); print is black on white. Pink (--accent) is the one main action per
    screen: Continue on setup, View plan in the bar, Generate list, Share list. Headings are Archivo in capitals.
+   Lit states (BT8): hovered, chosen and added things light up with the lit tokens (pink edge, dark pink fill, pink label);
+   the budget meter fills pink while within budget.
    Text sizes and line heights are rem so a 200% text setting scales them; widths, borders and tap targets stay in px. */
 
 .shell { min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font-text); font-size: 1rem; line-height: 1.5rem; }
@@ -33,15 +35,15 @@
 .primary { min-height: var(--target-primary); padding: 12px 22px; background: var(--accent); color: var(--on-accent); font-weight: 800; transition: background-color .16s ease, box-shadow .3s ease; }
 .primary:hover:not(:disabled) { filter: brightness(1.06); box-shadow: 0 0 28px 2px color-mix(in srgb, var(--accent) 55%, transparent); }
 .secondary, .outline { min-height: var(--target-min); padding: 10px 18px; background: transparent; border-color: var(--line-strong); color: var(--text); }
-.secondary:hover:not(:disabled), .outline:hover:not(:disabled) { border-color: var(--text); background: var(--surface-raised); }
+.secondary:hover:not(:disabled), .outline:hover:not(:disabled) { border-color: var(--lit); background: var(--surface-raised); }
 .linkButton { min-height: var(--target-min); padding: 0 10px; background: transparent; color: var(--text); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
-.linkButton:hover:not(:disabled) { background: var(--surface-raised); }
+.linkButton:hover:not(:disabled) { background: var(--surface-raised); text-decoration-color: var(--lit); }
 .shell button:disabled { cursor: not-allowed; opacity: .45; }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-top: var(--space-5); }
 .close { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: var(--target-min); height: var(--target-min); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--text); font-size: 1.75rem; line-height: 1; }
 .close:hover { background: var(--surface-raised); }
 .iconButton { display: inline-grid; place-items: center; width: var(--target-min); height: var(--target-min); padding: 0; border: 0; border-radius: var(--radius-pill); background: transparent; color: var(--text-muted); }
-.iconButton:hover { background: var(--surface-raised); color: var(--text); }
+.iconButton:hover { background: var(--surface-raised); color: var(--lit-text); }
 
 /* Notices carry a glyph and a word, never colour alone. */
 .notice { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-1) var(--space-3); margin: 0 0 var(--space-3); padding: 12px 16px; border-radius: var(--radius-md); background: var(--surface-raised); font: 600 0.875rem/1.25rem var(--font-text); overflow-wrap: anywhere; }
@@ -69,7 +71,9 @@
 .stepper, .rupeeField, .quantityControls { display: grid; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); overflow: hidden; }
 .stepper { grid-template-columns: var(--target-min) minmax(0, 1fr) var(--target-min); }
 .stepper button, .quantityControls button { min-height: var(--target-min); padding: 0; border: 0; background: transparent; color: var(--text); font: 600 1.25rem/1 var(--font-text); }
-.stepper button:hover:not(:disabled), .quantityControls button:hover:not(:disabled) { background: var(--surface-raised); }
+.stepper button:hover:not(:disabled), .quantityControls button:hover:not(:disabled) { background: var(--surface-raised); color: var(--lit-text); }
+.stepper:focus-within, .rupeeField:focus-within, .quantityControls:focus-within { border-color: var(--lit); }
+.panel input:not([type="checkbox"], [type="radio"], [aria-invalid="true"]):focus, .modal input:not([type="checkbox"], [type="radio"], [aria-invalid="true"]):focus { border-color: var(--lit); }
 .stepper:has(input[aria-invalid="true"]), .rupeeField:has(input[aria-invalid="true"]) { border-color: var(--error); border-width: 2px; }
 .stepper input { min-height: calc(var(--target-primary) - 3px); border-inline: 1px solid var(--line); text-align: center; font-variant-numeric: tabular-nums; }
 .rupeeField { display: flex; align-items: center; padding-left: 14px; border-radius: var(--radius-sm); font-weight: 700; }
@@ -92,8 +96,8 @@
 .facet legend { margin-bottom: var(--space-2); padding: 0; font: 600 0.9375rem/1.25rem var(--font-text); }
 .facetChips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .filter, .filterActive { display: inline-flex; align-items: center; gap: var(--space-1); min-height: var(--target-min); max-width: 100%; padding: 8px 16px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); background: transparent; color: var(--text); font: 600 0.9375rem/1.25rem var(--font-text); text-align: left; overflow-wrap: anywhere; cursor: pointer; }
-.filter:hover { background: var(--surface-raised); }
-.filterActive, .filter[aria-pressed="true"] { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
+.filter:hover { background: var(--surface-raised); border-color: var(--lit); }
+.filterActive, .filter[aria-pressed="true"] { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
 .suggestionNote { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-1) var(--space-3); margin-top: var(--space-5); padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); background: var(--surface); }
 .suggestionNote > p { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
 
@@ -108,10 +112,11 @@
 .categoryIndex { display: none; }
 .categoryChoice { display: block; }
 .categoryTab { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); width: 100%; min-height: var(--target-min); padding: 8px 12px; border: 0; border-left: 3px solid transparent; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; background: transparent; color: var(--text-muted); font: 600 0.9375rem/1.25rem var(--font-text); text-align: left; cursor: pointer; }
-/* Hover is lighter than the selected item (surface and a bone bar), so it never looks selected. */
+/* Hover is lighter than the selected item (surface and a pink bar), so it never looks selected. */
 .categoryTab:hover { background: color-mix(in srgb, var(--surface) 55%, transparent); color: var(--text); }
 .categoryTab small { color: var(--text-muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; }
-.categoryTabActive { border-left-color: var(--highlight); background: var(--surface); color: var(--text); font-weight: 800; }
+.categoryTabActive { border-left-color: var(--lit); background: var(--lit-bg); color: var(--lit-text); font-weight: 800; }
+.categoryTabActive small { color: var(--text); }
 .shelf { min-width: 0; scroll-margin-top: 96px; }
 .shelf:focus { outline: none; }
 .filterBar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
@@ -128,7 +133,7 @@
 /* Product rows */
 .menuList { display: grid; gap: var(--space-2); margin: var(--space-3) 0 0; padding: 0; list-style: none; }
 .menuItem, .menuItemSelected { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); background: var(--surface); overflow-wrap: anywhere; }
-.menuItemSelected { outline: 2px solid var(--highlight); }
+.menuItemSelected { outline: 1px solid var(--lit); background: var(--lit-bg); }
 .menuArt { flex: none; display: none; width: 56px; height: 56px; place-items: center; border-radius: var(--radius-sm); background: var(--surface-raised); }
 .menuArt img { width: 40px; height: 44px; object-fit: contain; }
 .menuIdentity { flex: 1 1 8rem; display: grid; gap: 2px; min-width: 0; }
@@ -139,15 +144,16 @@
 .menuIdentity .overNote { color: var(--text-muted); }
 .menuActions { flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2); }
 .menuActions .primary { min-height: var(--target-min); min-width: 80px; padding: 8px 20px; background: transparent; border-color: var(--line-strong); color: var(--text); filter: none; }
-.menuActions .primary:hover:not(:disabled) { background: var(--surface-raised); filter: none; }
+.menuActions .primary:hover:not(:disabled) { background: var(--surface-raised); border-color: var(--lit); filter: none; box-shadow: none; }
 .menuActions .secondary { min-height: var(--target-min); padding: 0 10px; border-color: transparent; color: var(--text); font-size: 0.875rem; text-decoration: underline; text-underline-offset: 4px; }
 .cardStepper { display: grid; justify-items: end; gap: 4px; }
-.cardStepper .quantityControls { border-color: var(--highlight); background: var(--highlight); }
-.cardStepper .quantityControls button, .shell .cardStepper .quantityControls input { color: var(--on-highlight); }
+.cardStepper .quantityControls { border-color: var(--lit); background: var(--bg); }
+.cardStepper .quantityControls button { color: var(--lit-text); }
+.shell .cardStepper .quantityControls input { color: var(--text); }
 .shell .cardStepper .quantityControls input { border-inline-color: transparent; }
-.cardStepper .quantityControls button:hover:not(:disabled) { background: transparent; filter: brightness(.94); }
+.cardStepper .quantityControls button:hover:not(:disabled) { background: var(--lit-bg); }
 .dragHint { position: absolute; top: 50%; left: -20px; display: none; transform: translateY(-50%); color: var(--text-muted); line-height: 0; pointer-events: none; }
-.validDrop { outline: 3px solid var(--highlight); outline-offset: 2px; }
+.validDrop { outline: 3px solid var(--lit); outline-offset: 2px; }
 .emptySlot { display: grid; gap: var(--space-2); justify-items: start; margin: var(--space-3) 0; padding: var(--space-4); border-radius: var(--radius-md); background: var(--surface); color: var(--text-muted); }
 .emptySlot p { margin: 0; }
 .emptySlot strong { display: block; color: var(--text); }
@@ -162,7 +168,7 @@
 .meterEdit { display: inline-flex; align-items: center; gap: 6px; min-height: var(--target-min); padding: 0 16px; border: 1px solid color-mix(in srgb, var(--on-bar) 45%, transparent); border-radius: var(--radius-pill); background: transparent; color: var(--on-bar); font: 700 0.875rem/1.25rem var(--font-text); }
 .meterEdit:hover { background: color-mix(in srgb, var(--on-bar) 14%, transparent); }
 .meterTrack { height: 6px; border-radius: var(--radius-pill); background: color-mix(in srgb, var(--on-bar) 22%, transparent); overflow: hidden; }
-.meterFill, .meterFillOver { height: 100%; border-radius: var(--radius-pill); background: var(--highlight); transition: width .2s ease; }
+.meterFill, .meterFillOver { height: 100%; border-radius: var(--radius-pill); background: var(--lit); transition: width .2s ease; }
 .meterFillOver { background: var(--error); }
 .heroRow { display: flex; flex-wrap: wrap; gap: 2px var(--space-3); margin: 0; color: var(--on-bar-muted); font-size: 0.875rem; line-height: 1.25rem; font-variant-numeric: tabular-nums; }
 .heroRow > span:first-child { font-weight: 800; }

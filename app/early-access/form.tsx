@@ -36,7 +36,7 @@ export default function EarlyAccessForm() {
     <div className={styles.wrap}>
       <div role="status" aria-live="polite" aria-atomic="true">
         {state.status === 'success' && (
-          <div className={styles.done}>
+          <div className={`${styles.done} sf-glow-once`}>
             <span className={styles.tick}><CheckIcon size={40} /></span>
             <h3>You&apos;re on the list</h3>
             <p>We&apos;ll email {email ? <b>{email}</b> : 'you'} when bookings open.</p>

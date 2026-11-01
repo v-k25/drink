@@ -55,6 +55,7 @@ const pairs = [
   [4.5, 'accent-text', ['bg', 'surface', 'surface-raised']], [4.5, 'on-accent', ['accent']], [4.5, 'on-highlight', ['highlight']],
   [4.5, 'text', ['highlight-quiet']], [4.5, 'on-city', ['city']], [4.5, 'on-bar', ['bar']], [4.5, 'on-bar-muted', ['bar']],
   [4.5, 'success', ['bg', 'surface', 'surface-raised']], [4.5, 'warning', ['bg', 'surface', 'surface-raised']], [4.5, 'error', ['bg', 'surface', 'surface-raised']],
+  [4.5, 'lit-text', ['lit-bg', 'bg', 'surface']], [4.5, 'text', ['lit-bg']], [3, 'lit', ['bg', 'surface', 'surface-raised', 'lit-bg']],
   [3, 'line-strong', ['bg', 'surface']], [3, 'focus', ['bg', 'surface', 'surface-raised']], [3, 'highlight', ['bar']],
 ]
 

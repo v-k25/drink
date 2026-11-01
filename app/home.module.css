@@ -1,6 +1,7 @@
 /* Landing page, Black Tie design (BT3; boards on the mockup canvas, see docs/black-tie-redesign-plan.md). Theme tokens come from
    app/tokens.css under data-theme="landing"; shared button, accordion and sticker styles come from app/ui.css.
-   Rani pink (--accent) is used once per screen: the hero's Join the list. Photos are black and white. */
+   Rani pink (--accent) is used once per screen as a solid fill: the hero's Join the list. Photos are black and white.
+   Lit states (BT8): hovered links and cards and the picked preview chip light up with the lit tokens. */
 .home { background: var(--bg); color: var(--text); min-height: 100vh; overflow-wrap: break-word; }
 .home :global(.skip-link) { background: var(--highlight); border-radius: 0; color: var(--on-highlight); padding: 12px 16px; }
 
@@ -19,6 +20,8 @@
 .mobileMenu { position: static; }
 .mobileMenu summary { align-items: center; border: 1px solid var(--line-strong); border-radius: 0; cursor: pointer; display: grid; height: var(--target-min); list-style: none; place-items: center; width: var(--target-min); }
 .mobileMenu summary::-webkit-details-marker { display: none; }
+.mobileMenu summary:hover, .mobileMenu[open] summary { border-color: var(--lit); color: var(--lit-text); }
+.mobileMenu nav a:not(:global(.sf-btn)):hover { color: var(--lit-text); }
 .mobileMenu nav { background: var(--bg); border-bottom: 1px solid var(--line); display: grid; gap: 4px; left: 0; padding: 8px var(--space-4) 20px; position: absolute; right: 0; top: 100%; z-index: 1; }
 /* Dims the page under the open menu, so nothing behind it competes with the links. */
 .mobileMenu :global(.menu-scrim) { background: var(--scrim); height: 100dvh; left: 0; position: absolute; right: 0; top: 100%; }
@@ -66,7 +69,7 @@
 .tool h3 { font: 800 1.5rem/1.02 var(--font-display); margin: 0; text-transform: uppercase; }
 .tool p { color: var(--text-muted); font-size: 1.0625rem; line-height: 1.5625rem; margin: 10px 0 0; max-width: 420px; }
 .go { align-items: center; color: var(--text); display: inline-flex; font-weight: 700; gap: 8px; min-height: var(--target-min); }
-.tool:hover { border-color: var(--line-strong); }
+.tool:hover { border-color: var(--lit); }
 
 /* Tool previews: a static glimpse of each tool's result, built from the same tokens as the tools. */
 .preview { background: var(--bg); border: 1px solid var(--line); display: grid; font-size: 0.875rem; gap: 6px; line-height: 1.25rem; padding: 14px 16px; }
@@ -76,7 +79,7 @@
 .previewTotal { border-top: 1px solid var(--line-strong); font-weight: 700; margin-top: 4px; padding-top: 8px; }
 .previewChips { display: flex; flex-wrap: wrap; gap: 6px; }
 .previewChips > span { border: 1px solid var(--line-strong); color: var(--text-muted); font-weight: 700; padding: 5px 12px; }
-.previewChips > .previewPicked { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
+.previewChips > .previewPicked { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
 
 /* For venues: a bone band with black text; the mail button is black on bone. No pink here. */
 .venue { align-items: stretch; background: var(--city); color: var(--on-city); display: flex; flex-direction: column; gap: 24px; padding: 28px 22px; }
@@ -155,7 +158,7 @@
   .wordmark svg { height: 1.375rem; }
   .desktopNav { color: var(--text-muted); display: flex; font-size: 0.9375rem; font-weight: 600; gap: 28px; margin-left: auto; }
   .desktopNav a { align-items: center; display: inline-flex; min-height: var(--target-min); text-decoration: none; }
-  .desktopNav a:hover { color: var(--text); }
+  .desktopNav a:hover { color: var(--text); text-decoration: underline; text-decoration-color: var(--lit); text-underline-offset: 6px; }
   .navCta { display: inline-flex; }
   .mobileMenu { display: none; }
   .hero { min-height: max(640px, calc(100svh - 80px)); }

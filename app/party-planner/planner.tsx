@@ -72,7 +72,8 @@ function PlannerSkeleton() {
 function Receipt({ plan, printing = false }: { plan: Plan; printing?: boolean }) {
   const groups = [...new Set(plan.lines.map(line => line.category))]
   const perGuest = perGuestMoney(plan.totalPaise / plan.guests)
-  return <div className={styles.receipt}>
+  // On screen the receipt is the done moment of the Planner (BT8): one short pink glow when it appears.
+  return <div className={printing ? styles.receipt : `${styles.receipt} sf-glow-once`}>
     {printing && <p className={styles.printBrand}><Wordmark /></p>}
     <h3 className={printing ? styles.printTitle : styles.receiptTitle}>{printing ? 'Socifer party list' : 'Party list'}</h3>
     <p className={styles.receiptMeta}>{plan.guests} guests · budget {shortMoney(plan.budgetPaise)}</p>

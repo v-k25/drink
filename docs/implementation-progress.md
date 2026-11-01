@@ -1,5 +1,21 @@
 # Implementation progress
 
+### Metric note removed from the recipe page, 2026-11-01
+
+**Done (not committed).** The owner asked to remove "Metric amounts are approximate. Where a conversion is unclear, the original unit is shown." from under the ingredient checklist (restored earlier the same day). Removed from `detail.tsx`, along with the now unused `quantityNote` prop in `making.tsx` and the `.quantityNote` class; the `metric.ts` rounding comment no longer refers to the note. Ambiguous ounce lines still carry their own per-line note. `recipe-detail-check` now asserts the note is absent.
+
+### Fix: loading skeleton nested in recipe card names, 2026-11-01
+
+**Done (not committed).** The dev overlay showed six errors ("<div>/<section>/<article> cannot be a descendant of <p>") when a "More like this" card was clicked on a recipe page. `DetailPending` and `ListingPending` rendered the full-page loading skeleton inside the link, which sits in the card's `<p>` or `<h3>` name. They now portal the skeleton into the page's `[data-theme="tools"]` root (`app/find-my-drink/components/pending-overlay.tsx`); the link status hook still drives it. Present since the loading skeletons were added, not from BT8.
+
+**Checks actually run.** On the running dev server: open a recipe, click a related card and Back to results; the overlay renders in the themed root outside the link, no console errors, no new errors in `.next/dev/logs`. `tsc --noEmit`, `pnpm build`, recipe-detail, recipe-discovery, recipe-guided-browser and recipe-pantry-browser checks: PASS.
+
+### BT8 Lit states, 2026-11-01
+
+**Done (not committed).** Owner idea: the light-bringer on every page. Anything hovered, chosen or completed now lights up pink instead of turning bone or grey; the solid pink fill stays the one main action per screen. New `lit`, `lit-bg`, `lit-text` tokens; edits in `app/ui.css`, `planner.module.css`, `finder.module.css`, `tool-shell.module.css`, `home.module.css`; a one-time pink glow (`.sf-glow-once`) on the Planner receipt, the spirit match and the launch-list success panel (`planner.tsx`, `guided.tsx`, `early-access/form.tsx`). Details in `docs/black-tie-redesign-plan.md` (BT8).
+
+**Checks actually run.** `design-tokens --check` (all pairs AA, lit pairs included), `tsc --noEmit`, `pnpm build`: pass. Browser checks: planner-redesign, planner-ux, planner-ux-production, planner-inventory, planner-tool-shell, planner-retry-production, design-polish, brewlist-tools-style, brewlist-home, recipe-detail, recipe-guided-browser, recipe-pantry-browser, early-access: PASS. recipe-discovery timed out once while a second server ran beside it, then passed alone. Screenshots of Planner setup, build, plan sheet and review; Find My Drink quiz, browse and recipe; landing card and phone menu (live read-only data): no page errors.
+
 ### Hero photo: Pink lasers, 2026-11-01
 
 **Done (not committed).** The owner found the stage photo too flat and chose "Pink lasers" (A J., Unsplash, free licence) from a six-photo shortlist (https://claude.ai/artifact/12hW9tKX5F4QPy24TtS91G). The same `public/images/nightlife/hero-night-*` file names now hold it, so the markup is unchanged: 2400 and 1600px desktop, 1280×1600 and 800×1000 phone centre crops, AVIF and WebP made with sharp. Footer credit (`app/page.tsx`) and `docs/nightlife-image-credits.md` updated. The hero still shows it in black and white with the pink colour reveal under the cursor.

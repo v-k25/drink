@@ -199,7 +199,7 @@ function hasAmbiguousFoodWord(name: string): boolean {
 // 0.25 ml (canonical spoon measures like ¼ tsp = 1.25 ml survive), 2–10 ml to
 // the nearest 0.5 ml, 10–20 to whole units (⅓ oz → 10 ml, not 9.76), and from
 // 20 up to the nearest 5, the way bar measures are written (1½ oz → 45 ml).
-// The checklist note says amounts are approximate, so no "~" is shown.
+// Rounded bar measures read as approximate on their own, so no "~" is shown.
 function roundMetric(value: number): string | null {
   if (!Number.isFinite(value) || value <= 0) return null
   let rounded: number

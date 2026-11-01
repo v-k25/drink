@@ -31,7 +31,8 @@ async function main() {
         await img.evaluate(el => el.decode())
         assert.ok(await img.evaluate(el => el.naturalWidth > 0))
       }
-      assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running').length), 0, 'reduced motion must be static')
+      // The loader (first-visit intro) is the one moving thing allowed under reduced motion: owner decision 2026-11-01.
+      assert.equal(await page.evaluate(() => document.getAnimations().filter(animation => animation.playState === 'running' && !animation.effect?.target?.closest?.('.sf-loader, .sf-intro')).length), 0, 'reduced motion must be static apart from the loader')
       await page.screenshot({ path: path.join(output, `home-${width}.png`), fullPage: true })
       await page.evaluate(() => window.scrollTo(0, 0))
       if (width < 1024) {

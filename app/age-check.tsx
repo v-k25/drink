@@ -33,7 +33,7 @@ export default function AgeCheck({ lines, checked, onCheckedChange, onContinue, 
         if (busy) return
         if (!checked) { setMissing(true); box.current?.focus(); return }
         onContinue?.()
-      }}>{continueLabel}{busy && <span className={styles.sr}> ({busyLabel})</span>}</button>
+      }}>{busy && <span className="sf-spinner" aria-hidden="true" />}{continueLabel}{busy && <span className={styles.sr}> ({busyLabel})</span>}</button>
       <Link href="/" className="sf-btn sf-btn--ghost sf-btn--block">No thanks, take me home</Link>
     </div>
   </>

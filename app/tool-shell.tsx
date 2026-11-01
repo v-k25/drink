@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { archivo, manrope } from './fonts'
 import { Wordmark } from './logo'
+import NavPending from './nav-pending'
 import styles from './tool-shell.module.css'
 
 // Shared shell for Party Planner and Find My Drink (Pre-Party R3). A tool page puts these on its root element:
@@ -13,10 +14,10 @@ export type ToolName = 'planner' | 'finder'
 
 export function ToolHeader({ current }: { current?: ToolName }) {
   return <header className={styles.header} data-tool-header>
-    <Link href="/" className={styles.wordmark} aria-label="Socifer home"><Wordmark label={null} /></Link>
+    <Link href="/" className={styles.wordmark} aria-label="Socifer home"><Wordmark label={null} /><NavPending /></Link>
     <nav className={styles.nav} aria-label="Tools">
-      <Link href="/party-planner" aria-current={current === 'planner' ? 'page' : undefined}>Plan a party</Link>
-      <Link href="/find-my-drink" aria-current={current === 'finder' ? 'page' : undefined}>Find a drink</Link>
+      <Link href="/party-planner" aria-current={current === 'planner' ? 'page' : undefined}>Plan a party<NavPending /></Link>
+      <Link href="/find-my-drink" aria-current={current === 'finder' ? 'page' : undefined}>Find a drink<NavPending /></Link>
     </nav>
     {/* Only the Planner saves something you can see (your list), so only its header says so. */}
     {current === 'planner' && <span className={styles.saved}>Saved on this device · no account needed</span>}
@@ -26,9 +27,9 @@ export function ToolHeader({ current }: { current?: ToolName }) {
 export function ToolFooter() {
   return <footer className={styles.footer} data-tool-footer>
     <nav aria-label="Footer navigation">
-      <Link href="/">Home</Link>
-      <Link href="/party-planner">Plan a party</Link>
-      <Link href="/find-my-drink">Find a drink</Link>
+      <Link href="/">Home<NavPending /></Link>
+      <Link href="/party-planner">Plan a party<NavPending /></Link>
+      <Link href="/find-my-drink">Find a drink<NavPending /></Link>
       <Link href="/#privacy">Privacy</Link>
       <Link href="/#responsible-use">Responsible use</Link>
     </nav>

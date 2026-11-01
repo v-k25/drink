@@ -1,7 +1,8 @@
 /* Landing page, Black Tie design (BT3; boards on the mockup canvas, see docs/black-tie-redesign-plan.md). Theme tokens come from
    app/tokens.css under data-theme="landing"; shared button, accordion and sticker styles come from app/ui.css.
    Rani pink (--accent) is used once per screen as a solid fill: the hero's Join the list. Photos are black and white.
-   Lit states (BT8): hovered links and cards and the picked preview chip light up with the lit tokens. */
+   Lit states (BT8): hovered links and cards light up with the lit tokens; a tool card's picked chip and total light up
+   with the rest of the card (hover, keyboard focus, or data-lit on touch screens), not at rest. */
 .home { background: var(--bg); color: var(--text); min-height: 100vh; overflow-wrap: break-word; }
 .home :global(.skip-link) { background: var(--highlight); border-radius: 0; color: var(--on-highlight); padding: 12px 16px; }
 
@@ -79,9 +80,12 @@
 .previewTotal { border-top: 1px solid var(--line-strong); font-weight: 700; margin-top: 4px; padding-top: 8px; }
 .previewChips { display: flex; flex-wrap: wrap; gap: 6px; }
 .previewChips > span { border: 1px solid var(--line-strong); color: var(--text-muted); font-weight: 700; padding: 5px 12px; }
-.previewChips > .previewPicked { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
+.previewChips > .previewPicked { border-color: var(--text); color: var(--text); }
+.tool:is(:hover, :focus-visible, [data-lit]) .previewChips > .previewPicked { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
+.tool:is(:hover, :focus-visible, [data-lit]) .previewTotal b { color: var(--lit-text); }
 
-/* For venues: a bone band with black text; the mail button is black on bone. No pink here. */
+/* For venues: a bone band with black text; the mail button is black on bone at rest. On hover or keyboard focus pink wipes
+   in from the left and the envelope lifts; a click presses it in and sends the envelope off. */
 .venue { align-items: stretch; background: var(--city); color: var(--on-city); display: flex; flex-direction: column; gap: 24px; padding: 28px 22px; }
 .venue .h2 { color: var(--on-city); }
 .venueLine { font-size: 1.125rem; font-weight: 600; margin: 8px 0 0; }
@@ -90,8 +94,14 @@
 .venueButton { align-items: center; justify-content: center; display: inline-flex; font-weight: 800; min-height: var(--target-primary); overflow-wrap: anywhere; padding: 0 22px; text-decoration: none; }
 .mailIcon { flex: none; margin-right: 10px; }
 @keyframes mail-send { 0% { transform: translate(0, 0); opacity: 1; } 55% { transform: translate(14px, -8px) rotate(-12deg); opacity: 0; } 56% { transform: translate(-14px, 8px); opacity: 0; } 100% { transform: translate(0, 0); opacity: 1; } }
-.venueSolid { background: var(--on-city); color: var(--city); }
+.venueSolid { background: var(--on-city); color: var(--city); isolation: isolate; overflow: hidden; position: relative; }
+.venueSolid::before { background: var(--accent); content: ""; inset: 0; position: absolute; transform: scaleX(0); transform-origin: left; z-index: -1; }
+.venueSolid:is(:hover, :focus-visible) { color: var(--on-accent); }
+.venueSolid:is(:hover, :focus-visible)::before { transform: scaleX(1); }
+.venueSolid:active::before { background: color-mix(in srgb, var(--accent) 82%, var(--on-accent)); transform: scaleX(1); }
+.venueSolid:active { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent); color: var(--on-accent); }
 .venueOutline { border: 2px solid var(--on-city); color: var(--on-city); }
+.venueOutline:is(:hover, :focus-visible) { background: var(--on-city); color: var(--city); }
 .venue :focus-visible { box-shadow: 0 0 0 2px var(--city); outline-color: var(--on-city); }
 
 /* One card holds the heading and the form, so the section has no empty column beside the form. */
@@ -117,10 +127,14 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .venueButton { transition: transform 120ms ease; }
-  .venueButton:hover { transform: translateY(-1px); }
-  .venueButton:active { transform: scale(.96); }
+  .venueButton { transition: transform 160ms ease, color 200ms ease, background-color 200ms ease, box-shadow 200ms ease; }
+  .venueButton:hover { transform: translateY(-2px); }
+  .venueButton:active { transform: translateY(0) scale(.97); transition-duration: 80ms; }
+  .venueSolid::before { transition: transform 320ms cubic-bezier(.2, .7, .2, 1), background-color 120ms ease; }
+  .mailIcon { transition: transform 240ms cubic-bezier(.2, .7, .2, 1); }
+  .venueSolid:is(:hover, :focus-visible) .mailIcon { transform: translate(2px, -2px) rotate(-8deg); }
   .venueButton:active .mailIcon { animation: mail-send 420ms ease-out; }
+  .previewChips > span, .previewTotal b { transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease; }
 
   .tool { transition: border-color 160ms ease, transform 160ms ease; }
   .tool:hover { transform: translateY(-2px); }

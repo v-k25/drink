@@ -1,8 +1,10 @@
+import Link from 'next/link'
 import EarlyAccessForm from './early-access/form'
 import MobileMenu from './mobile-menu'
 import { ArrowRightIcon } from './icons'
 import { Wordmark } from './logo'
 import LightBringer from './light-bringer'
+import NavPending from './nav-pending'
 import { archivo, manrope } from './fonts'
 import styles from './home.module.css'
 
@@ -32,12 +34,12 @@ export default function Home() {
         <div className={`${styles.wrap} ${styles.headerRow}`}>
           <a className={styles.wordmark} href="#top" aria-label="Socifer home"><Wordmark label={null} /></a>
           <nav className={styles.desktopNav} aria-label="Main navigation">
-            {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
+            {navLinks.map(([href, label]) => href.startsWith('/') ? <Link href={href} key={href}>{label}<NavPending /></Link> : <a href={href} key={href}>{label}</a>)}
           </nav>
           {/* Secondary here: the hero's Join the list is the one pink button on the first screen. */}
           <a className={`sf-btn sf-btn--secondary ${styles.navCta}`} href="#early-access">Join the list</a>
           <MobileMenu className={styles.mobileMenu}>
-            {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
+            {navLinks.map(([href, label]) => href.startsWith('/') ? <Link href={href} key={href}>{label}<NavPending /></Link> : <a href={href} key={href}>{label}</a>)}
             <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
           </MobileMenu>
         </div>
@@ -86,7 +88,7 @@ export default function Home() {
           <h2 id="tools-title" className={styles.h2}>Free tools, no sign-up</h2>
           <div className={styles.tools}>
             {/* Each card shows a small, static preview of what the tool gives you. Decorative: the heading and line carry the meaning. */}
-            <a className={`${styles.tool} sf-lit`} href="/party-planner" data-light-card>
+            <Link className={`${styles.tool} sf-lit`} href="/party-planner" data-light-card>
               <picture className={styles.photo}><source type="image/avif" srcSet="/images/nightlife/planner-1200.avif" /><source type="image/webp" srcSet="/images/nightlife/planner-1200.webp" /><img src="/images/nightlife/planner-1200.webp" alt="" width={1200} height={800} loading="lazy" decoding="async" /></picture>
               <div className={styles.toolBody}>
                 <div><h3>Party Planner</h3><p>Work out what to buy for your party and what it will cost.</p></div>
@@ -98,8 +100,9 @@ export default function Home() {
                 </div>
                 <span className={styles.go}>Plan a party <ArrowRightIcon size={18} /></span>
               </div>
-            </a>
-            <a className={`${styles.tool} sf-lit`} href="/find-my-drink" data-light-card>
+              <NavPending label="Loading Party Planner…" />
+            </Link>
+            <Link className={`${styles.tool} sf-lit`} href="/find-my-drink" data-light-card>
               <picture className={styles.photo}><source type="image/avif" srcSet="/images/nightlife/drink-1200.avif" /><source type="image/webp" srcSet="/images/nightlife/drink-1200.webp" /><img src="/images/nightlife/drink-1200.webp" alt="" width={1200} height={1800} loading="lazy" decoding="async" /></picture>
               <div className={styles.toolBody}>
                 <div><h3>Find My Drink</h3><p>Find a spirit you’ll like, then browse 50 cocktails and mocktails to make at home.</p></div>
@@ -109,7 +112,8 @@ export default function Home() {
                 </div>
                 <span className={styles.go}>Find a drink <ArrowRightIcon size={18} /></span>
               </div>
-            </a>
+              <NavPending label="Loading Find My Drink…" />
+            </Link>
           </div>
         </section>
 
@@ -156,7 +160,7 @@ export default function Home() {
       <footer className={styles.footer}>
         <div className={styles.wrap}>
           <a className={styles.wordmark} href="#top" aria-label="Socifer, back to top"><Wordmark label={null} /></a>
-          <nav aria-label="Footer navigation"><a href="/party-planner">Plan a party</a><a href="/find-my-drink">Find a drink</a><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
+          <nav aria-label="Footer navigation"><Link href="/party-planner">Plan a party<NavPending /></Link><Link href="/find-my-drink">Find a drink<NavPending /></Link><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
           <p>For adults. Drink responsibly and never drink and drive.<br />Stock photos, not Socifer venues. Photos: <a href="https://unsplash.com/photos/group-of-people-enjoying-concert-r3XvSBEQQLo">A J.</a>, <a href="https://unsplash.com/photos/champagne-pouring-into-celebration-flutes-xzKtOI1Cnxo">Alexander Naglestad</a>, <a href="https://unsplash.com/photos/three-colorful-cocktails-arranged-on-a-dark-reflective-surface-RQIq-yBMPAA">mediha ekici</a> and <a href="https://unsplash.com/photos/a-dj-in-front-of-spotlights-on-a-stage-Xwq-AS-rIs8">Davide Brocca</a> on Unsplash.</p>
         </div>
       </footer>

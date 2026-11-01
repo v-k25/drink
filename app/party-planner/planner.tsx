@@ -7,7 +7,7 @@ import { confirmEligibility, getCatalogue, validatePlan } from './actions'
 import AgeCheck from '../age-check'
 import { CloseIcon } from '../icons'
 import { ToolFooter, ToolHeader, toolFonts, toolRoot } from '../tool-shell'
-import { Wordmark } from '../logo'
+import { LoadingScreen, Wordmark } from '../logo'
 import styles from './planner.module.css'
 
 const iconProps = { viewBox: '0 0 24 24', width: 20, height: 20, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true, focusable: false }
@@ -38,33 +38,11 @@ function Stages({ current, narrow }: { current: number, narrow?: boolean }) {
 }
 
 
-// Loading placeholder that mirrors the build screen (pills, search/filters, product rows, plan panel / mobile bar).
-// Decorative only: no visible text; the sr-only status below it is the accessible announcement.
-const skeletonPillWidths = [92, 128, 112, 140, 100, 120]
-function PlannerSkeleton() {
-  return <div className={styles.loading}>
-    <div className={styles.skeleton} aria-hidden="true">
-      <div className={styles.inventoryLayout}>
-        <div className={styles.browse}>
-          <div className={styles.categoryRail}><div className={styles.skelPills}>{skeletonPillWidths.map((width, index) => <span key={index} className={styles.skelPill} style={{ width }} />)}</div></div>
-          <div className={styles.shelf}>
-            <div className={styles.filterBar}><span className={styles.skelSearch} /><span className={styles.skelFilter} /></div>
-            <div className={styles.menuList}>{[0, 1, 2, 3, 4, 5, 6].map(row => <div key={row} className={styles.skelRow}>
-              <span className={styles.skelArt} />
-              <div className={styles.skelIdentity}><span className={styles.skelBar} style={{ width: row % 2 ? '58%' : '72%' }} /><span className={styles.skelBarSmall} style={{ width: row % 3 ? '34%' : '44%' }} /></div>
-              <span className={styles.skelButton} />
-            </div>)}</div>
-          </div>
-        </div>
-        <div className={styles.planPanel}>
-          <div className={styles.panelHead}><span className={styles.skelBarSmall} style={{ width: 84 }} /></div>
-          <div className={styles.hero}><span className={styles.skelFigure} /><span className={styles.skelMeter} /><span className={styles.skelBarSmall} style={{ width: '55%' }} /></div>
-          <div className={styles.skelLines}>{[0, 1, 2].map(line => <div key={line} className={styles.skelLine}><span className={styles.skelArtSmall} /><div className={styles.skelIdentity}><span className={styles.skelBar} style={{ width: line === 1 ? '62%' : '78%' }} /><span className={styles.skelBarSmall} style={{ width: '38%' }} /></div></div>)}</div>
-          <div className={styles.inventorySummary}><span className={styles.skelWide} /></div>
-        </div>
-      </div>
-      <div className={styles.mobileBar}><div className={styles.skelIdentity}><span className={styles.skelBar} style={{ width: '46%' }} /><span className={styles.skelBarSmall} style={{ width: '62%' }} /></div><span className={styles.skelButton} /></div>
-    </div>
+// Loading screen while the catalogue loads: the shared branded screen (LoadingScreen), the same as every other page load.
+// Decorative; the sr-only status is the accessible announcement.
+function PlannerLoading() {
+  return <div className="sf-nav-loading sf-nav-loading--now">
+    <LoadingScreen />
     <p className={`${styles.hint} ${styles.srOnly}`} role="status">Loading planner…</p>
   </div>
 }
@@ -540,12 +518,12 @@ export default function Planner() {
       <section className={step === 0 && !checkingGate ? styles.frameBare : styles.card} id="planner-content">
         {message && <p className={`${styles.notice} ${message === copiedMessage ? styles.noticeOk : ''}`.trim()} role="status">{message}</p>}
         <fieldset className={styles.panel} disabled={busy}>
-          {step === 0 && checkingGate && <PlannerSkeleton />}
+          {step === 0 && checkingGate && <PlannerLoading />}
           {step === 0 && !checkingGate && unavailable && <div className={styles.gateStage}><div className={styles.gateCard}>
             <h2 ref={unavailableHeading} tabIndex={-1}>Drinks are temporarily unavailable</h2>
             <p>Your plan is still saved on this device.</p>
             <p className={`${styles.hint} ${retrying ? styles.srOnly : ''}`.trim()} role="status">{retrying ? 'Trying again…' : retryFailures ? 'Still unavailable. Please try again in a moment.' : ''}</p>
-            <div className={styles.actions}><button className={styles.primary} disabled={retrying} aria-busy={retrying} onClick={() => void retryCatalogue()}>Try again{retrying && <span className={styles.srOnly}> (trying again…)</span>}</button></div>
+            <div className={styles.actions}><button className={styles.primary} disabled={retrying} aria-busy={retrying} onClick={() => void retryCatalogue()}>{retrying && <span className="sf-spinner" aria-hidden="true" />}Try again{retrying && <span className={styles.srOnly}> (trying again…)</span>}</button></div>
           </div></div>}
           {step === 0 && !checkingGate && !unavailable && <>
             <AgeCheck lines={['Party', 'Planner']} headingRef={heading} checked={eligible} onCheckedChange={setEligible} continueLabel={draftRestored ? 'Continue your list' : 'Continue to planner'} busy={busy} busyLabel="loading…" onContinue={() => void run(async () => {

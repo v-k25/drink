@@ -323,43 +323,9 @@
 @media (max-width: 519px) { .cookTool > span:not([aria-hidden]) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; } .cookTool { padding: 0; } .cookClose { width: var(--target-min); } }
 @media (min-width: 768px) { .cookNav { grid-template-columns: minmax(max-content, 200px) minmax(0, 360px); justify-content: center; } }
 
-/* Loading placeholders (decorative, no text). Same bones as the Planner: a slow sweep, static under reduced motion. */
-.skBar, .skBarSm, .skChip, .skPick, .skPantry, .skMobileFilter, .skSearch, .skType, .skCardImage, .skHero, .skSpec, .skTitle, .skPrimary, .skSecondary, .skIngredient, .skDot { position: relative; display: block; overflow: hidden; background: var(--surface-raised); }
-.skBar::after, .skBarSm::after, .skChip::after, .skPick::after, .skPantry::after, .skMobileFilter::after, .skSearch::after, .skType::after, .skCardImage::after, .skHero::after, .skSpec::after, .skTitle::after, .skPrimary::after, .skSecondary::after, .skIngredient::after, .skDot::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--text) 6%, transparent), transparent); animation: skSweep 1.6s ease-in-out infinite; }
-@keyframes skSweep { to { transform: translateX(100%); } }
-.skBar { height: 14px; border-radius: var(--radius-pill); }
-.skBarSm { height: 10px; border-radius: var(--radius-pill); }
-.skSearch { min-height: var(--target-primary); border-radius: var(--radius-sm); }
-.skType { height: var(--target-min); width: 100%; max-width: 360px; border-radius: var(--radius-pill); }
-.skMobileFilter { width: 120px; height: var(--target-min); border-radius: var(--radius-md); }
-.skFacets { display: none; }
-.skFacetGroup { display: grid; gap: var(--space-3); padding-top: var(--space-3); }
-.skChips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.skChip { height: var(--target-min); border-radius: var(--radius-pill); }
-.skPantry { width: 200px; height: var(--target-min); margin-bottom: var(--space-4); border-radius: var(--radius-md); }
-.skHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: var(--target-min); margin: 0 0 var(--space-3); }
-.skPick { width: 140px; height: var(--target-min); border-radius: var(--radius-md); }
-.skCard { display: grid; gap: var(--space-2); align-content: start; min-width: 0; padding-bottom: var(--space-2); }
-.skCardWide { padding-bottom: 59px; }
-.skCardImage { width: 100%; aspect-ratio: 4 / 3; border-radius: var(--radius-md); }
-.skBack { display: block; width: 150px; height: var(--target-min); }
-.skHero { grid-area: hero; width: 100%; aspect-ratio: 16 / 10; border-radius: var(--radius-lg); }
-.skTitle { height: clamp(2rem, 1.4rem + 2.6vw, 3.25rem); width: 70%; margin-bottom: 6px; border-radius: var(--radius-md); }
-.skSpec { height: var(--target-min); border-radius: var(--radius-md); }
-.skPrimary { width: 168px; height: var(--target-primary); border-radius: var(--radius-md); }
-.skSecondary { width: 150px; height: var(--target-min); border-radius: var(--radius-md); }
-.skRows { display: grid; gap: 6px; }
-.skIngredient { min-height: 56px; border-radius: var(--radius-md); }
-.skSteps { display: grid; gap: var(--space-4); }
-.skStep { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: var(--space-4); align-items: start; }
-.skDot { width: 40px; height: 40px; }
-.skStepText { display: grid; gap: var(--space-3); padding-top: 8px; }
-.skOverlay { position: fixed; z-index: 4; top: 56px; right: 0; bottom: 0; left: 0; display: block; overflow: hidden; background: var(--bg); }
-@media (min-width: 800px) { .listing .skMobileFilter { display: none; } .listing .skFacets { display: grid; gap: var(--space-1); } }
-@media (min-width: 1024px) { .skHero { aspect-ratio: 4 / 5; max-height: 640px; } }
-
 @media (prefers-reduced-motion: reduce) {
-  .shell *, .shell *::before, .shell *::after { animation: none !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+  /* The loader keeps playing: it is a small loading indicator, not decorative motion (see .sf-loader in ui.css). */
+  .shell *:not(:global(.sf-loader) *), .shell *::before, .shell *::after { animation: none !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
 }
 @media print {
   .shell { background: #fff; color: #000; }

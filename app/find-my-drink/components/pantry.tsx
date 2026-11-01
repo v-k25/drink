@@ -6,6 +6,7 @@ import { pantryMatches, pantryVocabulary } from '../pantry'
 import type { RecipeRow } from '../queries'
 import { BasketIcon } from './icons'
 import styles from '../finder.module.css'
+import { AlertIcon, CloseIcon } from '../../icons'
 
 const storageKey = 'allcheers-pantry-session-v1'
 
@@ -32,7 +33,7 @@ export default function Pantry({ eligibleRows, matchingRows, returnTo }: { eligi
     {open && <div id="pantry-content" className={styles.pantryContent}>
       <h2 id="pantry-title">Ingredients I have</h2>
       <PantryChecklist eligibleRows={eligibleRows} selected={selected} onChange={setSelected} storageBlocked={storageBlocked} />
-      <p className={styles.hint}>Check quantities and equipment. Some recipes aren’t in ingredient matching yet. <Link href="#ordinary-results">Browse all matches</Link></p>
+      <p className={styles.hint}>Some recipes aren’t matched yet. <Link href="#ordinary-results">Browse all matches</Link></p>
       <div className={`${styles.pantryResultStatus} ${styles.srOnly}`} role="status" aria-live="polite">{selectedSet.size ? `${results.exact.length} ready to make; ${results.oneAway.length} one ingredient away.` : 'Tick ingredients to see matches.'}</div>
       {selectedSet.size > 0 && <>
         <h3>Ready to make · {results.exact.length}</h3>
@@ -40,7 +41,7 @@ export default function Pantry({ eligibleRows, matchingRows, returnTo }: { eligi
         <div className={styles.pantryMatches}>{results.exact.map(({ row, audit }) => <article className={styles.pantryMatch} id={`pantry-recipe-${row.id}`} key={row.id}><Link href={recipeHref(row)}>{row.name}</Link><p>Equipment: {audit.equipment.join(', ')}.</p></article>)}</div>
         <h3>One ingredient away · {results.oneAway.length}</h3>
         {!results.oneAway.length && <p className={styles.hint}>Nothing is one ingredient away under these filters.</p>}
-        <div className={styles.pantryMatches}>{results.oneAway.map(({ row, audit, missing }) => <article className={styles.pantryMatch} id={`pantry-recipe-${row.id}`} key={row.id}><Link href={recipeHref(row)}>{row.name}</Link><span className={styles.missingTag}><span aria-hidden="true">! </span>Missing: {missing.label}</span><p>Add {missing.quantityText}.</p><p>Equipment: {audit.equipment.join(', ')}.</p></article>)}</div>
+        <div className={styles.pantryMatches}>{results.oneAway.map(({ row, audit, missing }) => <article className={styles.pantryMatch} id={`pantry-recipe-${row.id}`} key={row.id}><Link href={recipeHref(row)}>{row.name}</Link><span className={styles.missingTag}><AlertIcon size={16} />Missing: {missing.label}</span><p>Add {missing.quantityText}.</p><p>Equipment: {audit.equipment.join(', ')}.</p></article>)}</div>
       </>}
     </div>}
   </section>
@@ -77,11 +78,11 @@ export function PantryChecklist({ eligibleRows, selected, onChange, storageBlock
   const visible = vocabulary.filter(item => item.label.toLowerCase().includes(search.toLowerCase()))
   function toggle(id: string) { onChange(selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]) }
   return <div className={styles.pantryContent}>
-    <p className={styles.hint}>Tick exact forms, including ice and any required garnish. Optional ingredients aren’t required.</p>
-    {storageBlocked && <p role="status" className={styles.hint}>Browser storage is off. Your ticks work here but won’t be kept when you leave.</p>}
+    <p className={styles.hint}>Tick what you have, including ice and garnish.</p>
+    {storageBlocked && <p role="status" className={styles.hint}>Browser storage is off. Your ticks won’t be saved.</p>}
     {selected.length > 0 && <p className={styles.hint} role="status">{selected.length} ticked</p>}
     <div className={styles.pantrySelected} role="group" aria-label="Selected ingredients">
-      {vocabulary.filter(item => selectedSet.has(item.ingredientId)).map(item => <button type="button" className={styles.filterActive} key={item.ingredientId} onClick={() => toggle(item.ingredientId)} aria-label={'Remove ' + item.label}>{item.label} ✕</button>)}
+      {vocabulary.filter(item => selectedSet.has(item.ingredientId)).map(item => <button type="button" className={styles.filterActive} key={item.ingredientId} onClick={() => toggle(item.ingredientId)} aria-label={'Remove ' + item.label}>{item.label}<CloseIcon size={16} /></button>)}
       {selected.length > 0 && <button type="button" className={styles.filter} onClick={() => onChange([])}>Clear</button>}
     </div>
     <label className={styles.guideLabel}>Search ingredients<input className={styles.pantrySearch} type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search ingredients" /></label>

@@ -12,14 +12,12 @@ type WakeLockNavigator = Navigator & { wakeLock?: { request: (type: 'screen') =>
 // Making experience for the detail page. Core content (ingredients, steps) is
 // server-rendered in full; everything interactive mounts progressively:
 // - ingredient checklist with native checkboxes (toggleable even without JS)
-//   and a checked-progress line once mounted; the server-computed quantity note
-//   (approximate metric conversions; shown when any line converted or stayed
-//   ambiguous) renders near the checklist without waiting for JS;
+//   and a checked-progress line once mounted;
 // - a full-screen step view (modal dialog, one step at a time) opened from the
 //   page's "Start making" button, keyboard and touch operable;
 // - Screen Wake Lock as a silent no-op where unsupported; its toggle lives in
 //   the step view. No save/like controls exist in this phase, and none are faked.
-export default function Making({ name, ingredients, steps, quantityNote }: { name: string; ingredients: string[]; steps: string[]; quantityNote?: string | null }) {
+export default function Making({ name, ingredients, steps }: { name: string; ingredients: string[]; steps: string[] }) {
   const [mounted, setMounted] = useState(false)
   const [checked, setChecked] = useState<ReadonlySet<number>>(new Set())
   const [stepMode, setStepMode] = useState(false)
@@ -115,7 +113,6 @@ export default function Making({ name, ingredients, steps, quantityNote }: { nam
         <p className={styles.progressLine} role="status">{checked.size} of {ingredients.length} gathered</p>
         <div className={styles.gatherBar} aria-hidden="true"><span style={{ width: `${gathered}%` }} /></div>
       </div>}
-      {ingredients.length > 0 && quantityNote && <p className={`${styles.hint} ${styles.quantityNote}`}>{quantityNote}</p>}
     </div>
     <div id="method" className={styles.makingBlock}>
       <h2>Method</h2>

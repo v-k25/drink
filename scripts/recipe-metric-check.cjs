@@ -6,15 +6,16 @@
 //    documented ingredient-line shapes of the 26 live eligible recipes plus
 //    malformed/ambiguous raw lines, unknown units, variable quantities, invalid
 //    decimals, alternatives and supported Unicode fractions through it:
-//      - confidently convertible lines are METRIC-FIRST ("~44 mL Vodka") and
+//      - confidently convertible lines are METRIC-FIRST ("45 ml Vodka") and
 //        never repeat the visible source-unit amount (no oz/cup/tbsp/tsp word);
-//      - grams ONLY for explicitly solid mass ounces ("~28 g Strawberries");
+//      - grams ONLY for explicitly solid mass ounces ("30 g Strawberries");
 //      - cups → mL, non-liquid contents carry "(by volume)" after the metric
-//        value ("~120 mL (by volume) frozen mango"), never grams;
+//        value ("120 ml (by volume) frozen mango"), never grams;
 //      - ambiguous ounces (e.g. "0.67 oz. Lime") keep the source quantity with
 //        the explicit per-line note — never a guessed mL/g;
 //      - rounding avoids false precision: nearest 0.25 mL under 2, nearest
-//        0.5 mL for 2–10 (¼ tsp = 1.25 mL survives, ⅓ oz → ~10 mL not 9.76);
+//        0.5 mL for 2–10 (¼ tsp = 1.25 mL survives, ⅓ oz → 10 ml not 9.76),
+//        whole units for 10–20 and the nearest 5 from 20 up (1½ oz → 45 ml);
 //      - alternatives ("X or Y") keep both sides, annotating every alternative
 //        that carries a convertible quantity, merging name-only alternatives;
 //      - never NaN/Infinity, never a mutated input array, deterministic.
@@ -59,72 +60,72 @@ function loadMetricModule() {
 // [raw, expected status, substrings the display must include]
 const SHAPES = [
   // US fluid ounces on liquids → metric-first millilitres.
-  ['1.5 oz. Vodka', 'converted', ['~44 mL Vodka']],
-  ['3 oz. Cranberry Juice', 'converted', ['~89 mL Cranberry Juice']],
-  ['1.33 oz. Vodka', 'converted', ['~39 mL Vodka']],
-  ['2 oz. Pineapple Juice', 'converted', ['~59 mL Pineapple Juice']],
-  ['0.5 oz. Sour Apple Schnapps', 'converted', ['~15 mL Sour Apple Schnapps']],
-  ['1.5 oz. Bourbon', 'converted', ['~44 mL Bourbon']],
-  ['1 oz. Campari', 'converted', ['~30 mL Campari']],
-  ['1 oz. Red Vermouth', 'converted', ['~30 mL Red Vermouth']],
-  ['1 oz. Cognac', 'converted', ['~30 mL Cognac']],
-  ['1 oz. Dark Creme de Cacao', 'converted', ['~30 mL Dark Creme de Cacao']],
-  ['1 oz. (fresh) Cream', 'converted', ['~30 mL (fresh) Cream']],
-  ['4 oz. Cola', 'converted', ['~118 mL Cola']],
-  ['0.33 oz. Lime Juice', 'converted', ['~10 mL Lime Juice']],
-  ['2 oz. Light Rum', 'converted', ['~59 mL Light Rum']],
-  ['0.25 oz. Gomme Syrup', 'converted', ['~7.5 mL Gomme Syrup']],
-  ['0.75 oz. Green Chartreuse', 'converted', ['~22 mL Green Chartreuse']],
-  ['0.75 oz. Maraschino Liqueur', 'converted', ['~22 mL Maraschino Liqueur']],
-  ['0.75 oz. Lime Juice', 'converted', ['~22 mL Lime Juice']],
-  ['1 oz. Orange Juice', 'converted', ['~30 mL Orange Juice']],
-  ['1.25 oz. White Tequila', 'converted', ['~37 mL White Tequila']],
-  ['0.67 oz. Cointreau', 'converted', ['~20 mL Cointreau']],
-  ['0.17 oz. Lime Juice', 'converted', ['~5 mL Lime Juice']],
-  ['3.33 oz. Grapefruit Soda', 'converted', ['~98 mL Grapefruit Soda']],
-  ['1.7 oz. White Rum', 'converted', ['~50 mL White Rum']],
-  ['1 oz. Cream of coconut', 'converted', ['~30 mL Cream of coconut']],
-  ['3.33 oz. Grapefruit Juice', 'converted', ['~98 mL Grapefruit Juice']],
-  ['0.83 oz. (fresh) Lemon Juice', 'converted', ['~25 mL (fresh) Lemon Juice']],
-  ['0.67 oz. Triple Sec', 'converted', ['~20 mL Triple Sec']],
-  ['0.67 oz. Lemon Juice', 'converted', ['~20 mL Lemon Juice']],
-  ['0.75 oz. Sugar Syrup', 'converted', ['~22 mL Sugar Syrup']],
-  ['0.67 oz. Kahlua', 'converted', ['~20 mL Kahlua']],
-  ['1 oz. Cream', 'converted', ['~30 mL Cream']],
-  ['1 oz. Lime Juice', 'converted', ['~30 mL Lime Juice']],
-  ['0.5 oz. Cointreau', 'converted', ['~15 mL Cointreau']],
-  ['0.5 oz. Lime Juice', 'converted', ['~15 mL Lime Juice']],
-  ['3 ounces cloudy apple juice', 'converted', ['~89 mL cloudy apple juice']],
-  ['1 ounce freshly squeezed lemon juice', 'converted', ['~30 mL freshly squeezed lemon juice']],
+  ['1.5 oz. Vodka', 'converted', ['45 ml Vodka']],
+  ['3 oz. Cranberry Juice', 'converted', ['90 ml Cranberry Juice']],
+  ['1.33 oz. Vodka', 'converted', ['40 ml Vodka']],
+  ['2 oz. Pineapple Juice', 'converted', ['60 ml Pineapple Juice']],
+  ['0.5 oz. Sour Apple Schnapps', 'converted', ['15 ml Sour Apple Schnapps']],
+  ['1.5 oz. Bourbon', 'converted', ['45 ml Bourbon']],
+  ['1 oz. Campari', 'converted', ['30 ml Campari']],
+  ['1 oz. Red Vermouth', 'converted', ['30 ml Red Vermouth']],
+  ['1 oz. Cognac', 'converted', ['30 ml Cognac']],
+  ['1 oz. Dark Creme de Cacao', 'converted', ['30 ml Dark Creme de Cacao']],
+  ['1 oz. (fresh) Cream', 'converted', ['30 ml (fresh) Cream']],
+  ['4 oz. Cola', 'converted', ['120 ml Cola']],
+  ['0.33 oz. Lime Juice', 'converted', ['10 ml Lime Juice']],
+  ['2 oz. Light Rum', 'converted', ['60 ml Light Rum']],
+  ['0.25 oz. Gomme Syrup', 'converted', ['7.5 ml Gomme Syrup']],
+  ['0.75 oz. Green Chartreuse', 'converted', ['20 ml Green Chartreuse']],
+  ['0.75 oz. Maraschino Liqueur', 'converted', ['20 ml Maraschino Liqueur']],
+  ['0.75 oz. Lime Juice', 'converted', ['20 ml Lime Juice']],
+  ['1 oz. Orange Juice', 'converted', ['30 ml Orange Juice']],
+  ['1.25 oz. White Tequila', 'converted', ['35 ml White Tequila']],
+  ['0.67 oz. Cointreau', 'converted', ['20 ml Cointreau']],
+  ['0.17 oz. Lime Juice', 'converted', ['5 ml Lime Juice']],
+  ['3.33 oz. Grapefruit Soda', 'converted', ['100 ml Grapefruit Soda']],
+  ['1.7 oz. White Rum', 'converted', ['50 ml White Rum']],
+  ['1 oz. Cream of coconut', 'converted', ['30 ml Cream of coconut']],
+  ['3.33 oz. Grapefruit Juice', 'converted', ['100 ml Grapefruit Juice']],
+  ['0.83 oz. (fresh) Lemon Juice', 'converted', ['25 ml (fresh) Lemon Juice']],
+  ['0.67 oz. Triple Sec', 'converted', ['20 ml Triple Sec']],
+  ['0.67 oz. Lemon Juice', 'converted', ['20 ml Lemon Juice']],
+  ['0.75 oz. Sugar Syrup', 'converted', ['20 ml Sugar Syrup']],
+  ['0.67 oz. Kahlua', 'converted', ['20 ml Kahlua']],
+  ['1 oz. Cream', 'converted', ['30 ml Cream']],
+  ['1 oz. Lime Juice', 'converted', ['30 ml Lime Juice']],
+  ['0.5 oz. Cointreau', 'converted', ['15 ml Cointreau']],
+  ['0.5 oz. Lime Juice', 'converted', ['15 ml Lime Juice']],
+  ['3 ounces cloudy apple juice', 'converted', ['90 ml cloudy apple juice']],
+  ['1 ounce freshly squeezed lemon juice', 'converted', ['30 ml freshly squeezed lemon juice']],
   // Explicit solid-mass ounce → metric-first grams.
-  ['1 oz. Strawberries', 'converted', ['~28 g Strawberries']],
+  ['1 oz. Strawberries', 'converted', ['30 g Strawberries']],
   // Ambiguous ounce → source quantity with the explicit per-line note, no guessed mL/g.
   ['0.67 oz. Lime', 'ambiguous', ['0.67 oz. Lime', 'weight or volume unclear']],
   // Spoon measures → metric-first millilitres (no classification needed).
-  ['0.25 tsp. Salt', 'converted', ['~1.25 mL Salt']],
-  ['1 tsp. Powdered Sugar', 'converted', ['~5 mL Powdered Sugar']],
-  ['2 tbsp lime juice', 'converted', ['~30 mL lime juice']],
-  ['2 tablespoons blood orange juice (freshly squeezed)', 'converted', ['~30 mL blood orange juice (freshly squeezed)']],
-  ['1 tablespoon lime juice (freshly squeezed)', 'converted', ['~15 mL lime juice (freshly squeezed)']],
+  ['0.25 tsp. Salt', 'converted', ['1.25 ml Salt']],
+  ['1 tsp. Powdered Sugar', 'converted', ['5 ml Powdered Sugar']],
+  ['2 tbsp lime juice', 'converted', ['30 ml lime juice']],
+  ['2 tablespoons blood orange juice (freshly squeezed)', 'converted', ['30 ml blood orange juice (freshly squeezed)']],
+  ['1 tablespoon lime juice (freshly squeezed)', 'converted', ['15 ml lime juice (freshly squeezed)']],
   // Cups → metric-first millilitres; non-liquid contents carry "(by volume)",
   // never grams.
-  ['1/3 cup coconut cream', 'converted', ['~80 mL coconut cream']],
-  ['1/2 cup pineapple juice', 'converted', ['~120 mL pineapple juice']],
-  ['1 cup frozen pineapple chunks', 'converted', ['~240 mL (by volume) frozen pineapple chunks']],
-  ['1 cup pineapple', 'converted', ['~240 mL (by volume) pineapple']],
-  ['1 cup reduced-fat coconut milk', 'converted', ['~240 mL reduced-fat coconut milk']],
-  ['2 cups sparkling water', 'converted', ['~480 mL sparkling water']],
-  ['.5 cup frozen mango', 'converted', ['~120 mL (by volume) frozen mango']],
-  ['3/4 cup coconut water', 'converted', ['~180 mL coconut water']],
-  ['2 cups watermelon', 'converted', ['~480 mL (by volume) watermelon']],
-  ['1/2 cup fresh lime juice', 'converted', ['~120 mL fresh lime juice']],
+  ['1/3 cup coconut cream', 'converted', ['80 ml coconut cream']],
+  ['1/2 cup pineapple juice', 'converted', ['120 ml pineapple juice']],
+  ['1 cup frozen pineapple chunks', 'converted', ['240 ml (by volume) frozen pineapple chunks']],
+  ['1 cup pineapple', 'converted', ['240 ml (by volume) pineapple']],
+  ['1 cup reduced-fat coconut milk', 'converted', ['240 ml reduced-fat coconut milk']],
+  ['2 cups sparkling water', 'converted', ['480 ml sparkling water']],
+  ['.5 cup frozen mango', 'converted', ['120 ml (by volume) frozen mango']],
+  ['3/4 cup coconut water', 'converted', ['180 ml coconut water']],
+  ['2 cups watermelon', 'converted', ['480 ml (by volume) watermelon']],
+  ['1/2 cup fresh lime juice', 'converted', ['120 ml fresh lime juice']],
   // Alternatives: every convertible alternative annotated metric-first;
   // name-only alternatives merged back into one quantity; separators preserved.
-  ['1 ounce alcohol free vodka or 1 teaspoon apple cider vinegar', 'converted', ['~30 mL alcohol free vodka or ~5 mL apple cider vinegar']],
-  ['1 cup alcohol free Rosé or alternative (see notes)', 'converted', ['~240 mL alcohol free Rosé or alternative (see notes)']],
-  ['1 teaspoon sugar or sweetener (optional)', 'converted', ['~5 mL sugar or sweetener (optional)']],
-  ['1 oz non-alcoholic rum ((optional))', 'converted', ['~30 mL non-alcoholic rum ((optional))']],
-  ['1 oz white rum or vodka', 'converted', ['~30 mL white rum or vodka']],
+  ['1 ounce alcohol free vodka or 1 teaspoon apple cider vinegar', 'converted', ['30 ml alcohol free vodka or 5 ml apple cider vinegar']],
+  ['1 cup alcohol free Rosé or alternative (see notes)', 'converted', ['240 ml alcohol free Rosé or alternative (see notes)']],
+  ['1 teaspoon sugar or sweetener (optional)', 'converted', ['5 ml sugar or sweetener (optional)']],
+  ['1 oz non-alcoholic rum ((optional))', 'converted', ['30 ml non-alcoholic rum ((optional))']],
+  ['1 oz white rum or vodka', 'converted', ['30 ml white rum or vodka']],
   // Whole-fruit pieces, dashes, pinches, counts and variable quantities stay verbatim.
   ['1 wedge Lime', 'verbatim', []],
   ['1 slice Oranges', 'verbatim', []],
@@ -154,17 +155,17 @@ const EDGES = [
   // An ounce with no ingredient name at all is ambiguous, never guessed.
   ['1 oz.', 'ambiguous', ['weight or volume unclear']],
   // Supported Unicode fractions convert; unsupported ones stay verbatim.
-  ['½ oz Vodka', 'converted', ['~15 mL Vodka']],
-  ['¾ cup mango', 'converted', ['~180 mL (by volume) mango']],
-  ['1½ oz Vodka', 'converted', ['~44 mL Vodka']],
-  ['2⅗ cup juice', 'converted', ['~624 mL juice']],
+  ['½ oz Vodka', 'converted', ['15 ml Vodka']],
+  ['¾ cup mango', 'converted', ['180 ml (by volume) mango']],
+  ['1½ oz Vodka', 'converted', ['45 ml Vodka']],
+  ['2⅗ cup juice', 'converted', ['625 ml juice']],
   ['⅐ oz Vodka', 'verbatim', []],
   // A solid plus an ambiguous food word stays verbatim (no g guess for the lime).
   ['1 oz strawberries or lime', 'ambiguous', ['1 oz strawberries or lime', 'weight or volume unclear']],
   // A full alternative with an unknown unit is never merged into the previous quantity.
-  ['1 oz strawberries or 1 splash soda', 'converted', ['~28 g strawberries or 1 splash soda']],
+  ['1 oz strawberries or 1 splash soda', 'converted', ['30 g strawberries or 1 splash soda']],
   // Case-insensitive "or".
-  ['1 oz. vodka OR 1 tsp. vinegar', 'converted', ['~30 mL vodka OR ~5 mL vinegar']],
+  ['1 oz. vodka OR 1 tsp. vinegar', 'converted', ['30 ml vodka OR 5 ml vinegar']],
 ]
 
 // A converted line must never repeat a visible source-unit word — metric-first
@@ -182,10 +183,10 @@ function runCases(metric, cases, label) {
       assert.equal(line.display, raw, `${label}: verbatim line must be unchanged: ${JSON.stringify(raw)}`)
     } else if (status === 'ambiguous') {
       assert.ok(line.display.startsWith(raw.trim()), `${label}: ambiguous line must retain the source quantity: ${JSON.stringify(raw)}`)
-      assert.ok(!line.display.includes(' mL') && !line.display.includes(' g'), `${label}: ambiguous line must not gain a metric guess: ${JSON.stringify(raw)}`)
+      assert.ok(!line.display.includes(' ml') && !line.display.includes(' g'), `${label}: ambiguous line must not gain a metric guess: ${JSON.stringify(raw)}`)
     } else {
-      assert.ok(line.display.startsWith('~'), `${label}: converted line must show metric quantity first: ${JSON.stringify(raw)} (got ${JSON.stringify(line.display)})`)
-      assert.ok(line.display.includes(' mL') || line.display.includes(' g'), `${label}: converted line must carry a metric annotation: ${JSON.stringify(raw)}`)
+      assert.ok(/^\d/.test(line.display), `${label}: converted line must show metric quantity first: ${JSON.stringify(raw)} (got ${JSON.stringify(line.display)})`)
+      assert.ok(line.display.includes(' ml') || line.display.includes(' g'), `${label}: converted line must carry a metric annotation: ${JSON.stringify(raw)}`)
       assert.ok(!SOURCE_UNIT_WORD.test(line.display), `${label}: converted line must not repeat the source unit: ${JSON.stringify(raw)} (got ${JSON.stringify(line.display)})`)
     }
     for (const text of includes) {
@@ -349,8 +350,8 @@ async function liveChecks(metric) {
         assert.ok(line.display.startsWith(raw.trim()) && line.display.includes('weight or volume unclear'), `${row.id}: ${raw}`)
       } else {
         converted += 1
-        assert.ok(line.display.startsWith('~'), `${row.id}: converted line must show metric quantity first: ${raw} (got ${line.display})`)
-        assert.ok(line.display.includes(' mL') || line.display.includes(' g'), `${row.id}: ${raw}`)
+        assert.ok(/^\d/.test(line.display), `${row.id}: converted line must show metric quantity first: ${raw} (got ${line.display})`)
+        assert.ok(line.display.includes(' ml') || line.display.includes(' g'), `${row.id}: ${raw}`)
         assert.ok(!SOURCE_UNIT_WORD.test(line.display), `${row.id}: converted line must not repeat the source unit: ${raw} (got ${line.display})`)
       }
       // Cross-check with the stored details: a known convertible unit with a

@@ -177,7 +177,7 @@ async function main() {
     for (const text of grapefruitCards) assert.match(text, /grapefruit/i)
     await plainPage.locator('article a', { hasText: 'Grapefruit MartiNO' }).first().click()
     await plainPage.locator('a[href="#ingredients"]').click()
-    assert.ok((await plainPage.locator('body').innerText()).includes('~120 mL grapefruit juice'))
+    assert.ok((await plainPage.locator('body').innerText()).includes('120 ml grapefruit juice'))
     assert.equal(await plainPage.getByRole('button', { name: 'Start making', exact: true }).count(), 0)
     await noJs.close()
     assert.deepEqual(errors, [])

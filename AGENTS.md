@@ -61,7 +61,7 @@ Implemented + acceptance criteria met + verification passed + no known blockers 
 
 ## Scope and design
 
-Follow `docs/socifer-product-plan.md` section 3 ("Jaipur After Dark"): dark booking-first landing page, dark warm-gold Tool Night surfaces, Nunito Sans, WCAG 2.2 AA. Do not implement design changes ahead of their approved checkpoint.
+Follow the Black Tie design approved on 2026-11-01. The plan and checkpoints (BT0–BT7) are in `docs/black-tie-redesign-plan.md`; it supersedes the Pre-Party design (`docs/pre-party-redesign-plan.md`, `docs/design/pre-party/`, kept for reference only). In brief: Archivo (wide caps headings) + Manrope; black, bone and champagne with one rani pink per screen; Little Horns logo; square corners; dark everywhere, tools included; black-and-white landing photos with the light-bringer colour reveal, full-colour photos in the tools; minimal, plain copy; WCAG 2.2 AA. Do not implement design changes ahead of their checkpoint.
 
 ## Graphify
 

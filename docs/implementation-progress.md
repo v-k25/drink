@@ -1,5 +1,147 @@
 # Implementation progress
 
+### Metric note removed from the recipe page, 2026-11-01
+
+**Done (not committed).** The owner asked to remove "Metric amounts are approximate. Where a conversion is unclear, the original unit is shown." from under the ingredient checklist (restored earlier the same day). Removed from `detail.tsx`, along with the now unused `quantityNote` prop in `making.tsx` and the `.quantityNote` class; the `metric.ts` rounding comment no longer refers to the note. Ambiguous ounce lines still carry their own per-line note. `recipe-detail-check` now asserts the note is absent.
+
+### Fix: loading skeleton nested in recipe card names, 2026-11-01
+
+**Done (not committed).** The dev overlay showed six errors ("<div>/<section>/<article> cannot be a descendant of <p>") when a "More like this" card was clicked on a recipe page. `DetailPending` and `ListingPending` rendered the full-page loading skeleton inside the link, which sits in the card's `<p>` or `<h3>` name. They now portal the skeleton into the page's `[data-theme="tools"]` root (`app/find-my-drink/components/pending-overlay.tsx`); the link status hook still drives it. Present since the loading skeletons were added, not from BT8.
+
+**Checks actually run.** On the running dev server: open a recipe, click a related card and Back to results; the overlay renders in the themed root outside the link, no console errors, no new errors in `.next/dev/logs`. `tsc --noEmit`, `pnpm build`, recipe-detail, recipe-discovery, recipe-guided-browser and recipe-pantry-browser checks: PASS.
+
+### BT8 Lit states, 2026-11-01
+
+**Done (not committed).** Owner idea: the light-bringer on every page. Anything hovered, chosen or completed now lights up pink instead of turning bone or grey; the solid pink fill stays the one main action per screen. New `lit`, `lit-bg`, `lit-text` tokens; edits in `app/ui.css`, `planner.module.css`, `finder.module.css`, `tool-shell.module.css`, `home.module.css`; a one-time pink glow (`.sf-glow-once`) on the Planner receipt, the spirit match and the launch-list success panel (`planner.tsx`, `guided.tsx`, `early-access/form.tsx`). Details in `docs/black-tie-redesign-plan.md` (BT8).
+
+**Checks actually run.** `design-tokens --check` (all pairs AA, lit pairs included), `tsc --noEmit`, `pnpm build`: pass. Browser checks: planner-redesign, planner-ux, planner-ux-production, planner-inventory, planner-tool-shell, planner-retry-production, design-polish, brewlist-tools-style, brewlist-home, recipe-detail, recipe-guided-browser, recipe-pantry-browser, early-access: PASS. recipe-discovery timed out once while a second server ran beside it, then passed alone. Screenshots of Planner setup, build, plan sheet and review; Find My Drink quiz, browse and recipe; landing card and phone menu (live read-only data): no page errors.
+
+### Hero photo: Pink lasers, 2026-11-01
+
+**Done (not committed).** The owner found the stage photo too flat and chose "Pink lasers" (A J., Unsplash, free licence) from a six-photo shortlist (https://claude.ai/artifact/12hW9tKX5F4QPy24TtS91G). The same `public/images/nightlife/hero-night-*` file names now hold it, so the markup is unchanged: 2400 and 1600px desktop, 1280×1600 and 800×1000 phone centre crops, AVIF and WebP made with sharp. Footer credit (`app/page.tsx`) and `docs/nightlife-image-credits.md` updated. The hero still shows it in black and white with the pink colour reveal under the cursor.
+
+**Checks actually run.** `tsc --noEmit` and `pnpm build` pass; `home-design-check` and `brewlist-home-check` pass on a production server; screenshots at 1440 (at rest and with the colour circle) and 390; LCP 72 ms locally, no page errors. The 2400px AVIF is 144 KB (was 79 KB); the browser picked the 1600px file at 1440.
+
+### BT7 Black Tie regression and copy pass, 2026-11-01
+
+**Done (not committed).** The Black Tie redesign (BT1–BT7) is built. Site title "Socifer | Jaipur nights, booked" plus dark `theme-color` / `color-scheme` meta (`app/layout.tsx`); 404 restyled (`app/not-found.*`); `.sf-btn--ghost` bone and underlined (`app/ui.css`, used by the 404 and the age check); `planner-redesign-check` moved to the plan sheet; `brewlist-tools-style-check` font regex and `brewlist-home-check` comment updated; Pre-Party marked superseded (`docs/design/pre-party/SUPERSEDED.md`, banner on its plan, AGENTS.md). Details in `docs/black-tie-redesign-plan.md` (BT7).
+
+**Checks actually run.** `tsc --noEmit`, `pnpm build`, `git diff --check`: pass. Browser checks on production builds: planner-redesign, planner-ux, planner-ux-production, planner-inventory, planner-tool-shell, planner-retry-production, design-polish, brewlist-tools-style, brewlist-home, home-design, recipe-detail, recipe-discovery, recipe-guided-browser, recipe-pantry-browser: PASS. Logic checks: early-access, booking, spirit, party-planner, party-planner-suggest, recipe-guided, recipe-pantry, recipe-browse, recipe-metric (live read-only), design-tokens `--check`: PASS. One-off audit of five pages at 320/390/1280/1440px, 200% text and print: no overflow, no page errors, AA contrast on solid backgrounds. Not run: the three backend-key Planner checks (no backend change). Text over photos not contrast-sampled.
+
+### BT6 Black Tie Find My Drink, 2026-11-01
+
+**Done (not committed).** `app/find-my-drink/finder.module.css` restyled for Black Tie: capitals headings and card names, 1px borders, pink only on each screen's main action (cook-mode Next is now pink), champagne labels and step numbers, full-colour recipe photos with a pink line under the photo on hover or focus (also on the entry route cards). Fixed the mangled minus on the open "Source & recipe context", and added `width: 100%` to the centred quiz columns so the step bar no longer collapses on phones (an uncommitted centring edit had shrunk it). Details in `docs/black-tie-redesign-plan.md` (BT6).
+
+**Checks actually run.** `tsc --noEmit` and `pnpm build` pass. `recipe-discovery-check`, `recipe-guided-browser-check`, `recipe-pantry-browser-check`, `recipe-guided-check`, `recipe-pantry-check`: PASS. `recipe-detail-check`: PASS after the owner chose to restore the metric note ("Metric amounts are approximate…") that an uncommitted, unlogged `detail.tsx` edit had removed; it is back in `detail.tsx`, the shorter source copy from that edit is kept. Screenshots of entry (320/390/768/1024/1440), quiz, browse hover, recipe page and cook mode reviewed; the pink hover line was measured on a route and a recipe card. `git diff --check` clean.
+
+**Harness.** `recipe-detail-check` and `recipe-guided-browser-check` now compare recipe names case-insensitively (they render in capitals).
+
+### Planner checks updated for the bar-and-sheet layout, 2026-11-01
+
+**Done (not committed).** The owner chose to keep the Planner layout where the plan lives only in the bottom bar and its sheet (no desktop panel). Five harnesses were rewritten for it; app code unchanged.
+- `design-polish-check`: opens the sheet to edit guests and budget, change a line and review; closes it to search.
+- `planner-ux-production-check`: the 1280px section now expects the sheet after Generate list, three lines in it, two fully visible, and Review list reachable inside it.
+- `planner-inventory-check`: `openPlan` / `closePlan` helpers round every list read or change; drag-to-plan and foreign-drop steps removed (no drop target without the panel); the deep-scroll check now asks that the View plan bar stays in view.
+- `planner-tool-shell-check`: the sheet opens after Generate list at every width (was "never on desktop"); the budget and review steps open the sheet at every width.
+- `brewlist-tools-style-check`: Remove/Undo and the long-plan Review checks happen in the sheet; the landing image check looks at the first `main img` (the page has four since BT3/BT4).
+
+**Checks actually run.** Each of the five against its own production server with the mock upstream (Playwright from the npx cache, `NODE_PATH` set): all PASS. App code and build unchanged since BT5's `tsc` and build.
+
+**Known gap.** Drag to add no longer works on desktop (no drop target); the code remains in `planner.tsx`.
+
+### BT5 Black Tie tool shell and Party Planner, 2026-11-01
+
+**Done (not committed).** Details in `docs/black-tie-redesign-plan.md` → Status → BT5.
+- `app/party-planner/planner.module.css`: capitals headings, 1px borders, pink only on the main action (the bar's View plan is pink now), bone underlined link buttons, champagne labels, token colours instead of Pre-Party literals, dim skeleton sweep, print brand as SVG. `app/party-planner/planner.tsx`: imports `Wordmark` for the printed list (one line). `app/tool-shell.module.css`, `app/age-check.module.css`: comments, square skip link, age-check mark sized for wide capitals.
+- **Found, not caused by BT5:** uncommitted, unlogged Planner changes already in the working tree moved the plan into the bar and sheet at every width and removed the desktop plan panel. That is why `design-polish-check` failed in BT3. Kept as the current state.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `git diff --check` clean. Logic: `party-planner-check`, `party-planner-suggest-check`, `party-planner-backend-check`, `party-planner-catalogue-server-check` PASS. Browser (Playwright from the npx cache, `NODE_PATH` set for the scripts that `require('playwright')`): `planner-retry-production-check` PASS at 390 and 1280. A one-off walkthrough script (scratchpad) on the production server at 360, 390, 768, 1024 and 1440: age check → Set your party → Build your list → add two drinks → View plan → Review list → Ready for the shops at every width, no horizontal overflow on the build or review screens, and on the review screen the only pink control is Share list. Screenshots reviewed: build at 1440, the plan sheet at 390, review at 1440.
+
+**Failing, from the layout change above (not fixed):** `design-polish-check`, `planner-ux-production-check`, `planner-inventory-check`, `planner-tool-shell-check` and `brewlist-tools-style-check` all wait for the plan's lines, Remove buttons or Review list on the page at desktop width, or assert the sheet never opens by itself on desktop. Stale details fixed along the way: icon colour and plan-sheet step (design-polish), accent colour (tools-style), "Saved on this device" line (tool-shell).
+
+### BT4 Light-bringer hover, 2026-11-01
+
+**Done (not committed).** Details in `docs/black-tie-redesign-plan.md` → Status → BT4.
+- New `app/light-bringer.tsx`; `app/page.tsx` adds the hero's colour `<picture>`, `data-light-hero`, `sf-lit` + `data-light-card` on the two tool cards, and `<LightBringer />`.
+- `app/home.module.css`: `.heroLight` (masked colour layer, `@property --lr`), tool photos no longer filtered there. `app/ui.css`: `.sf-lit` card treatment and the primary-button glow.
+- Reduced motion: the first build turned the hero circle off; the in-app browser reports reduced motion on this machine, so nobody here would have seen it. Changed to keep the circle (it follows the visitor's own mouse) without the grow animation.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0 (the `@property` rule is in the built CSS); `git diff --check` clean. `home-design-check` PASS at all five widths; `brewlist-home-check` PASS after the image count update (3 → 4). A one-off Playwright script (session scratchpad, not committed) against the production server: mouse move lights the hero (`data-lit`, `--lr` 240px) and leaving clears it; hovering a tool card turns its photo to colour and shows the pink line; keyboard focus does the same; on a touch phone (390px, `hover: none`) a card lights only while it is in the middle of the screen and the hero ignores taps; under reduced motion the circle still follows the mouse and both changes are instant. Screenshot reviewed of the lit circle on the desktop hero.
+
+**Not measured.** Text contrast with the circle directly under the headline: the colour layer has the same gradient as the black and white one, so the ground under the text is the same near-black, but this was not sampled.
+
+### BT3 Black Tie landing page, 2026-11-01
+
+**Done (not committed).** `/` restyled to the Black Tie boards; copy, form, server action and links unchanged. Details in `docs/black-tie-redesign-plan.md` → Status → BT3.
+- `app/home.module.css` rewritten: capitals headings, black and white photos, square smoke tool cards with a photo strip, champagne step numbers with rules, bone For venues band, 1px borders, black gradient on the hero.
+- `app/page.tsx`: header Join the list is secondary (pink once per screen); tool card markup wraps the text in `.toolBody`; For venues photo removed.
+- `app/ui.css`: accordion "+" is champagne. `app/early-access/form.module.css`: success heading in capitals.
+- Harnesses: `brewlist-home-check` image count (1 → 3) and menu link count (5 → 4) were stale since the 2026-10-31 design review; `design-polish-check` expects `#ff2d87` in `icon.svg`.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `git diff --check` clean. With Playwright from the npx cache (`PLAYWRIGHT_MODULE`, `PLAYWRIGHT_CHROMIUM_EXECUTABLE` as in the 2026-10-31 entry) against the production server: `home-design-check` PASS at 1440, 1024, 768, 390 and 320 (layout, images, anchors, FAQ, signup validation, mobile menu, skip link, zero page errors, no form writes); `brewlist-home-check` PASS after the two count fixes. `design-polish-check` passes the landing part and then fails in the Party Planner waiting for an "Edit guests and budget" button; BT3 does not touch the Planner, and `planner.tsx` has other uncommitted changes in this working tree, so this is left for BT5. Own checks: no horizontal overflow at 320, 360, 390, 768, 1024, 1440, and at 200% text at 360 and 1024; the headline fits every width. Screenshots reviewed at desktop width (hero, How it'll work, tools, For venues) and 390 (hero).
+
+### BT2 Little Horns logo and icons, 2026-11-01
+
+**Done (not committed).** Details in `docs/black-tie-redesign-plan.md` → Status → BT2.
+- **Logo as SVG paths:** `app/logo.tsx` (`Wordmark`, `LogoMark`). Letters are Archivo outlines (wdth 125, wght 800) made with fontTools from the downloaded font; the horned O is drawn. Handoff files in `docs/design/black-tie/`: `logo-wordmark-dark.svg`, `logo-wordmark-light.svg`, `logo-mark.svg`.
+- **Swapped in:** landing header and footer (`app/page.tsx`, `home.module.css`) and the tool header (`app/tool-shell.tsx`, `tool-shell.module.css`). The link keeps its name ("Socifer home", "Socifer, back to top"); the SVG inside is hidden from screen readers.
+- **Icons:** `app/icon.svg`, new `app/apple-icon.png` (180px), `public/favicon.ico` (16/32/48) rendered with `sharp` from `node_modules`.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0 (routes now include `/apple-icon.png`); `node scripts/design-tokens.cjs --check` ok; `git diff --check` clean. Production server: logo renders in the headers at 320, 360, 390, 768, 1024 and 1440 on `/`, `/party-planner` and `/find-my-drink` (107×16 on phones, 147×22 on wider tool pages and the landing from 1024), header links 44px tall, no horizontal overflow; `/favicon.ico`, `/icon.svg` and `/apple-icon.png` return 200 and the page has the icon and apple-touch-icon links. Icon checked by eye at 16, 32 and 180px; headers checked by eye at 390 and desktop width. The tool header wraps to two rows at 320px only.
+
+**Not run.** The `scripts/*-check.cjs` harnesses (BT7).
+
+### BT1 Black Tie foundations, 2026-11-01
+
+**Done (not committed).** Owner approved fetching Archivo. Details in `docs/black-tie-redesign-plan.md` → Status → BT1.
+- **Tokens:** `docs/design/black-tie/tokens.json`, generator `scripts/design-tokens.cjs` (renamed from `pre-party-tokens.cjs`), regenerated `app/tokens.css`. Two dark themes (`landing`, `tools`) with the same values; `tools-dark` removed; print black on white; new `--detail` (champagne); radii 0; shadows replaced by 1px lines.
+- **Fonts:** Archivo downloaded once from the google/fonts repository (OFL), instanced at `wdth 125`, `wght 700–800`, subset to Latin + ₹ with fontTools → `app/fonts/Archivo-latin.woff2` (20,512 bytes) and `OFL-Archivo.txt`. `app/fonts.ts`, `app/page.tsx` and `app/tool-shell.tsx` use `archivo`; Bricolage Grotesque files removed.
+- **Primitives:** `app/ui.css` restyled for square, 1px, capitals display type, champagne eyebrow and sticker, pink summary-bar action.
+- **Landing contrast fix:** plum photo washes in `home.module.css` are black; the Party Planner tool card uses `surface-raised` instead of the (now bone) highlight.
+
+**Checks actually run.** `node node_modules/typescript/bin/tsc --noEmit` exit 0. `node scripts/design-tokens.cjs --check` ok (3 themes, all pairs AA). `corepack pnpm build` exit 0 (run twice, after the contrast fix too). `git diff --check` clean. Production server (`next start`, port 3201): `/`, `/party-planner`, `/find-my-drink` and a 404 load at 360, 768, 1024 and 1440 with no horizontal overflow; Archivo and Manrope load; page background is `#0a0a0b`. Screenshots reviewed: landing hero and tools/For venues sections at desktop width, landing, Planner setup and Find My Drink entry at 390.
+
+**Not run.** The `scripts/*-check.cjs` harnesses: several assert Pre-Party colours and fonts and are updated in BT7.
+
+### BT0 Black Tie direction approved, 2026-11-01
+
+**Done (not committed). Docs only; no code changed.** The owner said the built Pre-Party design did not feel premium or happening. Four directions were researched and mocked on a private design canvas (https://claude.ai/artifact/GzCZwkJWVczG5T1cmUqC28), and the owner chose **Black Tie** with the **Little Horns** logo. Decisions, recorded in `docs/black-tie-redesign-plan.md`: tools stay dark all the time (no light theme), with full-colour photos inside the tools; black-and-white landing photos with the light-bringer colour reveal; the logo is redrawn here as SVG in BT2. AGENTS.md "Scope and design" now points to the Black Tie plan. The code still shows Pre-Party until BT1–BT7 land.
+
+**Still open before BT1.** Approval to download the Archivo font file; whether the "light bringer" meaning is ever said in public copy.
+
+**Checks actually run.** `git diff --check` on the changed docs.
+
+### Design review follow-ups (owner gave design discretion), 2026-10-31
+
+**Done (not committed).** The owner asked for the review's polish list, an icon set and the design calls to be decided and built ("do the best changes for me"). Hero photo: owner chose a proper stock photo; candidates offered, download waits for the owner's OK.
+- **Icons.** New `app/icons.tsx` (24px line icons, 1.75 stroke, `currentColor`, decorative): arrows, close, menu, check, alert, compass, die, grid, basket. They replace the text characters → ← ✕ × ≡ ✓ ! ? on the menu button, Find My Drink route cards, back links, search button, filter chips, dialog and cook-mode close buttons, Planner chips and sheet closes, age-check and form errors, and the unavailable state. Remaining: the "✓ ₹110 left" / "! ₹X over" text inside the Planner meter strings.
+- **Landing.** One name for the action: the header and menu buttons say "Join the list" like the hero and form. For venues is now a plum `surface-raised` block with pink only on the button and a thin arch outline (the `city` token's "small Jaipur nod"). Tool cards carry a static, decorative preview (a mini receipt; a quiz question with a picked answer); the Find My Drink line leads with the spirit finder. The launch-list section is one card holding the heading and the form, so there is no empty column. Photo caption now "Stock photo, not a Socifer venue".
+- **Mobile menu.** ✕ while open (label "Close menu"), a scrim over the page below the header that closes the menu on tap. Escape and focus return unchanged.
+- **Launch-list form.** `noValidate` plus a client check with the server's own rule and messages, so the designed error states show instead of the browser's bubbles; focus moves to the first invalid field. The "I'm joining early access for Jaipur" checkbox is replaced by a hidden `interests=jaipur` input (Jaipur is the only city). `app/early-access/actions.ts` is **unchanged**; without JavaScript the server's errors render as before. Privacy note: "the city you joined for (Jaipur)".
+- **Tool shell.** The root is a flex column and `main` grows, so the footer sits at the bottom of short pages. "Saved on this device · no account needed" shows in the Planner header only.
+- **Find My Drink.** Route cards: icon tiles, titles aligned. Cards: no "Reviewed tastes" line; facts in two lines (spirit; method · ingredients · time), servings left to the recipe page; the Cocktail/Mocktail badge only where a list mixes types (`showType`). Guide me: no Skip on the flavour step ("Any" does the same), the repeated "Flavours" label is screen-reader only. The best-match card is a dark `bar` block like the budget meter. Three picks on phone: the first spans the row. Recipes without a photo use one on-brand placeholder (`public/images/recipe-placeholder.svg`) instead of the per-spirit bottles; `artFor` in `recipe.ts` returns it. Duplicate adults-only lines removed from Browse all and the recipe page (the footer keeps it). "Source & recipe context" has a +/− marker. Metric amounts: no "~", "ml", and from 20 ml rounded to the nearest 5 (1½ oz → 45 ml); the checklist note already says amounts are approximate.
+- **Party Planner.** Over-budget rows: one Add (outlined, named "Add X anyway (over budget)") and a muted "₹X over budget", instead of red "! ₹X over", a disabled Add and "Add anyway". One per-guest figure in whole rupees ("About ₹395 per guest"); the meter shows guests only. Set your party has a "What you'll get" panel from 1024px. The suggest step's exit says "Choose drinks myself". Category hover is lighter than the selected item.
+- **Harness scripts updated for the new UI:** `brewlist-home-check` (header CTA name), `planner-inventory-check` (one Add on over-budget cards), `planner-ux-production-check` ("Choose drinks myself"), `recipe-pantry-browser-check` (back link name), `recipe-discovery-check` and `recipe-metric-check` (metric format and rounding), `brewlist-tools-style-check` (active chip selector).
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `git diff --check` clean; `pre-party-tokens --check` ok. Every `scripts/*-check.cjs` passes (25 scripts; `home-design-check` against `next start` on 3125, which it expects; it now also asserts the hidden Jaipur field, the designed email and consent errors and focus on the first invalid field). Four needed string or selector updates for the new UI before passing, listed above plus `recipe-detail-check` and `home-design-check`. Visual pass of every page at 390, 768 and 1440 (light; dark spot-checked on the recipe page and 404): no overflow anywhere; landing, menu, form errors, Find My Drink entry, quiz result, recipe page and the Planner's setup and build screens reviewed by eye.
+
+**Hero photo (D12 / B2), done 2026-10-31.** The owner turned down a Pexels pair, an Unsplash shortlist (Hawa Mahal, club nights, toasts) and asked for moody silhouettes; from about 260 Unsplash silhouettes they chose "golden crowd": hands raised in amber haze by Edward Cisneros (Unsplash License, no recognisable faces). Downloaded once at 2400×1600 with approval, written by `sharp` from `node_modules` (4:5 mobile crops and, after the full-screen change below, wide desktop files). `app/page.tsx` srcset widths and `img` size updated; footer credit "Edward Cisneros / Unsplash". Source, licence and sizes in `docs/nightlife-image-credits.md`. Checked: `tsc`, build, `home-design-check`, `brewlist-home-check`, `design-polish-check` pass; hero screenshots at 1440, 768 and 390.
+
+**Full-screen hero, done 2026-10-31.** The owner found the arch photo too small and chose a full-screen layout from two mocks (big arch / full-screen). The hero now spans the window (about one screen tall, at least 560–640px) with the photo behind the copy: the wide photo from 768px (`hero-night-desktop{,-1600}.{avif,webp}`), the 4:5 crop below. A plum gradient rises from the bottom under 1024px and runs from the left from 1024px; its near-solid part reaches at least 600px so the copy is never over bright photo. In `app/page.tsx` the hero sits outside the centred column (`main` no longer has `.wrap`; the other sections are wrapped in one). Worst-case text contrast against the brightest pixel behind each line at 1440, 1280, 1024, 768, 390, 360 and 320: headline 7.4–16.6:1, lede 6.7–10.3:1, caption 9.7–11.4:1 (the lede was 3.7:1 at 1024 before the gradient fix). No overflow at those sizes; `tsc`, build, `home-design-check`, `brewlist-home-check` (hero containment incl. 200% text), `design-polish-check` and `early-access-check` pass. The arch shape stays in For venues and the recipe placeholder.
+
+**Not done, needs the owner.** Recipe names that read like blog titles and the Whisky/Whiskey/Bourbon spelling are stored in `public.drinks`; renaming them is a live data change (owner: later).
+
+### Design review bug fixes, 2026-10-31
+
+**Done (not committed).** The owner asked for the three bugs found in the design review (private design system artifact "Socifer Design Review") to be fixed. CSS only; no markup, copy, tokens or behaviour changed.
+- **Dark 404.** The middle of the 404 was the old `body` cream from `globals.css`, so the near-white heading vanished in dark mode. `.root` in `app/tool-shell.module.css` now has `min-height: 100dvh` and `background: var(--bg)`, so every tool root (both tools and the 404) fills the window in its theme colour.
+- **Box round headings on load.** The shell's focus ring matched `[tabindex]:focus-visible`, which beat the existing `outline: none` rules for headings that get focus by script (Chrome treats focus set by script on a fresh page as `:focus-visible`). The selector now skips `[tabindex="-1"]`. Focus still moves to the headings; keyboard rings on links, buttons and inputs are unchanged.
+- **Left edges.** The header and footer content run 1240px wide; Find My Drink's containers were 1240px including their 16px padding (content at x = 116 at 1440), and the recipe page used 32px padding from 768px (x = 132). `.listingState`, `.guide`, `.listing`, `.listingHead` and `.detailBody` in `finder.module.css` are now 1272px (as the Planner already was), and the recipe page's 32px tablet padding is gone. The 404 content uses the same 1272px container, left-aligned, with its text still capped at 40rem.
+
+**Checks actually run.** `tsc --noEmit` exit 0; `corepack pnpm build` exit 0; `git diff --check` clean (CRLF notices only). Production server: Find My Drink entry, Guide me, Browse all, a recipe page, the Planner and the 404 at 1440, 768 and 390, light and dark: the wordmark and the first content element share the same x (100 at 1440, 16 below), no focused heading has an outline, every tool root fills the window, the 404 heading contrast is 17.2:1 (light) and 17.4:1 (dark), no overflow. Tab order on Find My Drink, the Planner and the 404 still shows the 2px ring on each control. Harnesses `design-polish-check`, `brewlist-tools-style-check`, `planner-tool-shell-check`, `recipe-detail-check`, `recipe-discovery-check` and `recipe-guided-browser-check` pass.
+
+**Not fixed (from the same review, design calls for the owner).** Short pages still leave the footer partway up the window; the other review items (imagery, icons, Build your list warnings, pink venues band, recipe names) are untouched.
+
 ### Find My Drink: Guide me finds your base spirit, 2026-10-31
 
 **Done (not committed).** Owner request: the main goal of Find My Drink is to help someone choose a base spirit; cocktails and mocktails are the extra. Owner choices: ask "Are you drinking?" first, offer more than the six spirits we have recipes for, replace the old Guide me, four questions.
@@ -2323,3 +2465,4 @@ Created docs/party-planner-ux-plan.md from the owner conversation and prior hand
 ### B12 guided discovery checkpoint 2 — editorial records, 2026-10-14
 
 Read-only SQL on the configured catalogue project returned 50 published editorial-ready recipes (35 cocktails, 15 mocktails). Reviewed ingredients and preparation for all 50; discovery-audit.json records six-vocabulary taste tags, rationale, exact primary base/additional alcohol, version/date and source signatures. No occasion records are approved. Reviewed all 15 mocktail preparation/pantry paths: 11 supported, four unresolved (blood orange, fig, quick cranberry, vodka mocktail) remain excluded from new recommendations. Piña Colada uses the explicitly optional-rum-free path; Paloma uses the recorded vinegar/maple path, with visible guidance. Added eight pantry audits to the existing 17, covering all 11 supported mocktails; unresolved alternatives stay disabled. Existing 17 source signatures matched the current read after SQL-to-REST serialization. Stored non-personal recipe fixtures for reproducible checks. No remote writes. Assertion harness follows in checkpoint 3; Graphify/CLI checks remain blocked by terminal startup.
+- 2026-10-31: added Unsplash photos to the Party Planner, Find My Drink and venue sections; removed the hero stock-photo caption (credits stay in the footer). Build and tsc pass.

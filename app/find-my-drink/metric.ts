@@ -7,9 +7,9 @@
 // source unit, with no density assumptions anywhere. Confidently convertible
 // lines are rewritten metric-first — the metric quantity leads and the
 // source-unit amount is not repeated in the visible checklist:
-// - US fluid ounces on liquid ingredients → "~44 mL Vodka" (~29.57 mL per fl oz);
+// - US fluid ounces on liquid ingredients → "45 ml Vodka" (29.57 ml per fl oz);
 // - ounces on explicitly solid ingredients (berries, fruit, herbs, fresh
-//   ginger, spices) → "~28 g Strawberries" (~28.35 g per oz), never for liquids;
+//   ginger, spices) → "28 g Strawberries" (28.35 g per oz), never for liquids;
 // - cups → millilitres (240 mL per cup): "~80 mL coconut cream" for liquid
 //   contents, "~120 mL (by volume) frozen mango" for non-liquid contents — a
 //   cup measure is a volume either way, and no density assumption ever turns a
@@ -195,15 +195,18 @@ function hasAmbiguousFoodWord(name: string): boolean {
 
 // --- Annotation ---
 
-// Practical metric rounding without false precision: below 2 mL to the nearest
-// 0.25 mL (canonical spoon measures like ¼ tsp = 1.25 mL survive), 2–10 mL to
-// the nearest 0.5 mL, everything above to whole units (⅓ oz → ~10 mL, not 9.76).
+// Practical metric rounding without false precision: below 2 ml to the nearest
+// 0.25 ml (canonical spoon measures like ¼ tsp = 1.25 ml survive), 2–10 ml to
+// the nearest 0.5 ml, 10–20 to whole units (⅓ oz → 10 ml, not 9.76), and from
+// 20 up to the nearest 5, the way bar measures are written (1½ oz → 45 ml).
+// Rounded bar measures read as approximate on their own, so no "~" is shown.
 function roundMetric(value: number): string | null {
   if (!Number.isFinite(value) || value <= 0) return null
   let rounded: number
   if (value < 2) rounded = Math.round(value * 4) / 4
   else if (value < 10) rounded = Math.round(value * 2) / 2
-  else rounded = Math.round(value)
+  else if (value < 20) rounded = Math.round(value)
+  else rounded = Math.round(value / 5) * 5
   return rounded > 0 ? String(rounded) : null
 }
 
@@ -224,13 +227,13 @@ function annotateSingle(text: string): { display: string; status: 'converted' | 
       const value = roundMetric(lead.amount * ML_PER_US_FLOZ)
       return value === null
         ? { display: `${base} ${AMBIGUOUS_NOTE}`, status: 'ambiguous' }
-        : { display: metricFirst(`~${value} mL`, lead.name), status: 'converted' }
+        : { display: metricFirst(`${value} ml`, lead.name), status: 'converted' }
     }
     if (isSolidName(lead.name) && !hasAmbiguousFoodWord(lead.name)) {
       const value = roundMetric(lead.amount * G_PER_OZ_MASS)
       return value === null
         ? { display: `${base} ${AMBIGUOUS_NOTE}`, status: 'ambiguous' }
-        : { display: metricFirst(`~${value} g`, lead.name), status: 'converted' }
+        : { display: metricFirst(`${value} g`, lead.name), status: 'converted' }
     }
     return { display: `${base} ${AMBIGUOUS_NOTE}`, status: 'ambiguous' }
   }
@@ -240,13 +243,13 @@ function annotateSingle(text: string): { display: string; status: 'converted' | 
     // A cup is a volume measure whatever it holds; for non-liquid contents the
     // "(by volume)" qualifier follows the metric value so a solid cup is never
     // read as a weight in grams.
-    const annotation = `~${value} mL${isLiquidName(lead.name) ? '' : ' (by volume)'}`
+    const annotation = `${value} ml${isLiquidName(lead.name) ? '' : ' (by volume)'}`
     return { display: metricFirst(annotation, lead.name), status: 'converted' }
   }
   const perUnit = lead.kind === 'tbsp' ? ML_PER_TBSP : ML_PER_TSP
   const value = roundMetric(lead.amount * perUnit)
   if (value === null) return { display: `${base} ${AMBIGUOUS_NOTE}`, status: 'ambiguous' }
-  return { display: metricFirst(`~${value} mL`, lead.name), status: 'converted' }
+  return { display: metricFirst(`${value} ml`, lead.name), status: 'converted' }
 }
 
 // Split a raw line on its " or " alternatives, keeping the exact separator

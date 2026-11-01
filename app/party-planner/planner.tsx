@@ -5,7 +5,9 @@ import { formatMoney, parseBudget, planText, PRICE_LABEL, type Plan, type Planne
 import { suggestibleCategories, suggestStartingList, SUGGEST_LABEL, type Suggestion } from './suggest'
 import { confirmEligibility, getCatalogue, validatePlan } from './actions'
 import AgeCheck from '../age-check'
+import { CloseIcon } from '../icons'
 import { ToolFooter, ToolHeader, toolFonts, toolRoot } from '../tool-shell'
+import { Wordmark } from '../logo'
 import styles from './planner.module.css'
 
 const iconProps = { viewBox: '0 0 24 24', width: 20, height: 20, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true, focusable: false }
@@ -15,6 +17,8 @@ const PencilIcon = () => <svg {...iconProps} width={16} height={16}><path d="M4 
 const GripIcon = () => <svg {...iconProps} width={16} height={16} fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.6" /><circle cx="15" cy="6" r="1.6" /><circle cx="9" cy="12" r="1.6" /><circle cx="15" cy="12" r="1.6" /><circle cx="9" cy="18" r="1.6" /><circle cx="15" cy="18" r="1.6" /></svg>
 // Display-only: whole rupees drop ".00". Exact formatMoney strings stay available as visually hidden text where asserted.
 const shortMoney = (paise: number) => formatMoney(paise).replace(/\.00$/, '')
+// Per-guest figures are estimates, so they show whole rupees everywhere.
+const perGuestMoney = (paise: number) => shortMoney(Math.round(paise / 100) * 100)
 const validCount = (value: string) => /^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 1000
 const estimateNote = 'Estimated from our Jaipur catalogue. Store prices and availability may differ.'
 type Confirmation = { kind: 'new' } | { kind: 'suggest' }
@@ -29,8 +33,8 @@ const confirmationCopy = (kind: Confirmation['kind'], items: number) => kind ===
   : { title: 'Replace your list?', description: `Your ${items} ${items === 1 ? 'item' : 'items'} will be swapped for a suggested list. You can undo right after.`, action: 'Replace list', keep: 'Keep my list' }
 const copiedMessage = 'List copied. Paste it into WhatsApp or notes.'
 const stageLabels = [['Set your party', 'Party'], ['Build your list', 'List'], ['Ready for the shops', 'Shops']]
-function Stages({ current }: { current: number }) {
-  return <ol className={`sf-stages ${styles.stages}`} aria-label="Progress">{stageLabels.map(([long, short], index) => <li key={long} className={index < current ? 'done' : undefined} aria-current={index === current ? 'step' : undefined}><span className={styles.stageLong}>{long}{index < current && <span className={styles.srOnly}> (done)</span>}</span><span className={styles.stageShort} aria-hidden="true">{short}</span></li>)}</ol>
+function Stages({ current, narrow }: { current: number, narrow?: boolean }) {
+  return <ol className={`sf-stages ${styles.stages} ${narrow ? styles.stagesNarrow : ''}`.trim()} aria-label="Progress">{stageLabels.map(([long, short], index) => <li key={long} className={index < current ? 'done' : undefined} aria-current={index === current ? 'step' : undefined}><span className={styles.stageLong}>{long}{index < current && <span className={styles.srOnly}> (done)</span>}</span><span className={styles.stageShort} aria-hidden="true">{short}</span></li>)}</ol>
 }
 
 
@@ -67,9 +71,10 @@ function PlannerSkeleton() {
 
 function Receipt({ plan, printing = false }: { plan: Plan; printing?: boolean }) {
   const groups = [...new Set(plan.lines.map(line => line.category))]
-  const perGuest = shortMoney(Math.round(plan.totalPaise / plan.guests))
-  return <div className={styles.receipt}>
-    {printing && <p className={styles.printBrand}>socifer</p>}
+  const perGuest = perGuestMoney(plan.totalPaise / plan.guests)
+  // On screen the receipt is the done moment of the Planner (BT8): one short pink glow when it appears.
+  return <div className={printing ? styles.receipt : `${styles.receipt} sf-glow-once`}>
+    {printing && <p className={styles.printBrand}><Wordmark /></p>}
     <h3 className={printing ? styles.printTitle : styles.receiptTitle}>{printing ? 'Socifer party list' : 'Party list'}</h3>
     <p className={styles.receiptMeta}>{plan.guests} guests · budget {shortMoney(plan.budgetPaise)}</p>
     {groups.map(category => <div className={styles.receiptGroup} key={category}><h4>{category}</h4>{plan.lines.filter(line => line.category === category).map(line => <div className={styles.receiptLine} key={line.id}>
@@ -77,7 +82,7 @@ function Receipt({ plan, printing = false }: { plan: Plan; printing?: boolean })
     </div>)}</div>)}
     <div className={styles.receiptTotal}><span>Estimated total</span><b>{shortMoney(plan.totalPaise)}</b></div>
     <p className={styles.receiptStatus}><span className={plan.remainingPaise < 0 ? styles.overBudget : styles.goodBudget}>{plan.remainingPaise < 0 ? `Over budget by ${shortMoney(-plan.remainingPaise)}` : 'Within budget'}</span> · {perGuest} per guest</p>
-    <p className={styles.disclaimer}>{PRICE_LABEL}. Not a guaranteed price. {estimateNote} Alcohol only: mixers, water, ice and food are not included. Quantities are an estimate; check them before you buy.{printing ? ' For adults. Drink responsibly and never drink and drive.' : ''}</p>
+    <p className={styles.disclaimer}>{PRICE_LABEL}. Estimate only; shops may differ. Alcohol only.{printing ? ' For adults. Drink responsibly and never drink and drive.' : ''}</p>
   </div>
 }
 
@@ -415,7 +420,7 @@ export default function Planner() {
     setInventory(picked)
     setQuantities(Object.fromEntries(result.lines.map(line => [line.productId, String(line.quantity)])))
     setNeedsReview({}); setActiveCategory(result.lines[0]?.category || ''); setEstimate(result); setGuestNotice(false); setSuggestionOpen(false)
-    if (window.matchMedia('(max-width: 1023px)').matches) window.setTimeout(openInventory, 0)
+    window.setTimeout(openInventory, 0)
     setAnnouncement(`Starting list added: ${result.lines.length} drinks, ${formatMoney(result.totalPaise)}. ${SUGGEST_LABEL}`)
     if (snapshot.inventory.length) showToast('Replaced your list with a starting list.', () => { undoRemoval(snapshot); setEstimate(snapshot.estimate); setServings(snapshot.estimate ? String(snapshot.estimate.servingsPerDrinker) : snapshot.servings); setNonDrinkers(snapshot.estimate ? String(snapshot.estimate.nonDrinkers) : snapshot.nonDrinkers); setSuggestCategories(snapshot.estimate ? snapshot.estimate.categories : snapshot.suggestCategories); setGuestNotice(snapshot.guestNotice) })
   }
@@ -442,7 +447,7 @@ export default function Planner() {
       <div className={styles.meterTrack}><div className={over ? styles.meterFillOver : styles.meterFill} style={{ width: `${budgetPaise && budgetPaise > 0 ? Math.min(100, (subtotal / budgetPaise) * 100) : 0}%` }} /></div>
       <p className={styles.heroRow}>
         {shortStatus && <span className={over ? styles.overBudget : styles.goodBudget} aria-hidden="true">{shortStatus}</span>}
-        {guests && <span aria-hidden="true">{guests} guests{perGuest ? ` · ${perGuest}/guest` : ''}</span>}
+        {guests && <span aria-hidden="true">{guests} guests</span>}
         <span className={styles.srOnly}>{formatMoney(subtotal)}{budgetPaise === null ? '' : ` of ${formatMoney(budgetPaise)}`}. {remainingLabel} {guests || 'Set'} guests{perGuest ? ` · Budget per guest ${perGuest}` : ''}</span>
       </p>
     </div>
@@ -473,7 +478,7 @@ export default function Planner() {
         </div>
       })}</div>)}</div>
       <div className={styles.inventorySummary}>{itemsIncomplete && <strong>{subtotalLabel} {formatMoney(subtotal)}</strong>}
-        {validCount(guests) && <p>Estimated cost per guest: {formatMoney(Math.round(subtotal / Number(guests)))}</p>}
+        {validCount(guests) && <p>About {perGuestMoney(subtotal / Number(guests))} per guest</p>}
         {(!inventory.length || issueCategories.length > 0 || !basicsValid) && <div className={styles.issueChips} aria-label="List issues">{!basicsValid && <button className={styles.filter} onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}>Set guests & budget</button>}{!inventory.length ? <button className={styles.filter} onClick={() => focusIssue(categories[0])}>Add at least one drink</button> : issueCategories.map(category => <button key={category} className={styles.filter} onClick={() => focusIssue(category)}>{category} — {inventory.some(item => item.category === category) ? 'check quantities' : 'add at least one item'}</button>)}</div>}
         <button className={styles.primary} disabled={!reviewReady || busy} onClick={reviewList}>{busy ? 'Checking…' : <>Review list<span aria-hidden="true">{` · ${shortMoney(subtotal)}`}</span></>}</button></div>
     </fieldset>
@@ -488,8 +493,8 @@ export default function Planner() {
         <div className={styles.field}><label htmlFor={`${prefix}-guests`}>Guests</label><span className={styles.stepper}><button type="button" aria-label="Decrease guests" disabled={validCount(guests) && Number(guests) <= 1} onClick={() => stepGuests(-1)}>−</button><input id={`${prefix}-guests`} inputMode="numeric" value={guests} onChange={event => setGuests(event.target.value)} aria-describedby={guestsInvalid ? `${prefix}-guests-hint` : undefined} aria-invalid={guestsInvalid} placeholder="e.g. 20" /><button type="button" aria-label="Increase guests" disabled={validCount(guests) && Number(guests) >= 1000} onClick={() => stepGuests(1)}>+</button></span>{guestsInvalid && <small id={`${prefix}-guests-hint`}>Enter a whole number from 1 to 1,000.</small>}</div>
         <label>Drinks budget<span className={styles.rupeeField}><span aria-hidden="true">₹</span><input id={`${prefix}-budget`} inputMode="decimal" value={budget} onChange={event => setBudget(event.target.value)} aria-describedby={setupError || budget !== '' ? `${prefix}-budget-hint` : undefined} aria-invalid={(setupError || budget !== '') && budgetPaise === null} placeholder="e.g. 5000" /></span>{(setupError || budget !== '') && budgetPaise === null && <small id={`${prefix}-budget-hint`}>Enter ₹0.01–₹10,00,000, with up to two decimal places.</small>}</label>
       </div>
-      {perGuest && <p>Budget per guest: {perGuest}</p>}
-      <p className={styles.hint}>Alcohol budget only. Mixers, water, ice and food are not included.</p>
+      {perGuest && budgetPaise !== null && <p>Budget per guest: {perGuestMoney(budgetPaise / Number(guests))}</p>}
+      <p className={styles.hint}>Alcohol only. Mixers and food aren’t included.</p>
       {prefix === 'setup' && <>
         <fieldset className={`sf-fieldset ${styles.startChoice}`}><legend>How do you want to start?</legend>
           <label className="sf-choice"><input type="radio" name="start-mode" checked={startMode === 'suggest'} onChange={() => setStartMode('suggest')} /><span><b>Suggest my list</b><small>We make a starting list you can edit.</small></span></label>
@@ -511,12 +516,11 @@ export default function Planner() {
     const target = validCount(servings) && Number(servings) <= 20 && drinkers > 0 ? drinkers * Number(servings) : null
     const eligibleCategories = suggestibleCategories(products)
     return <section className={styles.setupCard} aria-labelledby="suggest-title"><h2 id="suggest-title" ref={suggestionHeading} tabIndex={-1}>Suggest my list</h2>
-      <p className={styles.hint}>Shopping estimate only, not a drinking recommendation.</p>
       <div className={styles.formGrid}><label>Not drinking<input id="suggest-nondrinkers" inputMode="numeric" value={nonDrinkers} onChange={event => setNonDrinkers(event.target.value)} aria-describedby={suggestMessage ? 'suggest-error' : undefined} aria-invalid={!!suggestMessage && (!/^\d+$/.test(nonDrinkers) || Number(nonDrinkers) >= Number(guests))} /></label><label>Drinks each<input id="suggest-servings" inputMode="numeric" value={servings} onChange={event => setServings(event.target.value)} placeholder="Whole number, 1–20" aria-describedby={suggestMessage ? 'suggest-error' : undefined} aria-invalid={!!suggestMessage && (!validCount(servings) || Number(servings) > 20)} /></label></div>
       <fieldset className={styles.facet} aria-describedby={suggestMessage ? 'suggest-error' : undefined}><legend>What would your guests like? Pick a few.</legend><div className={styles.facetChips}>{eligibleCategories.map((category, index) => <button id={index === 0 ? 'suggest-category-choice' : undefined} type="button" key={category} className={suggestCategories.includes(category) ? styles.filterActive : styles.filter} aria-pressed={suggestCategories.includes(category)} onClick={() => setSuggestCategories(current => current.includes(category) ? current.filter(value => value !== category) : [...current, category])}>{category}</button>)}</div></fieldset>
       <div className={styles.suggestionNote}><p aria-live="polite">{target === null ? 'Enter drinks each to see your target' : `Target: ${target} servings`}</p><button type="button" className={styles.linkButton} onClick={openInfo}>How are quantities chosen?</button></div>
       {suggestMessage && <p id="suggest-error" className={styles.overBudget} role="alert">{suggestMessage}</p>}
-      <div className={styles.actions}><button className={styles.primary} onClick={event => suggest(event.currentTarget)}>Generate list</button><button className={styles.secondary} onClick={() => { setSuggestionOpen(false); window.setTimeout(() => heading.current?.focus(), 0) }}>Back to drinks</button></div>
+      <div className={styles.actions}><button className={styles.primary} onClick={event => suggest(event.currentTarget)}>Generate list</button><button className={styles.secondary} onClick={() => { setSuggestionOpen(false); window.setTimeout(() => heading.current?.focus(), 0) }}>Choose drinks myself</button></div>
     </section>
   }
 
@@ -552,8 +556,9 @@ export default function Planner() {
               setProducts(result.products); move(1)
             })} />
           </>}
-          {step === 1 && !setupComplete && <><Stages current={0} /><section className={styles.setupStage}><h2 ref={heading} tabIndex={-1}>Set your party</h2>{basicsFields('setup')}</section></>}
-          {step === 1 && setupComplete && suggestionOpen && <><Stages current={1} />{suggestionFields()}</>}
+          {step === 1 && !setupComplete && <><Stages current={0} narrow /><div className={styles.setupLayout}><section className={styles.setupStage}><h2 ref={heading} tabIndex={-1}>Set your party</h2>{basicsFields('setup')}</section>
+</div></>}
+          {step === 1 && setupComplete && suggestionOpen && <><Stages current={1} narrow />{suggestionFields()}</>}
           {step === 1 && setupComplete && !suggestionOpen && <>
             <Stages current={1} />
             <h2 ref={heading} tabIndex={-1} className={styles.stepHeading}>Build your list</h2>
@@ -574,10 +579,10 @@ export default function Planner() {
                 {filtersActive && <div className={styles.activeFilters}>
                   <span className={styles.resultCount} aria-hidden="true">{matches.length} {matches.length === 1 ? 'drink' : 'drinks'}</span>
                   <span className={styles.activeFiltersLabel}>Active filters</span>
-                  {search && <button className={styles.filterChip} aria-label="Remove search filter" onClick={() => setSearch('')}><span className={styles.filterChipLabel}>{search}</span><span aria-hidden="true">×</span></button>}
-                  {selectedBrands.map(brand => <button key={brand} className={styles.filterChip} aria-label={`Remove ${brand} filter`} onClick={() => setBrands(current => ({ ...current, [filterScope]: (current[filterScope] || []).filter(value => value !== brand) }))}><span className={styles.filterChipLabel}>{brand}</span><span aria-hidden="true">×</span></button>)}
-                  {selectedSizes.map(size => <button key={size} className={styles.filterChip} aria-label={`Remove ${size} ml filter`} onClick={() => setSizes(current => ({ ...current, [filterScope]: (current[filterScope] || []).filter(value => value !== size) }))}><span className={styles.filterChipLabel}>{size} ml</span><span aria-hidden="true">×</span></button>)}
-                  {withinOn && <button className={styles.filterChip} aria-label="Remove within-budget filter" onClick={() => setWithin(current => ({ ...current, [filterScope]: false }))}><span className={styles.filterChipLabel}>Within budget</span><span aria-hidden="true">×</span></button>}
+                  {search && <button className={styles.filterChip} aria-label="Remove search filter" onClick={() => setSearch('')}><span className={styles.filterChipLabel}>{search}</span><CloseIcon size={16} /></button>}
+                  {selectedBrands.map(brand => <button key={brand} className={styles.filterChip} aria-label={`Remove ${brand} filter`} onClick={() => setBrands(current => ({ ...current, [filterScope]: (current[filterScope] || []).filter(value => value !== brand) }))}><span className={styles.filterChipLabel}>{brand}</span><CloseIcon size={16} /></button>)}
+                  {selectedSizes.map(size => <button key={size} className={styles.filterChip} aria-label={`Remove ${size} ml filter`} onClick={() => setSizes(current => ({ ...current, [filterScope]: (current[filterScope] || []).filter(value => value !== size) }))}><span className={styles.filterChipLabel}>{size} ml</span><CloseIcon size={16} /></button>)}
+                  {withinOn && <button className={styles.filterChip} aria-label="Remove within-budget filter" onClick={() => setWithin(current => ({ ...current, [filterScope]: false }))}><span className={styles.filterChipLabel}>Within budget</span><CloseIcon size={16} /></button>}
                   <button className={styles.linkButton} onClick={resetFilters}>Clear all filters</button>
                 </div>}
                 {!matches.length && <div className={styles.emptySlot}><p><strong>No matching drinks</strong>Try another word or clear the filters.</p><button className={styles.secondary} onClick={resetFilters}>Clear filters</button></div>}
@@ -591,7 +596,7 @@ export default function Planner() {
                   <div className={styles.menuIdentity}>
                     <strong>{product.name}</strong>{search && <small>{product.category}</small>}
                     <small>{product.sizeMl} ml · <b className={styles.menuPrice}>{shortMoney(product.pricePaise)}</b><span className={styles.srOnly}> ({formatMoney(product.pricePaise)})</span></small>
-                    {!fits && <b className={styles.overBudget}><span aria-hidden="true">{shortMoney(product.pricePaise - remainingExcluding(product))} over</span><span className={styles.srOnly}>{formatMoney(product.pricePaise - remainingExcluding(product))} over remaining budget</span></b>}
+                    {!fits && <small className={styles.overNote}><span aria-hidden="true">{shortMoney(product.pricePaise - remainingExcluding(product))} over budget</span><span className={styles.srOnly}>{formatMoney(product.pricePaise - remainingExcluding(product))} over remaining budget</span></small>}
                   </div>
                   <div className={styles.menuActions}>
                   {inInventory ? <div className={styles.cardStepper}>
@@ -603,8 +608,9 @@ export default function Planner() {
                     </div>
                     <p id={`card-quantity-status-${cardToken}`} className={`${styles.quantityMessage} ${cardQuantityValid ? styles.srOnly : ''}`.trim()}>{cardQuantityValid ? `Line total: ${formatMoney(lineCost(product.id))}` : 'Enter a whole number from 1 to 1,000.'}</p>
                   </div> : <>
-                    <button className={styles.primary} disabled={!fits} aria-label={`Add ${product.name} to inventory`} onClick={() => addProduct(product.id)}>Add</button>
-                    {!fits && <button className={styles.secondary} aria-label={`Add ${product.name} anyway (over budget)`} onClick={() => addProduct(product.id)}><span aria-hidden="true">Add anyway</span></button>}
+                    {/* One Add per row. Over budget it is the quieter outlined button, and its name says so; the row's note gives the amount. */}
+                    {fits ? <button className={styles.primary} aria-label={`Add ${product.name} to inventory`} onClick={() => addProduct(product.id)}>Add</button>
+                      : <button className={styles.secondary} aria-label={`Add ${product.name} anyway (over budget)`} onClick={() => addProduct(product.id)}>Add</button>}
                   </>}
                   </div>
                 </li>})}</ul>
@@ -614,7 +620,7 @@ export default function Planner() {
               </div>
               <aside className={`${styles.planPanel} ${dragOver ? styles.validDrop : ''}`} aria-label="Your selected plan" onDragOverCapture={dropZoneOver} onDragLeave={dropZoneLeave} onDropCapture={dropZoneDrop}><div className={styles.panelHead}><h3>Your list</h3>{infoButton()}</div>{inventoryContents('desktop')}</aside>
             </div>
-            <p className={styles.disclaimer}>{estimateNote} {PRICE_LABEL}. Not included: mixers, food, water, ice and supplies.</p>
+            <p className={styles.disclaimer}>{estimateNote} Mixers, food and ice aren’t included.</p>
             <div className={styles.mobileBar}><div className={styles.mobileMeter} aria-hidden="true"><div className={remaining !== null && remaining < 0 ? styles.meterFillOver : styles.meterFill} style={{ width: `${budgetPaise && budgetPaise > 0 ? Math.min(100, (subtotal / budgetPaise) * 100) : 0}%` }} /></div><div><strong>{shortMoney(subtotal)}</strong><small><span aria-hidden="true">{inventory.length} {inventory.length === 1 ? 'item' : 'items'}{remaining === null ? '' : remaining < 0 ? ` · ! ${shortMoney(-remaining)} over` : ` · ✓ ${shortMoney(remaining)} left`}{mobileStatus === 'Ready to review' ? '' : ` · ${mobileStatus}`}</span><span className={styles.srOnly}>{inventory.length} {inventory.length === 1 ? 'item' : 'items'} · {remainingLabel ? `${remainingLabel} · ${mobileStatus}` : mobileStatus}</span></small></div><button ref={inventoryTrigger} className={styles.primary} aria-haspopup="dialog" aria-expanded={drawerOpen} onClick={openInventory}>View plan</button></div>
           </>}
           {step === 2 && plan && <>
@@ -623,7 +629,6 @@ export default function Planner() {
             <div className={styles.reviewLayout}>
               <Receipt plan={plan} />
               <div id="list-export" className={styles.reviewActions}>
-                <p className={styles.keptNote}>Saved on this device only.</p>
                 <div className={styles.reviewButtons}>
                   <button className={styles.primary} onClick={() => void shareList(plan)}>Share list</button>
                   <button className={styles.outline} onClick={() => void copyList(plan)}>Copy list</button>
@@ -642,27 +647,25 @@ export default function Planner() {
       </main>
       <ToolFooter />
       <dialog ref={inventoryDialog} className={`${styles.modal} ${styles.inventoryDrawer} ${dragOver ? styles.validDrop : ''}`.trim()} aria-labelledby="inventory-title" onCancel={event => { event.preventDefault(); closeInventory() }} onDragOverCapture={dropZoneOver} onDragLeave={dropZoneLeave} onDropCapture={dropZoneDrop}>
-        <button className={styles.close} onClick={closeInventory} aria-label="Close plan">×</button><div className={styles.sheetHead}><h2 id="inventory-title" tabIndex={-1}>Your list</h2>{infoButton()}</div>
+        <button className={styles.close} onClick={closeInventory} aria-label="Close plan"><CloseIcon size={22} /></button><div className={styles.sheetHead}><h2 id="inventory-title" tabIndex={-1}>Your list</h2>{infoButton()}</div>
         <p role="status" className={styles.srOnly}>{announcement}</p>{drawerOpen && inventoryContents('drawer')}
         {drawerOpen && toast && <div className={styles.toast} role="status"><span>{toast.message}</span><button className={styles.toastAction} onClick={() => toast.restore()}>Undo</button></div>}
       </dialog>
       <dialog ref={categoryDialog} className={`${styles.modal} ${styles.categorySheet}`} aria-labelledby="category-sheet-title" onCancel={event => { event.preventDefault(); closeCategoryPicker() }}><h2 id="category-sheet-title">Categories</h2><p>{products.length.toLocaleString('en-IN')} drinks. Browsing does not change your list.</p><div className={styles.categorySheetChoices}>{allCategories.map(category => <button key={category} className={browsing === category ? styles.filterActive : styles.filter} aria-current={browsing === category || undefined} onClick={() => { setActiveCategory(category); closeCategoryPicker() }}>{category}</button>)}</div><button className={styles.secondary} onClick={closeCategoryPicker}>Cancel</button></dialog>
       <dialog ref={infoDialog} className={`${styles.modal} ${styles.basicsPanel}`} aria-labelledby="info-title" onCancel={event => { event.preventDefault(); closeInfo() }}>
-        <button className={styles.close} onClick={closeInfo} aria-label="Close how quantities are chosen">×</button>
+        <button className={styles.close} onClick={closeInfo} aria-label="Close how quantities are chosen"><CloseIcon size={22} /></button>
         <h2 id="info-title" tabIndex={-1}>How are quantities chosen?</h2>
         {estimate && <div role="note" className={styles.infoNote}><p><strong>{SUGGEST_LABEL}</strong> Original estimate for {estimate.drinkers} {estimate.drinkers === 1 ? 'drinker' : 'drinkers'} · target {estimate.totalServings} servings · packs cover about {estimate.coveredServings} category-specific servings · original total {formatMoney(estimate.totalPaise)} · original estimated cost per guest {formatMoney(estimate.perGuestPaise)}. Edits to your list do not change these original figures.</p>{estimate.notes.map(note => <p key={note}>{note}</p>)}</div>}
         <ul className={styles.infoList}>
-          <li>Drinking guests × drinks each = total drinks. Non-drinkers aren’t counted.</li>
+          <li>Drinking guests × drinks each = total drinks.</li>
           <li>Drinks are split evenly across the categories you pick.</li>
-          <li>One drink is 330 ml of beer, 150 ml of wine, 60 ml of spirits or 275 ml of RTD.</li>
-          <li>We pick a mid-priced pack in each category and round up to whole bottles. If that’s over budget, we swap in cheaper packs.</li>
-          <li>Liqueurs and sake aren’t suggested. Add them yourself.</li>
+          <li>We pick a mid-priced pack in each category and round up to whole bottles, or cheaper if you’re over budget.</li>
         </ul>
-        <p className={styles.hint}>This is a shopping estimate, not a drinking recommendation. Changing guests does not change existing quantities. Non-alcoholic drinks and mixers are not in the catalogue yet.</p>
+        <p className={styles.hint}>A shopping estimate, not a drinking recommendation. Changing guests doesn’t change your quantities.</p>
         <div className={styles.actions}><button className={styles.primary} onClick={closeInfo}>Done</button></div>
       </dialog>
       <dialog ref={basicsDialog} className={`${styles.modal} ${styles.basicsPanel}`} aria-labelledby="basics-title" onCancel={event => { event.preventDefault(); closeBasics() }}>
-        <button className={styles.close} onClick={() => closeBasics()} aria-label="Close guests and budget">×</button>
+        <button className={styles.close} onClick={() => closeBasics()} aria-label="Close guests and budget"><CloseIcon size={22} /></button>
         <h2 id="basics-title" tabIndex={-1} ref={basicsHeading}>Guests & budget</h2>
         {basicsFields('dialog')}
         <div className={styles.actions}><button className={styles.secondary} onClick={() => closeBasics()}>Cancel</button><button className={styles.primary} onClick={() => closeBasics(true)}>Save changes</button></div>
@@ -678,7 +681,7 @@ export default function Planner() {
         </>}
       </dialog>
       <dialog ref={filterDialog} className={`${styles.modal} ${styles.filterPanel}`} aria-labelledby="filter-title" onCancel={event => { event.preventDefault(); closeFilters() }}>
-        <button className={styles.close} onClick={closeFilters} aria-label="Close filters">×</button>
+        <button className={styles.close} onClick={closeFilters} aria-label="Close filters"><CloseIcon size={22} /></button>
         <h2 id="filter-title" tabIndex={-1} ref={filterHeading}>Filters</h2>
         {browsing && <><p>Filters apply to {search ? 'all search results' : browsing}.</p>
           <fieldset className={styles.facet}><legend>Brand</legend><div className={styles.facetChips}>{brandOptions.map(brand => <button key={brand} className={selectedBrands.includes(brand) ? styles.filterActive : styles.filter} aria-pressed={selectedBrands.includes(brand)} onClick={() => setBrands(current => { const selected = current[filterScope] || []; return { ...current, [filterScope]: selected.includes(brand) ? selected.filter(value => value !== brand) : [...selected, brand] } })}>{brand || 'Unlisted brand'} ({categoryProducts.filter(product => product.brand === brand).length})</button>)}</div></fieldset>

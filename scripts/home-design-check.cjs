@@ -48,7 +48,12 @@ async function main() {
       await email.fill('not-an-email')
       assert.equal(await email.evaluate(el => el.checkValidity()), false)
       assert.equal(await page.locator('input[name="consent"]').isChecked(), false)
-      assert.equal(await page.locator('input[value="jaipur"]').isChecked(), false)
+      // Jaipur is sent as a hidden field; the form shows its own errors instead of the browser's bubbles.
+      assert.equal(await page.locator('input[type="hidden"][name="interests"]').inputValue(), 'jaipur')
+      await page.locator('#early-access').getByRole('button', { name: 'Join the list' }).click()
+      assert.ok(await page.getByText('Enter a valid email address.').isVisible(), 'designed email error shows on submit')
+      assert.ok(await page.getByText('We need your agreement to contact you.').isVisible(), 'designed consent error shows on submit')
+      assert.equal(await email.evaluate(el => el === document.activeElement), true, 'focus moves to the first invalid field')
       console.log(`PASS: ${width}px layout, images, anchors, FAQ, signup validation${width < 1024 ? ', mobile menu' : ''}`)
     }
     await page.goto(origin)

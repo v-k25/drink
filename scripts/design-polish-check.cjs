@@ -45,7 +45,7 @@ async function main() {
     await page.goto(origin)
     await page.evaluate(() => document.fonts.ready)
     await fits(page)
-    // Pre-Party landing: one H1, waitlist-only primary CTA, "How it works" secondary CTA.
+    // Landing: one H1, waitlist-only primary CTA, "How it works" secondary CTA.
     assert.equal(await page.locator('h1').count(), 1)
     await page.getByRole('heading', { name: 'Jaipur nights, booked.', level: 1 }).waitFor()
     const hero = page.locator('section[aria-labelledby="hero-title"]')
@@ -70,7 +70,7 @@ async function main() {
     const response = await fetch(origin + asset); assert.equal(response.status, 200)
     const data = Buffer.from(await response.arrayBuffer())
     if (asset.endsWith('.ico')) { assert.equal(data.readUInt16LE(2), 1); assert.ok(data.readUInt16LE(4) >= 3, 'favicon.ico bundles at least three sizes') }
-    else assert.match(data.toString(), /#3d1a45/)
+    else assert.match(data.toString(), /#ff2d87/) // Black Tie (BT2): pink horned O
   }
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto(origin)
@@ -86,18 +86,25 @@ async function main() {
   await page.locator('#setup-guests').fill('12')
   await page.locator('#setup-budget').fill('5000.25')
   await page.getByLabel('Choose drinks myself').check(); await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  // The plan lives in the bar and its sheet at every width now, so open it to reach the budget card's Edit button.
+  await page.getByRole('button', { name: 'View plan', exact: true }).click()
   await page.getByRole('button', { name: 'Edit guests and budget', exact: true }).click(); await basics.waitFor()
   assert.equal(await basics.getByLabel(/^Guests/).inputValue(), '12')
   await basics.getByRole('button', { name: 'Cancel', exact: true }).click()
   await basics.waitFor({ state: 'hidden' })
+  await page.getByRole('button', { name: 'Close plan', exact: true }).click()
   await page.getByRole('heading', { name: 'Build your list' }).waitFor()
   await page.getByRole('navigation', { name: 'Categories', exact: true }).getByRole('button', { name: /^Beer\s*\d+ drinks/ }).click()
   const firstBeerCard = page.locator(`[data-product-id="${firstBeer.id}"]`)
   await firstBeerCard.getByRole('button', { name: /^Add .* to inventory/ }).click()
+  // The list is in the plan sheet at every width: open it to check and change the line, close it to search, open it to review.
+  await page.getByRole('button', { name: 'View plan', exact: true }).click()
   assert.equal(await page.locator('[data-inventory-id]').filter({ visible: true }).count(), 1)
   assert.equal(await page.getByLabel(`${firstBeer.name} pack quantity`, { exact: true }).filter({ visible: true }).first().inputValue(), '1')
   await page.getByLabel(`${firstBeer.name} pack quantity`, { exact: true }).filter({ visible: true }).first().fill('2')
+  await page.getByRole('button', { name: 'Close plan', exact: true }).click()
   await page.getByLabel('Search all drinks', { exact: true }).fill('kept query')
+  await page.getByRole('button', { name: 'View plan', exact: true }).click()
   await page.getByRole('button', { name: 'Review list', exact: true }).filter({ visible: true }).click()
   const receipt = page.locator('#planner-content').locator('[class*="receipt"]').first()
   await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()

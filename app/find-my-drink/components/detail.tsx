@@ -7,6 +7,7 @@ import RecipeCard from './recipe-card'
 import Shell from './shell'
 import { capitalize, typeLabel, safeResultsHref } from '../recipe'
 import RecipeImage from './recipe-image'
+import { ArrowLeftIcon } from '../../icons'
 import { metricIngredients } from '../metric'
 import type { RecipeRow } from '../queries'
 import { Unavailable } from './states'
@@ -15,7 +16,7 @@ import styles from '../finder.module.css'
 export function DetailUnavailable() {
   return <Shell>
     <div className={styles.detailBody}>
-      <Link href="/find-my-drink" className={styles.backLink}>← All ways to find a drink</Link>
+      <Link href="/find-my-drink" className={styles.backLink}><ArrowLeftIcon size={18} />All ways to find a drink</Link>
       <Unavailable />
     </div>
   </Shell>
@@ -25,15 +26,8 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   // The stored original image is preferred when present; otherwise the
   // hand-authored SVG fallback renders decoratively.
   const resultsHref = safeResultsHref(returnTo)
-  // Metric display lines: each exact source line rewritten metric-first with a
-  // practical metric equivalent only where it can be safely converted (pure
-  // helper over the validated row; the raw quantities themselves are never
-  // rewritten in storage). The note labels the approximations near the
-  // checklist whenever any line converted or stayed ambiguous.
+  // Metric display lines: each source line rewritten metric-first where it can be safely converted; stored quantities are never rewritten.
   const metric = metricIngredients(recipe.ingredients)
-  const quantityNote = metric.convertedCount > 0 || metric.ambiguousCount > 0
-    ? 'Metric amounts are approximate. Where a conversion is unclear, the original unit is shown.'
-    : null
   const allergens = recipe.allergens === null ? 'not specified' : recipe.allergens.length > 0 ? recipe.allergens.join(', ') : 'none listed'
   const caffeine = recipe.hasCaffeine === null ? 'not specified' : recipe.hasCaffeine ? 'contains' : 'none reported'
   // Spec chips: tiny label over the value. The plain "Label: value" string stays
@@ -50,7 +44,7 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   return <Shell>
     <div className={styles.detailBody}>
       <article className={styles.detailPage}>
-        <Link href={resultsHref} className={styles.backLink}>← Back to results<ListingPending /></Link>
+        <Link href={resultsHref} className={styles.backLink}><ArrowLeftIcon size={18} />Back to results<ListingPending /></Link>
         <div className={styles.titleBlock}>
           <p className={styles.typeLine}>{typeLabel(recipe.alcoholType, recipe.baseSpirit)}</p>
           <h1>{recipe.name}</h1>
@@ -65,19 +59,18 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
         </div>
         <section className={styles.makeSection} aria-labelledby="making-title">
           <h2 id="making-title" className={styles.srOnly}>Make it</h2>
-          <Making name={recipe.name} ingredients={metric.lines.map(line => line.display)} steps={recipe.preparation} quantityNote={quantityNote} />
+          <Making name={recipe.name} ingredients={metric.lines.map(line => line.display)} steps={recipe.preparation} />
         </section>
         <RecipeImage key={`${recipe.id}:${recipe.imageUrl}`} row={recipe} width={1200} height={750} className={styles.heroImage} />
         <details className={styles.sourceContext}>
           <summary>Source &amp; recipe context</summary>
-          <p>Recipe facts from <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">{recipe.sourceName}</a>. Retrieved {recipe.sourceRetrievedAt.slice(0, 10)}.</p>
-          <p>We reviewed the wording of these steps. If allergens or caffeine aren’t listed, that doesn’t mean there are none.</p>
+          <p>Source: <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">{recipe.sourceName}</a>.</p>
+          <p>Allergens and caffeine may not be listed.</p>
         </details>
         {related !== null && related.length > 0 && <section className={styles.related} aria-labelledby="related-title">
           <h2 id="related-title">More like this</h2>
           <div className={styles.relatedGrid}>{related.map(row => <RecipeCard key={row.id} row={row} returnTo={resultsHref} preserveAnchor />)}</div>
         </section>}
-        <p className={styles.disclaimer}>Cocktail recipes are for adults of legal drinking age. Please drink responsibly.</p>
       </article>
     </div>
   </Shell>

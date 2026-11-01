@@ -36,13 +36,13 @@ async function main() {
       await page.getByRole('button', { name: 'Start making', exact: true }).waitFor()
       const body = await page.locator('body').innerText()
       // Metric-first checklist: converted lines lead with the metric quantity
-      // and do not repeat the source-unit amount; the wedge stays verbatim; the
-      // note labels the approximations; old note wordings are gone.
-      for (const text of ['Cape Codder', 'Yield: 1 cocktail', 'Glass: Highball glass', 'Allergens: not specified', 'Caffeine: not specified', '~44 mL Vodka', '~89 mL Cranberry Juice', '1 wedge Lime', 'Metric amounts are approximate. Where a conversion is unclear, the original unit is shown.']) assert.ok(body.includes(text), text)
+      // and do not repeat the source-unit amount; the wedge stays verbatim; no
+      // checklist note (owner removed it, 2026-11-01) and no old note wordings.
+      for (const text of ['Cape Codder', 'Yield: 1 cocktail', 'Glass: Highball glass', 'Allergens: not specified', 'Caffeine: not specified', '45 ml Vodka', '90 ml Cranberry Juice', '1 wedge Lime']) assert.ok(body.toLowerCase().includes(text.toLowerCase()), text) // headings render in capitals (Black Tie)
       assert.ok(!body.includes('1.5 oz. Vodka'), 'converted lines must not repeat the source-unit amount')
       assert.ok(!body.includes('3 oz. Cranberry Juice'), 'converted lines must not repeat the source-unit amount')
       assert.ok(!body.includes('Quantities are shown in the units the recipe was imported with'), 'the old imported-units note must be replaced')
-      assert.ok(!body.includes('Metric amounts are approximate conversions from the source; no serving scaling.'), 'the prior note wording must be replaced')
+      assert.ok(!body.includes('Metric amounts are approximate'), 'the metric note is removed')
       assert.ok(!body.includes('Original quantities are kept for every ingredient'), 'the prior below-section note wording must be replaced')
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `overflow at ${width}`)
       await page.getByRole('checkbox').first().check()

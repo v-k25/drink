@@ -1,5 +1,7 @@
 # Pre-Party redesign: implementation plan
 
+> **Superseded on 2026-11-01.** The owner replaced Pre-Party with Black Tie. See `docs/black-tie-redesign-plan.md`. This plan is kept as a record of R1–R6.
+
 Status: **design approved by the owner, 2026-10-30. All checkpoints (R1–R6) built, waiting for the owner to approve R6.**
 
 ## What this replaces

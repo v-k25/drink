@@ -211,7 +211,6 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
         </div> : <>
           {shown.spirit === 'wine' && <p className={styles.hint}>Our only wine recipe uses champagne.</p>}
           <RecipeList key={shown.spirit} items={cocktails} returnTo={returnTo} label={cocktails.length === 1 ? 'cocktail' : 'cocktails'} />
-          <p className={styles.hint}>Check quantities and equipment before you make anything.</p>
         </>}
       </section>
     </div>}
@@ -222,7 +221,7 @@ export default function Guided({ rows, initial }: { rows: RecipeRow[]; initial: 
           <h1 id="mocktail-title" ref={heading} tabIndex={-1}>Mocktails for you</h1>
           <p className={styles.resultFacts}>{view.tastes.length ? view.tastes.map(capitalize).join(' · ') : 'Any flavour'}</p>
         </div><button type="button" className={styles.backLink} onClick={() => navigate({ ...view, stage: 'taste' })}>Change answers</button></header>
-        <p className={styles.hint}>Only recipes with a reviewed alcohol-free path. Follow any note on a recipe; this isn’t a 0.0% claim.</p>
+        <p className={styles.hint}>Only recipes with a reviewed alcohol-free version. Not a 0.0% claim.</p>
         {mocktails.length ? <RecipeList items={mocktails} returnTo={returnTo} label="mocktails" /> : <div className={styles.stateCard}><h3>No matches just yet</h3><p>Try fewer flavours.</p></div>}
       </section>
     </div>}

@@ -51,6 +51,10 @@ async function main() {
   const increase = p => line(p).getByRole('button', { name: `Increase ${p.name} packs`, exact: true })
   const review = () => button('Review list').filter({ visible: true })
   const openMore = async () => {} // copy, print and start over are always visible since R4
+  // The plan lives in the bar and its sheet at every width (no desktop panel): open the sheet to read or change the list,
+  // close it to use the shelf behind it.
+  const openPlan = async () => { if (!await drawer.isVisible()) await button('View plan').click(); await drawer.waitFor({ state: 'visible' }) }
+  const closePlan = async () => { if (await drawer.isVisible()) await button('Close plan').click(); await drawer.waitFor({ state: 'hidden' }) }
   const inViewport = el => el.evaluate(node => { const r = node.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight })
   async function screenshots(name) {
     for (const width of [1440, 768, 390, 320]) {
@@ -78,7 +82,7 @@ async function main() {
   await page.locator('#setup-guests').fill('12'); await page.locator('#setup-budget').fill('5000.25')
   await page.getByLabel('Choose drinks myself').check(); await button('Continue').click()
   await page.getByRole('heading', { name: 'Build your list' }).waitFor()
-  assert.ok(await review().isDisabled(), 'an empty list blocks review')
+  await openPlan(); assert.ok(await review().isDisabled(), 'an empty list blocks review'); await closePlan()
   await chooseCategory('Beer'); assert.equal(await categoryButton('Beer').getAttribute('aria-current'), 'true')
   await chooseCategory(other.category)
   assert.equal(await categoryButton(other.category).getAttribute('aria-current'), 'true')
@@ -86,9 +90,11 @@ async function main() {
   await screenshots('categories')
   await chooseCategory('Beer')
   await add(b0).click(); await add(b1).click()
+  await openPlan()
   assert.equal(await lines().count(), 2)
   assert.equal(await quantity(b0).inputValue(), '1'); assert.equal(await quantity(b1).inputValue(), '1')
   await increase(b0).click(); assert.equal(await quantity(b0).inputValue(), '2')
+  await closePlan()
   // Client-only shelf facets: real loaded catalogue, unchanged deny-by-default upstream.
   const shelf = page.getByRole('region', { name: 'Beer selection', exact: true })
   const search = page.getByLabel('Search all drinks', { exact: true })
@@ -141,10 +147,10 @@ async function main() {
     await shelf.scrollIntoViewIfNeeded()
     await page.screenshot({ path: path.join(output, `filtered-shelf-${width}.png`), fullPage: true })
     if (width === 1440) {
-      await increase(b1).click(); assert.equal(await quantity(b1).inputValue(), '2')
-      await shelf.locator(`[data-product-id="${b1.id}"]`).dragTo(plan)
-      assert.equal(await quantity(b1).inputValue(), '3', 'searched native drag still merges a pack')
-      await quantity(b1).fill('1')
+      // Drag onto the plan panel is gone with the panel; changing a line in the sheet keeps the search.
+      await openPlan(); await increase(b1).click(); assert.equal(await quantity(b1).inputValue(), '2')
+      await quantity(b1).fill('1'); await closePlan()
+      assert.equal(await search.inputValue(), b1.name, 'the sheet keeps the search')
     }
     await search.fill('')
     await openFilters()
@@ -195,9 +201,10 @@ async function main() {
   page.off('request', countFilterRequests)
   assert.equal(filterRequests, 0, 'filtering uses only the already-loaded catalogue')
   await page.setViewportSize({ width: 1440, height: 900 })
-  console.log('PASS: shelf brand/size counts, keyboard toggles, facet OR/cross-facet AND, global search scope, category persistence, clear/reset, unchanged inventory, filtered native drag, client-only requests at 1440/390; 320 wrapping')
+  console.log('PASS: shelf brand/size counts, keyboard toggles, facet OR/cross-facet AND, global search scope, category persistence, clear/reset, unchanged inventory, plan edits keep the search, client-only requests at 1440/390; 320 wrapping')
 
   // Quantity validation and bounds: raw values are kept, flagged and block review.
+  await openPlan()
   for (const invalid of ['', '0', '1001', '1.5', 'text', '-1', '1e2', ' 2']) {
     await quantity(b0).fill(invalid)
     assert.equal(await quantity(b0).inputValue(), invalid)
@@ -211,37 +218,38 @@ async function main() {
   await quantity(b0).fill('2')
   await line(b1).getByRole('button', { name: `Remove ${b1.name}`, exact: true }).click()
   assert.equal(await lines().count(), 1); assert.equal(await quantity(b0).inputValue(), '2')
+  await closePlan()
   await add(b1).focus(); await page.keyboard.press('Enter')
-  assert.equal(await quantity(b1).inputValue(), '1')
-  const card = page.locator(`[data-product-id="${b1.id}"]`)
-  await card.dragTo(plan); assert.equal(await quantity(b1).inputValue(), '2', 'native desktop drag merges one pack')
-  const foreign = await page.evaluateHandle(() => { const d = new DataTransfer(); d.setData('text/uri-list', 'https://example.invalid'); d.setData('text/html', '<b>foreign</b>'); return d })
-  await plan.dispatchEvent('dragover', { dataTransfer: foreign }); assert.ok(!(await plan.getAttribute('class')).includes('validDrop'))
-  await plan.dispatchEvent('drop', { dataTransfer: foreign }); assert.equal(await quantity(b1).inputValue(), '2'); assert.equal(new URL(page.url()).origin, origin)
-  const forged = await page.evaluateHandle(id => { const d = new DataTransfer(); d.setData('application/x-allcheers-product', id); return d }, b1.id)
-  await plan.dispatchEvent('drop', { dataTransfer: forged }); assert.equal(await quantity(b1).inputValue(), '2', 'tag without an owned drag is ignored')
+  await openPlan(); assert.equal(await quantity(b1).inputValue(), '1')
+  // Native drag onto the plan was tested here; its drop target was the desktop panel, which the bar-and-sheet layout removed.
+  await increase(b1).click(); assert.equal(await quantity(b1).inputValue(), '2')
+  await closePlan()
   await chooseCategory(other.category); await add(other).click()
   await search.fill('no such product')
+  await openPlan()
   assert.equal(await lines().count(), 3, 'search retains inventory')
   const total = b0.pricePaise * 2 + b1.pricePaise * 2 + other.pricePaise
-  assert.ok((await plan.innerText()).includes(money(total))); assert.ok(await review().isEnabled())
+  assert.ok((await drawer.innerText()).includes(money(total))); assert.ok(await review().isEnabled())
+  await closePlan()
   await search.fill('')
 
   // Categories are browse-only; removing an item is immediate, announced and offers Undo.
+  await openPlan()
   await line(other).getByRole('button', { name: `Remove ${other.name}`, exact: true }).click()
   assert.equal(await lines().count(), 2, 'item removal preserves the other items')
   await button('Undo').click()
   assert.equal(await lines().count(), 3, 'Undo restores the item')
   assert.equal(await quantity(b0).inputValue(), '2'); assert.equal(await quantity(b1).inputValue(), '2')
   await quantity(b0).fill('1'); await quantity(b1).fill('1')
+  await closePlan()
   await chooseCategory('Beer')
   await screenshots('shelf-inventory')
   const linkage = await page.locator('input[id^="plan-quantity-"], input[id^="card-quantity-"]').evaluateAll(inputs => inputs.every(el => !/\s/.test(el.id) && el.getAttribute('aria-describedby').split(/\s+/).every(id => document.getElementById(id)?.textContent)))
   assert.ok(linkage)
   await button(`Show more Beer (${beer.length - PAGE} more)`).click()
   await page.evaluate(() => scrollTo(0, document.body.scrollHeight))
-  assert.ok(await inViewport(review()), 'Review stays reachable after a deep scroll')
-  await review().click()
+  assert.ok(await inViewport(button('View plan')), 'the plan bar (and so Review) stays reachable after a deep scroll')
+  await openPlan(); await review().click()
   await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
   assert.ok(await page.getByRole('heading', { name: 'Ready for the shops' }).evaluate(el => el === document.activeElement))
   await screenshots('final')
@@ -283,6 +291,7 @@ async function main() {
   // Budget-aware shelf: remaining/per-guest line, affordability tiers, escape hatch, within-budget chip.
   await page.setViewportSize({ width: 1440, height: 900 })
   await button('Edit list').click(); await page.getByRole('heading', { name: 'Build your list' }).waitFor()
+  await openPlan()
   await line(other).getByRole('button', { name: `Remove ${other.name}`, exact: true }).click()
   await quantity(b0).fill('1'); await quantity(b1).fill('1')
   const subtotal0 = b0.pricePaise + b1.pricePaise
@@ -296,9 +305,10 @@ async function main() {
   const lineQuantity = { [b0.id]: 1, [b1.id]: 1 }
   // Affordability rule (planner.tsx): a pack fits iff its price is within the remaining budget ignoring its own current line.
   const fits0 = p => p.pricePaise <= budgetPaise0 - (subtotal0 - (lineQuantity[p.id] ?? 0) * p.pricePaise)
-  const meter = page.locator('[aria-label="Budget meter"]')
+  const meter = drawer.locator('[aria-label="Budget meter"]')
   assert.ok((await meter.innerText()).includes(`${money(rem0)} left of budget`))
   assert.ok((await meter.innerText()).includes(`Budget per guest ${money(Math.round(budgetPaise0 / 12))}`))
+  await closePlan()
   const overBeer = beer.filter(p => !fits0(p))
   assert.ok(overBeer.length > 0 && beer.some(fits0), 'fixture must split into fitting and non-fitting beers')
   let limit0 = await shelf.locator('[data-product-id]').count() // show-more already used above persists per category
@@ -312,16 +322,18 @@ async function main() {
   const withinChip = () => filters.getByRole('group', { name: 'Within budget', exact: true }).getByRole('button', { name: /^Within budget \(\d+\)$/ })
   await openFilters(); assert.equal(await withinChip().count(), 1); await closeFilters()
   // Second add while it still fits: the announcement reports the post-add remaining budget.
+  await openPlan()
   await increase(b1).click()
   const afterAdd = subtotal0 + b1.pricePaise
   assert.ok((await status().innerText()).includes(afterAdd > budgetPaise0 ? `${money(afterAdd - budgetPaise0)} over budget` : `${money(budgetPaise0 - afterAdd)} left of budget`))
   await quantity(b1).fill('1')
+  await closePlan()
   // Within-budget chip: narrows to fitting, hides the escape hatch with the card, ANDs with the brand facet, keeps inventory.
   const fitting0 = beer.filter(fits0)
   await openFilters(); await withinChip().click(); await closeFilters()
   assert.deepEqual(await shelf.locator('[data-product-id]').evaluateAll(cards => cards.map(el => el.dataset.productId)), fitting0.slice(0, limit0).map(p => p.id), 'within-budget chip narrows to fitting products')
   assert.equal(await shelf.getByText('over remaining budget').count(), 0, 'escape hatch hidden with the card')
-  assert.equal(await lines().count(), 2, 'tier status never mutates inventory')
+  await openPlan(); assert.equal(await lines().count(), 2, 'tier status never mutates inventory'); await closePlan()
   await shelf.scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(output, 'within-budget-1440.png'), fullPage: true })
   await openFilters(); await filters.getByRole('group', { name: 'Brand', exact: true }).getByRole('button', { name: new RegExp(`^${escapeRegExp(b0.brand)} \\(`) }).click(); await closeFilters()
   assert.deepEqual(await shelf.locator('[data-product-id]').evaluateAll(cards => cards.map(el => el.dataset.productId)), fitting0.filter(p => p.brand === b0.brand).slice(0, PAGE).map(p => p.id), 'within budget ANDs with brand facet')
@@ -330,9 +342,11 @@ async function main() {
   assert.deepEqual(await shelf.locator('[data-product-id]').evaluateAll(cards => cards.map(el => el.dataset.productId)), beer.slice(0, limit0).map(p => p.id), 'clear-all resets filters/search but not the show-more limit')
   // Escape hatch: same add path, over-budget announcement, inventory retained.
   await overCard.getByRole('button', { name: `Add ${overBeer[0].name} anyway (over budget)`, exact: true }).click()
-  assert.equal(await quantity(overBeer[0]).inputValue(), '1', 'escape hatch uses the same add path')
   assert.ok((await status().innerText()).includes(`${money(subtotal0 + overBeer[0].pricePaise - budgetPaise0)} over budget`))
+  await openPlan()
+  assert.equal(await quantity(overBeer[0]).inputValue(), '1', 'escape hatch uses the same add path')
   assert.equal(await lines().count(), 3)
+  await closePlan()
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 844 })
     await shelf.scrollIntoViewIfNeeded(); await page.screenshot({ path: path.join(output, `budget-tiers-${width}.png`), fullPage: true })
@@ -366,8 +380,8 @@ async function main() {
   await touch.screenshot({ path: path.join(output, 'touch-drawer-390.png'), fullPage: true })
   await touchDrawer.getByRole('button', { name: 'Review list', exact: true }).tap(); await touch.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
   await mobile.close()
-  fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify({ result: 'PASS', pageErrors: errors, widths: [1440, 768, 390, 320], curl: 200, flows: 'siblings/mixed/repeat/invalid/bounds/removal/undo/native-drag/foreign-drop/keyboard/touch/dialog-focus/deep-scroll/export' }, null, 2))
-  console.log('PASS: inventory mixed/sibling arithmetic, bounds/invalid raw values, keyboard/native drag/foreign drop, item removal with undo, responsive screens, deep-scroll Review, touch drawer and exports; curl 200')
+  fs.writeFileSync(path.join(output, 'results.json'), JSON.stringify({ result: 'PASS', pageErrors: errors, widths: [1440, 768, 390, 320], curl: 200, flows: 'siblings/mixed/repeat/invalid/bounds/removal/undo/keyboard/touch/dialog-focus/deep-scroll/export' }, null, 2))
+  console.log('PASS: inventory mixed/sibling arithmetic, bounds/invalid raw values, keyboard add, item removal with undo, responsive screens, deep-scroll Review, touch drawer and exports; curl 200')
   assert.deepEqual(errors, [])
 }
 main().catch(e => { console.error(e); process.exitCode = 1 }).finally(async () => {

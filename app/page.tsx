@@ -1,7 +1,9 @@
 import EarlyAccessForm from './early-access/form'
 import MobileMenu from './mobile-menu'
 import { ArrowRightIcon } from './icons'
-import { bricolage, manrope } from './fonts'
+import { Wordmark } from './logo'
+import LightBringer from './light-bringer'
+import { archivo, manrope } from './fonts'
 import styles from './home.module.css'
 
 const PARTNER_EMAIL = 'partners@socifer.com'
@@ -9,7 +11,6 @@ const PARTNER_EMAIL = 'partners@socifer.com'
 const PARTNER_WHATSAPP = ''
 
 const navLinks = [
-  ['#how-it-works', 'How it works'],
   ['#for-venues', 'For venues'],
   ['/party-planner', 'Plan a party'],
   ['/find-my-drink', 'Find a drink'],
@@ -25,15 +26,16 @@ const steps = [
 
 export default function Home() {
   return (
-    <div className={`${styles.home} sf ${bricolage.variable} ${manrope.variable}`} data-theme="landing">
+    <div className={`${styles.home} sf ${archivo.variable} ${manrope.variable}`} data-theme="landing">
       <a className="skip-link" href="#main">Skip to content</a>
       <header className={styles.header} id="top">
         <div className={`${styles.wrap} ${styles.headerRow}`}>
-          <a className={styles.wordmark} href="#top" aria-label="Socifer home">socifer</a>
+          <a className={styles.wordmark} href="#top" aria-label="Socifer home"><Wordmark label={null} /></a>
           <nav className={styles.desktopNav} aria-label="Main navigation">
             {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
           </nav>
-          <a className={`sf-btn sf-btn--primary ${styles.navCta}`} href="#early-access">Join the list</a>
+          {/* Secondary here: the hero's Join the list is the one pink button on the first screen. */}
+          <a className={`sf-btn sf-btn--secondary ${styles.navCta}`} href="#early-access">Join the list</a>
           <MobileMenu className={styles.mobileMenu}>
             {navLinks.map(([href, label]) => <a href={href} key={href}>{label}</a>)}
             <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
@@ -42,15 +44,23 @@ export default function Home() {
       </header>
 
       <main id="main" tabIndex={-1}>
-        {/* Full-screen hero: the photo fills the first screen behind the copy. Wide crop from 768px, portrait crop below;
-            a plum gradient (left on desktop, bottom on phones) keeps the text on a near-solid ground. */}
-        <section className={styles.hero} aria-labelledby="hero-title">
+        {/* Full-screen hero: the photo fills the first screen behind the copy, in black and white. Wide crop from 768px,
+            portrait crop below; a black gradient (left on desktop, bottom on phones) keeps the text on a near-solid ground. */}
+        <section className={styles.hero} aria-labelledby="hero-title" data-light-hero>
           <picture className={styles.heroMedia}>
             <source media="(min-width: 768px)" type="image/avif" srcSet="/images/nightlife/hero-night-desktop-1600.avif 1600w, /images/nightlife/hero-night-desktop.avif 2400w" sizes="100vw" />
             <source media="(min-width: 768px)" type="image/webp" srcSet="/images/nightlife/hero-night-desktop-1600.webp 1600w, /images/nightlife/hero-night-desktop.webp 2400w" sizes="100vw" />
             <source type="image/avif" srcSet="/images/nightlife/hero-night-mobile-800.avif 800w, /images/nightlife/hero-night-mobile.avif 1280w" sizes="100vw" />
             <source type="image/webp" srcSet="/images/nightlife/hero-night-mobile-800.webp 800w, /images/nightlife/hero-night-mobile.webp 1280w" sizes="100vw" />
             <img src="/images/nightlife/hero-night-mobile-800.webp" alt="" width={800} height={1000} fetchPriority="high" decoding="async" />
+          </picture>
+          {/* Light-bringer: the same photo in colour, shown only inside a circle round the mouse (BT4). Same sources, so no extra download. */}
+          <picture className={styles.heroLight} aria-hidden="true">
+            <source media="(min-width: 768px)" type="image/avif" srcSet="/images/nightlife/hero-night-desktop-1600.avif 1600w, /images/nightlife/hero-night-desktop.avif 2400w" sizes="100vw" />
+            <source media="(min-width: 768px)" type="image/webp" srcSet="/images/nightlife/hero-night-desktop-1600.webp 1600w, /images/nightlife/hero-night-desktop.webp 2400w" sizes="100vw" />
+            <source type="image/avif" srcSet="/images/nightlife/hero-night-mobile-800.avif 800w, /images/nightlife/hero-night-mobile.avif 1280w" sizes="100vw" />
+            <source type="image/webp" srcSet="/images/nightlife/hero-night-mobile-800.webp 800w, /images/nightlife/hero-night-mobile.webp 1280w" sizes="100vw" />
+            <img src="/images/nightlife/hero-night-mobile-800.webp" alt="" width={800} height={1000} decoding="async" />
           </picture>
           <div className={`${styles.wrap} ${styles.heroInner}`}>
             <div className={styles.heroCopy}>
@@ -59,10 +69,9 @@ export default function Home() {
               <p className={styles.lede}>Book clubs and tables in Jaipur, then walk in with a pass. <b>We’re not taking bookings yet.</b></p>
               <div className={styles.cta}>
                 <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
-                <a className={`sf-btn sf-btn--secondary ${styles.secondary}`} href="#how-it-works">How it works</a>
+                <a className="sf-btn sf-btn--secondary" href="#how-it-works">How it works</a>
               </div>
             </div>
-            <p className={styles.credit}>Stock photo, not a Socifer venue</p>
           </div>
         </section>
 
@@ -77,23 +86,29 @@ export default function Home() {
           <h2 id="tools-title" className={styles.h2}>Free tools, no sign-up</h2>
           <div className={styles.tools}>
             {/* Each card shows a small, static preview of what the tool gives you. Decorative: the heading and line carry the meaning. */}
-            <a className={`${styles.tool} ${styles.toolYellow}`} href="/party-planner">
-              <div><h3>Party Planner</h3><p>Work out the drinks and the cost for a house party.</p></div>
-              <div className={styles.preview} aria-hidden="true">
-                <span className={styles.previewHead}>20 guests · ₹8,000</span>
-                <span className={styles.previewLine}><span>16× Lager, 330 ml</span><b>₹1,920</b></span>
-                <span className={styles.previewLine}><span>2× Blended Scotch</span><b>₹3,060</b></span>
-                <span className={`${styles.previewLine} ${styles.previewTotal}`}><span>Estimated total</span><b>₹4,980</b></span>
+            <a className={`${styles.tool} sf-lit`} href="/party-planner" data-light-card>
+              <picture className={styles.photo}><source type="image/avif" srcSet="/images/nightlife/planner-1200.avif" /><source type="image/webp" srcSet="/images/nightlife/planner-1200.webp" /><img src="/images/nightlife/planner-1200.webp" alt="" width={1200} height={800} loading="lazy" decoding="async" /></picture>
+              <div className={styles.toolBody}>
+                <div><h3>Party Planner</h3><p>Work out what to buy for your party and what it will cost.</p></div>
+                <div className={styles.preview} aria-hidden="true">
+                  <span className={styles.previewHead}>20 guests · ₹8,000</span>
+                  <span className={styles.previewLine}><span>16× Lager, 330 ml</span><b>₹1,920</b></span>
+                  <span className={styles.previewLine}><span>2× Blended Scotch</span><b>₹3,060</b></span>
+                  <span className={`${styles.previewLine} ${styles.previewTotal}`}><span>Estimated total</span><b>₹4,980</b></span>
+                </div>
+                <span className={styles.go}>Plan a party <ArrowRightIcon size={18} /></span>
               </div>
-              <span className={styles.go}>Plan a party <ArrowRightIcon size={18} /></span>
             </a>
-            <a className={`${styles.tool} ${styles.toolPlum}`} href="/find-my-drink">
-              <div><h3>Find My Drink</h3><p>Find the spirit that suits you, then 50 cocktails and mocktails to make at home.</p></div>
-              <div className={`${styles.preview} ${styles.previewQuiz}`} aria-hidden="true">
-                <span className={styles.previewHead}>How should it feel?</span>
-                <span className={styles.previewChips}><span>Light and fresh</span><span className={styles.previewPicked}>Smooth and rounded</span><span>Rich and warming</span></span>
+            <a className={`${styles.tool} sf-lit`} href="/find-my-drink" data-light-card>
+              <picture className={styles.photo}><source type="image/avif" srcSet="/images/nightlife/drink-1200.avif" /><source type="image/webp" srcSet="/images/nightlife/drink-1200.webp" /><img src="/images/nightlife/drink-1200.webp" alt="" width={1200} height={1800} loading="lazy" decoding="async" /></picture>
+              <div className={styles.toolBody}>
+                <div><h3>Find My Drink</h3><p>Find a spirit you’ll like, then browse 50 cocktails and mocktails to make at home.</p></div>
+                <div className={styles.preview} aria-hidden="true">
+                  <span className={styles.previewHead}>How should it feel?</span>
+                  <span className={styles.previewChips}><span>Light and fresh</span><span className={styles.previewPicked}>Smooth and rounded</span><span>Rich and warming</span></span>
+                </div>
+                <span className={styles.go}>Find a drink <ArrowRightIcon size={18} /></span>
               </div>
-              <span className={styles.go}>Find a drink <ArrowRightIcon size={18} /></span>
             </a>
           </div>
         </section>
@@ -102,7 +117,10 @@ export default function Home() {
           <div className={styles.venue}>
             <div><h2 id="venues-title" className={styles.h2}>Run a club in Jaipur?</h2><p className={styles.venueLine}>Partner with us.</p></div>
             <div className={styles.venueActions}>
-              <a className={`${styles.venueButton} ${styles.venueSolid}`} href={`mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent('Venue partnership')}`}>Email {PARTNER_EMAIL}</a>
+              <a className={`${styles.venueButton} ${styles.venueSolid}`} href={`mailto:${PARTNER_EMAIL}?subject=${encodeURIComponent('Venue partnership')}`} aria-label={`Mail us at ${PARTNER_EMAIL}`}>
+                <svg className={styles.mailIcon} viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></svg>
+                Mail us
+              </a>
               {PARTNER_WHATSAPP && <a className={`${styles.venueButton} ${styles.venueOutline}`} href={`https://wa.me/${PARTNER_WHATSAPP}`}>WhatsApp</a>}
             </div>
           </div>
@@ -120,25 +138,26 @@ export default function Home() {
           <div className={`sf-accordion ${styles.faq}`}>
             <details><summary>Are bookings live?</summary><div className="body">Not yet. Join the list and we’ll email you when they are.</div></details>
             <details><summary>Who confirms my booking?</summary><div className="body">The venue will. You’ll get your pass once they do.</div></details>
-            <details><summary>What will it cost?</summary><div className="body">We haven’t decided pricing or fees yet. We’ll share them before bookings open.</div></details>
-            <details><summary>Can I use the tools without an account?</summary><div className="body">Yes. Party Planner and Find My Drink are free and don’t need a login. Your plan stays on this device.</div></details>
-            <details><summary>Does Socifer sell alcohol?</summary><div className="body">No. We don’t sell or deliver alcohol, and we can’t tell you which shops carry what.</div></details>
-            <details id="responsible-use"><summary>Who is Socifer for?</summary><div className="body">Adults in Jaipur going out with friends, drinking or not. If you drink, follow local eligibility laws, drink responsibly and never drink and drive.</div></details>
+            <details><summary>What will it cost?</summary><div className="body">Pricing isn’t set yet. We’ll share it before bookings open.</div></details>
+            <details><summary>Can I use the tools without an account?</summary><div className="body">Yes. Both are free and need no login. Your plan stays on this device.</div></details>
+            <details><summary>Does Socifer sell alcohol?</summary><div className="body">No. We don’t sell or deliver alcohol.</div></details>
+            <details id="responsible-use"><summary>Who is Socifer for?</summary><div className="body">Adults in Jaipur going out with friends, whether they drink or not. If you drink, stick to the legal age, drink responsibly and never drink and drive.</div></details>
           </div>
         </section>
 
         <section className={styles.privacy} id="privacy" aria-labelledby="privacy-title">
           <h2 id="privacy-title" className={styles.h3}>Privacy</h2>
-          <p>We store your email, the city you joined for (Jaipur) and your consent record in Supabase, along with the signup source, to manage the early-access list and send the updates you agree to receive. Joining does not create a product account.</p>
+          <p>When you join the list, we keep your email and the city you chose. We only use them to email you when bookings open in Jaipur. Joining doesn’t create an account.</p>
         </section>
         </div>
+        <LightBringer />
       </main>
 
       <footer className={styles.footer}>
         <div className={styles.wrap}>
-          <a className={styles.wordmark} href="#top" aria-label="Socifer, back to top">socifer</a>
+          <a className={styles.wordmark} href="#top" aria-label="Socifer, back to top"><Wordmark label={null} /></a>
           <nav aria-label="Footer navigation"><a href="/party-planner">Plan a party</a><a href="/find-my-drink">Find a drink</a><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
-          <p>For adults. Drink responsibly and never drink and drive.<br />Stock photo, not a Socifer venue. Photo: <a href="https://unsplash.com/photos/people-jamming-while-man-singing-on-stage-KoKAXLKJwhk">Edward Cisneros / Unsplash</a>.</p>
+          <p>For adults. Drink responsibly and never drink and drive.<br />Stock photos, not Socifer venues. Photos: <a href="https://unsplash.com/photos/people-jamming-while-man-singing-on-stage-KoKAXLKJwhk">Edward Cisneros</a>, <a href="https://unsplash.com/photos/champagne-pouring-into-celebration-flutes-xzKtOI1Cnxo">Alexander Naglestad</a>, <a href="https://unsplash.com/photos/three-colorful-cocktails-arranged-on-a-dark-reflective-surface-RQIq-yBMPAA">mediha ekici</a> and <a href="https://unsplash.com/photos/a-dj-in-front-of-spotlights-on-a-stage-Xwq-AS-rIs8">Davide Brocca</a> on Unsplash.</p>
         </div>
       </footer>
     </div>

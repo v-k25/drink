@@ -1,4 +1,4 @@
-// Pre-Party landing (R2; was the B3 "Jaipur After Dark" landing): hero containment (incl. 200% text), 44px targets, local imagery,
+// Black Tie landing (BT3; was Pre-Party R2 and the B3 "Jaipur After Dark" landing): hero containment (incl. 200% text), 44px targets, local imagery,
 // keyboard menu/FAQ, skip link and routes. Complements home-design-check.cjs, which covers layout,
 // anchors, reduced motion and signup validation. Starts its own production server unless
 // BREWLIST_HOME_ORIGIN points at one already running; requires a completed `pnpm build`.
@@ -64,7 +64,8 @@ async function main() {
       assert.equal(await page.getByRole('link', { name: 'Join the list', exact: true }).first().getAttribute('href'), '#early-access', 'waitlist-only CTA')
       if (width >= 1024) assert.equal(await page.locator('header').getByRole('link', { name: 'Join the list', exact: true }).getAttribute('href'), '#early-access', 'header CTA')
       const localImages = page.locator('main img')
-      assert.equal(await localImages.count(), 1, 'expected only the local hero image')
+      // Hero (black and white, plus its colour copy for the light-bringer circle, BT4) and the two tool-card photos (BT3).
+      assert.equal(await localImages.count(), 4, 'expected the hero, its colour copy and the two tool photos')
       // Scroll each image into view before expecting it to have loaded.
       for (const image of await localImages.all()) {
         await image.scrollIntoViewIfNeeded()
@@ -93,7 +94,7 @@ async function main() {
         await menu.locator('summary').focus()
         await page.keyboard.press('Enter')
         const links = menu.locator('nav a')
-        assert.equal(await links.count(), 5, 'four destinations plus the launch-updates CTA')
+        assert.equal(await links.count(), 4, 'three destinations plus the launch-updates CTA')
         for (const link of await links.all()) {
           assert.ok(await link.isVisible())
           const box = await link.boundingBox()

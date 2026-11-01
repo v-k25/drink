@@ -1,8 +1,8 @@
-/* Age check (Pre-Party R3), shared by Party Planner and Find My Drink. The card itself is .sf-age in app/ui.css. */
+/* Age check (Pre-Party R3, Black Tie BT5), shared by Party Planner and Find My Drink. The card itself is .sf-age in app/ui.css. */
 .stage { display: grid; justify-items: center; align-content: start; grid-template-columns: minmax(0, 1fr); padding: clamp(24px, 8vw, 96px) 16px; }
 .card { width: 100%; min-width: 0; }
 .card :global(.sf-choice) { grid-template-columns: 24px minmax(0, 1fr); overflow-wrap: anywhere; }
-.card :global(.mark) { font-size: min(3.5rem, 13vw); overflow-wrap: anywhere; }
+.card :global(.mark) { font-size: min(2.75rem, 10.5vw); overflow-wrap: anywhere; }
 .card .lead { margin: 12px 0 20px; font: 500 1.0625rem/1.5rem var(--font-text); letter-spacing: 0; color: var(--text); }
 .lead:focus { outline: none; }
 .lead:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

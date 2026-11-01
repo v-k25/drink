@@ -1,14 +1,15 @@
 import localFont from 'next/font/local'
 
-// Pre-Party faces. A themed page (data-theme) puts `${bricolage.variable} ${manrope.variable}` on its root element;
+// Black Tie faces. A themed page (data-theme) puts `${archivo.variable} ${manrope.variable}` on its root element;
 // tokens.css maps --font-display and --font-text to these variables. Importing this file from a page is what makes
 // next/font preload the files on that route only.
-export const bricolage = localFont({
-  src: './fonts/BricolageGrotesque-latin.woff2',
+// Archivo is pinned to its widest width (wdth 125), weights 700-800, Latin plus ₹ (subset with fontTools).
+export const archivo = localFont({
+  src: './fonts/Archivo-latin.woff2',
   weight: '700 800',
   style: 'normal',
   display: 'swap',
-  variable: '--font-bricolage',
+  variable: '--font-archivo',
   fallback: ['Arial', 'Helvetica', 'sans-serif'],
   adjustFontFallback: 'Arial',
 })

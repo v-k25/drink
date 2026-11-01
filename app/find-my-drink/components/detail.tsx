@@ -26,12 +26,9 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
   // The stored original image is preferred when present; otherwise the
   // hand-authored SVG fallback renders decoratively.
   const resultsHref = safeResultsHref(returnTo)
-  // Metric display lines: each exact source line rewritten metric-first with a
-  // practical metric equivalent only where it can be safely converted (pure
-  // helper over the validated row; the raw quantities themselves are never
-  // rewritten in storage). The note labels the approximations near the
-  // checklist whenever any line converted or stayed ambiguous.
+  // Metric display lines: each source line rewritten metric-first where it can be safely converted; stored quantities are never rewritten.
   const metric = metricIngredients(recipe.ingredients)
+  // The note labels the approximations near the checklist whenever any line converted or stayed ambiguous.
   const quantityNote = metric.convertedCount > 0 || metric.ambiguousCount > 0
     ? 'Metric amounts are approximate. Where a conversion is unclear, the original unit is shown.'
     : null
@@ -71,8 +68,8 @@ export default function Detail({ recipe, related, returnTo }: { recipe: RecipeRo
         <RecipeImage key={`${recipe.id}:${recipe.imageUrl}`} row={recipe} width={1200} height={750} className={styles.heroImage} />
         <details className={styles.sourceContext}>
           <summary>Source &amp; recipe context</summary>
-          <p>Recipe facts from <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">{recipe.sourceName}</a>. Retrieved {recipe.sourceRetrievedAt.slice(0, 10)}.</p>
-          <p>We reviewed the wording of these steps. If allergens or caffeine aren’t listed, that doesn’t mean there are none.</p>
+          <p>Source: <a href={recipe.sourceUrl} target="_blank" rel="noreferrer">{recipe.sourceName}</a>.</p>
+          <p>Allergens and caffeine may not be listed.</p>
         </details>
         {related !== null && related.length > 0 && <section className={styles.related} aria-labelledby="related-title">
           <h2 id="related-title">More like this</h2>

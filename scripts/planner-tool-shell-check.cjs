@@ -1,5 +1,5 @@
 // Production browser check for the tool-redesign v2 planner frame (no repo network, no Supabase):
-//  - tool switcher aria-current, gate card, setup card, "Your plan" sheet auto-open after Suggest on mobile only,
+//  - tool switcher aria-current, gate card, setup card, "Your plan" sheet auto-open after Suggest at every width (the plan lives in the bar and its sheet),
 //  - paper receipt contrast, and the catalogue-unavailable "Try again" state.
 // Starts its own loopback servers: one with the in-memory upstream preload, one whose Supabase URL is unreachable
 // (per-process env only; no .env files are read or written). Set SHOT_DIR to also save screenshots.
@@ -66,34 +66,31 @@ async function main() {
       await page.getByRole('group', { name: /What would your guests like/ }).getByRole('button').first().click()
       await page.getByRole('button', { name: 'Generate list', exact: true }).click()
       const sheet = page.getByRole('dialog', { name: 'Your list' })
-      if (mobile) {
-        await sheet.waitFor()
-        await page.waitForFunction(() => document.activeElement && document.activeElement.id === 'inventory-title')
-        await shot(page, `plan-sheet-${width}`)
-        await page.getByRole('button', { name: 'Close plan', exact: true }).click()
-      } else {
-        await page.getByText('Starting list added').first().waitFor({ state: 'attached' }); await page.waitForTimeout(400)
-        assert.equal(await sheet.isVisible(), false, 'the plan sheet must not auto-open on desktop')
-      }
+      // The plan lives in the bar and its sheet at every width, so a generated list opens the sheet on desktop too.
+      await sheet.waitFor()
+      await page.waitForFunction(() => document.activeElement && document.activeElement.id === 'inventory-title')
+      await shot(page, `plan-sheet-${width}`)
+      await page.getByRole('button', { name: 'Close plan', exact: true }).click()
       await page.evaluate(() => scrollTo(0, 0)); await shot(page, `build-${width}`)
       // Over-budget build state, then filters sheet.
-      // The budget lives in the plan: the panel on desktop, the plan sheet on mobile.
-      if (mobile) await page.getByRole('button', { name: 'View plan', exact: true }).click()
+      // The budget lives in the plan sheet.
+      await page.getByRole('button', { name: 'View plan', exact: true }).click()
       await page.getByRole('button', { name: 'Edit guests and budget', exact: true }).click()
       const basics = page.getByRole('dialog', { name: 'Guests & budget' }); await basics.waitFor()
       await basics.getByLabel('Drinks budget').fill('9000'); await basics.getByRole('button', { name: 'Save changes', exact: true }).click(); await basics.waitFor({ state: 'hidden' })
-      if (mobile) { await shot(page, `plan-sheet-over-budget-${width}`); await page.getByRole('button', { name: 'Close plan', exact: true }).click() }
+      await shot(page, `plan-sheet-over-budget-${width}`); await page.getByRole('button', { name: 'Close plan', exact: true }).click()
       await page.evaluate(() => scrollTo(0, 0)); await shot(page, `over-budget-${width}`)
       await page.getByRole('button', { name: /^Filters/ }).click(); const filters = page.getByRole('dialog', { name: /filters/i }); await filters.waitFor(); await shot(page, `filters-sheet-${width}`)
       await filters.getByRole('button', { name: 'Done', exact: true }).click(); await filters.waitFor({ state: 'hidden' })
       // Review receipt: contrast of every text pair on the paper, and UI line contrast.
-      if (mobile) await page.getByRole('button', { name: 'View plan', exact: true }).click()
+      await page.getByRole('button', { name: 'View plan', exact: true }).click()
       await page.getByRole('button', { name: 'Review list', exact: true }).filter({ visible: true }).first().click()
       await page.getByRole('heading', { name: 'Ready for the shops' }).waitFor()
       await page.evaluate(() => scrollTo(0, 0)); await shot(page, `receipt-${width}`)
       const receipt = page.locator('#planner-content [class*="receipt"]').first()
       assert.match(await receipt.innerText(), /Over budget by/)
-      assert.equal(await page.getByText('Saved on this device only.').count(), 1)
+      // The review screen's own "Saved on this device only." line was removed; the Planner header still says it.
+      assert.equal(await page.getByText('Saved on this device · no account needed').count(), 1)
       const pairs = await page.evaluate(() => {
         const rootEl = document.querySelector('#planner-content [class*="receipt"]'); const found = []
         const bgOf = el => { for (let e = el; e; e = e.parentElement) { const c = getComputedStyle(e).backgroundColor; if (!/rgba?\(.*, 0\)$/.test(c) && c !== 'transparent') return c } return 'rgb(255, 255, 255)' }
@@ -129,7 +126,7 @@ async function main() {
       await bare.close()
     }
     assert.deepEqual(errors, [])
-    console.log('PASS: planner shell (tool switcher, gate card, setup stage, mobile-only plan sheet auto-open with heading focus, paper receipt contrast, catalogue-unavailable Try again)')
+    console.log('PASS: planner shell (tool switcher, gate card, setup stage, plan sheet auto-open with heading focus at every width, paper receipt contrast, catalogue-unavailable Try again)')
   } finally { await browser.close() }
 }
 main().catch(error => { console.error(error); process.exitCode = 1 }).finally(() => { for (const server of servers) server.kill() })

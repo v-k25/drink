@@ -16,3 +16,13 @@ used and modified for free, including commercial use, with attribution optional.
 This use retains visible attribution. The license prohibits implying endorsement
 by identifiable people or brands; the homepage’s credit clarifies the stock
 status and makes no venue or endorsement claim.
+
+## Section photos (2026-10-31)
+
+Downloaded with the owner's approval from Unsplash (free library, https://unsplash.com/license) at `?w=1600&q=85&fm=jpg`, resized to 1200px wide and saved as AVIF and WebP (quality 70, no grading) in `public/images/nightlife/`. No recognisable faces; stock only, not Socifer venues. Credited in the homepage footer.
+
+| Local file | Photographer | Source page | Used in |
+| --- | --- | --- | --- |
+| `planner-1200.{avif,webp}` | Alexander Naglestad | https://unsplash.com/photos/champagne-pouring-into-celebration-flutes-xzKtOI1Cnxo | Party Planner card |
+| `drink-1200.{avif,webp}` | mediha ekici | https://unsplash.com/photos/three-colorful-cocktails-arranged-on-a-dark-reflective-surface-RQIq-yBMPAA | Find My Drink card |
+| `club-1200.{avif,webp}` | Davide Brocca | https://unsplash.com/photos/a-dj-in-front-of-spotlights-on-a-stage-Xwq-AS-rIs8 | "Run a club in Jaipur?" block |

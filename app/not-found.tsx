@@ -5,7 +5,7 @@ import styles from './not-found.module.css'
 
 export const metadata: Metadata = { title: 'Page not found | Socifer' }
 
-// Themed 404 (Pre-Party R6 follow-up): the tool shell, plain copy and two ways back.
+// Themed 404 (Pre-Party R6 follow-up, Black Tie BT7): the tool shell, plain copy and two ways back.
 export default function NotFound() {
   return <div className={toolRoot} data-theme="tools">
     <a href="#main" className="skip-link">Skip to content</a>

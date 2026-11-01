@@ -33,7 +33,7 @@ export default function Pantry({ eligibleRows, matchingRows, returnTo }: { eligi
     {open && <div id="pantry-content" className={styles.pantryContent}>
       <h2 id="pantry-title">Ingredients I have</h2>
       <PantryChecklist eligibleRows={eligibleRows} selected={selected} onChange={setSelected} storageBlocked={storageBlocked} />
-      <p className={styles.hint}>Check quantities and equipment. Some recipes aren’t in ingredient matching yet. <Link href="#ordinary-results">Browse all matches</Link></p>
+      <p className={styles.hint}>Some recipes aren’t matched yet. <Link href="#ordinary-results">Browse all matches</Link></p>
       <div className={`${styles.pantryResultStatus} ${styles.srOnly}`} role="status" aria-live="polite">{selectedSet.size ? `${results.exact.length} ready to make; ${results.oneAway.length} one ingredient away.` : 'Tick ingredients to see matches.'}</div>
       {selectedSet.size > 0 && <>
         <h3>Ready to make · {results.exact.length}</h3>
@@ -78,8 +78,8 @@ export function PantryChecklist({ eligibleRows, selected, onChange, storageBlock
   const visible = vocabulary.filter(item => item.label.toLowerCase().includes(search.toLowerCase()))
   function toggle(id: string) { onChange(selected.includes(id) ? selected.filter(item => item !== id) : [...selected, id]) }
   return <div className={styles.pantryContent}>
-    <p className={styles.hint}>Tick exact forms, including ice and any required garnish. Optional ingredients aren’t required.</p>
-    {storageBlocked && <p role="status" className={styles.hint}>Browser storage is off. Your ticks work here but won’t be kept when you leave.</p>}
+    <p className={styles.hint}>Tick what you have, including ice and garnish.</p>
+    {storageBlocked && <p role="status" className={styles.hint}>Browser storage is off. Your ticks won’t be saved.</p>}
     {selected.length > 0 && <p className={styles.hint} role="status">{selected.length} ticked</p>}
     <div className={styles.pantrySelected} role="group" aria-label="Selected ingredients">
       {vocabulary.filter(item => selectedSet.has(item.ingredientId)).map(item => <button type="button" className={styles.filterActive} key={item.ingredientId} onClick={() => toggle(item.ingredientId)} aria-label={'Remove ' + item.label}>{item.label}<CloseIcon size={16} /></button>)}

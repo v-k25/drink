@@ -108,7 +108,7 @@ async function main() {
     assert.equal(await page.getByRole('link',{name:'Find beer in Party Planner'}).getAttribute('href'),'/party-planner')
     await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&spirit=wine')
     assert.equal(await spiritCards.count(),1)
-    assert.ok((await spiritCards.first().innerText()).includes('Mimosa'))
+    assert.ok((await spiritCards.first().textContent()).includes('Mimosa')) // card names render in capitals; read the source text
     await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail')
     await page.getByText('You skipped the questions, so this is a starting point.',{exact:true}).waitFor()
 
@@ -191,7 +191,7 @@ async function main() {
     await plain.getByRole('link',{name:'Browse all',exact:true}).click()
     await plain.getByLabel('Search by name or ingredient').fill('grapefruit')
     await plain.getByRole('button',{name:'Search',exact:true}).click()
-    const plainCards=await plain.locator('article').allInnerTexts()
+    const plainCards=await plain.locator('article').allTextContents() // names render in capitals; read the source text
     const grapefruitNames=fixture.filter(r=>/grapefruit/i.test(r.name)||r.ingredients.some(i=>/grapefruit/i.test(i))).map(r=>r.name)
     assert.ok(plainCards.length>0&&plainCards.every(t=>grapefruitNames.some(name=>t.includes(name))))
     await nojs.close()

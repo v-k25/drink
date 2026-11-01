@@ -1,5 +1,11 @@
 # Implementation progress
 
+### Hero photo: Pink lasers, 2026-11-01
+
+**Done (not committed).** The owner found the stage photo too flat and chose "Pink lasers" (A J., Unsplash, free licence) from a six-photo shortlist (https://claude.ai/artifact/12hW9tKX5F4QPy24TtS91G). The same `public/images/nightlife/hero-night-*` file names now hold it, so the markup is unchanged: 2400 and 1600px desktop, 1280×1600 and 800×1000 phone centre crops, AVIF and WebP made with sharp. Footer credit (`app/page.tsx`) and `docs/nightlife-image-credits.md` updated. The hero still shows it in black and white with the pink colour reveal under the cursor.
+
+**Checks actually run.** `tsc --noEmit` and `pnpm build` pass; `home-design-check` and `brewlist-home-check` pass on a production server; screenshots at 1440 (at rest and with the colour circle) and 390; LCP 72 ms locally, no page errors. The 2400px AVIF is 144 KB (was 79 KB); the browser picked the 1600px file at 1440.
+
 ### BT7 Black Tie regression and copy pass, 2026-11-01
 
 **Done (not committed).** The Black Tie redesign (BT1–BT7) is built. Site title "Socifer | Jaipur nights, booked" plus dark `theme-color` / `color-scheme` meta (`app/layout.tsx`); 404 restyled (`app/not-found.*`); `.sf-btn--ghost` bone and underlined (`app/ui.css`, used by the 404 and the age check); `planner-redesign-check` moved to the plan sheet; `brewlist-tools-style-check` font regex and `brewlist-home-check` comment updated; Pre-Party marked superseded (`docs/design/pre-party/SUPERSEDED.md`, banner on its plan, AGENTS.md). Details in `docs/black-tie-redesign-plan.md` (BT7).

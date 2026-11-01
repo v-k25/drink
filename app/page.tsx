@@ -157,7 +157,7 @@ export default function Home() {
         <div className={styles.wrap}>
           <a className={styles.wordmark} href="#top" aria-label="Socifer, back to top"><Wordmark label={null} /></a>
           <nav aria-label="Footer navigation"><a href="/party-planner">Plan a party</a><a href="/find-my-drink">Find a drink</a><a href="#faq">FAQ</a><a href="#for-venues">For venues</a><a href="#privacy">Privacy</a><a href="#responsible-use">Responsible use</a></nav>
-          <p>For adults. Drink responsibly and never drink and drive.<br />Stock photos, not Socifer venues. Photos: <a href="https://unsplash.com/photos/people-jamming-while-man-singing-on-stage-KoKAXLKJwhk">Edward Cisneros</a>, <a href="https://unsplash.com/photos/champagne-pouring-into-celebration-flutes-xzKtOI1Cnxo">Alexander Naglestad</a>, <a href="https://unsplash.com/photos/three-colorful-cocktails-arranged-on-a-dark-reflective-surface-RQIq-yBMPAA">mediha ekici</a> and <a href="https://unsplash.com/photos/a-dj-in-front-of-spotlights-on-a-stage-Xwq-AS-rIs8">Davide Brocca</a> on Unsplash.</p>
+          <p>For adults. Drink responsibly and never drink and drive.<br />Stock photos, not Socifer venues. Photos: <a href="https://unsplash.com/photos/group-of-people-enjoying-concert-r3XvSBEQQLo">A J.</a>, <a href="https://unsplash.com/photos/champagne-pouring-into-celebration-flutes-xzKtOI1Cnxo">Alexander Naglestad</a>, <a href="https://unsplash.com/photos/three-colorful-cocktails-arranged-on-a-dark-reflective-surface-RQIq-yBMPAA">mediha ekici</a> and <a href="https://unsplash.com/photos/a-dj-in-front-of-spotlights-on-a-stage-Xwq-AS-rIs8">Davide Brocca</a> on Unsplash.</p>
         </div>
       </footer>
     </div>

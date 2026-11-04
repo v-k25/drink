@@ -53,7 +53,7 @@ async function main() {
       assert.equal(await tools.getByRole('link', { name: 'Plan a party', exact: true }).getAttribute('aria-current'), 'page')
       assert.equal(await tools.getByRole('link', { name: 'Find a drink', exact: true }).getAttribute('aria-current'), null)
       assert.equal(await tools.getByRole('link', { name: 'Find a drink', exact: true }).getAttribute('href'), '/find-my-drink')
-      assert.equal(await page.getByText('Saved on this device · no account needed').isVisible(), !mobile, 'saved note shows from 768px up only')
+      assert.equal(await page.getByText('no account needed').count(), 0, 'the header no longer talks about accounts or saving')
       await shot(page, `gate-${width}`)
       // Required setup stage, then the separate suggestion step.
       await page.getByLabel(/I meet the legal drinking-age/).check(); await page.getByRole('button', { name: 'Continue to planner', exact: true }).click()
@@ -89,8 +89,6 @@ async function main() {
       await page.evaluate(() => scrollTo(0, 0)); await shot(page, `receipt-${width}`)
       const receipt = page.locator('#planner-content [class*="receipt"]').first()
       assert.match(await receipt.innerText(), /Over budget by/)
-      // The review screen's own "Saved on this device only." line was removed; the Planner header still says it.
-      assert.equal(await page.getByText('Saved on this device · no account needed').count(), 1)
       const pairs = await page.evaluate(() => {
         const rootEl = document.querySelector('#planner-content [class*="receipt"]'); const found = []
         const bgOf = el => { for (let e = el; e; e = e.parentElement) { const c = getComputedStyle(e).backgroundColor; if (!/rgba?\(.*, 0\)$/.test(c) && c !== 'transparent') return c } return 'rgb(255, 255, 255)' }

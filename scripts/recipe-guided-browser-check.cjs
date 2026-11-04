@@ -1,4 +1,4 @@
-// Fixture-only production check. Run after pnpm build, with the existing
+// Find a Drink and Surprise me, fixture-only production check (recipes and the planner_products snapshot). Run after pnpm build, with the existing
 // PLAYWRIGHT_MODULE and PLAYWRIGHT_CHROMIUM_EXECUTABLE environment settings.
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
@@ -31,6 +31,12 @@ async function main() {
         }
         return new Response(JSON.stringify(rows),{status:200,headers:{'content-type':'application/json','content-range':rows.length?'0-'+(rows.length-1)+'/'+rows.length:'*/0'}})
       }
+      if (u.origin === 'https://ojptrukzildmkilwponx.supabase.co' && u.pathname === '/rest/v1/planner_products' && (!init.method || init.method === 'GET')) {
+        const all = require(process.env.SOCIFER_TEST_CATALOGUE).map(p=>({id:p.id,category:p.category,name:p.name,brand:p.brand,size_ml:p.sizeMl,price_paise:p.pricePaise})).sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0)
+        const [start,end] = String(init.headers?.Range ?? '0-999').split('-').map(Number)
+        const page = all.slice(start,end+1)
+        return new Response(JSON.stringify(page),{status:206,headers:{'content-type':'application/json','content-range':start+'-'+(start+page.length-1)+'/'+all.length}})
+      }
       fs.appendFileSync(process.env.SOCIFER_TEST_REJECTED,u.origin+u.pathname+' '+(init.method||'GET')+'\n')
       throw Error('Unexpected upstream request')
     }
@@ -38,7 +44,7 @@ async function main() {
   fs.writeFileSync(preload, '(' + mockUpstream.toString() + ')()')
   const origin = 'http://127.0.0.1:3146'
   const server = spawn(process.execPath,['node_modules/next/dist/bin/next','start','--hostname','127.0.0.1','--port','3146'],{
-    cwd:root,env:{...process.env,NODE_OPTIONS:'--require='+preload,SOCIFER_TEST_RECIPES:input,SOCIFER_TEST_REJECTED:rejected,SUPABASE_URL:'https://ojptrukzildmkilwponx.supabase.co',SUPABASE_ANON_KEY:'test-only'},stdio:'ignore',
+    cwd:root,env:{...process.env,NODE_OPTIONS:'--require='+preload,SOCIFER_TEST_RECIPES:input,SOCIFER_TEST_REJECTED:rejected,SOCIFER_TEST_CATALOGUE:path.join(root,'app/party-planner/catalogue.json'),SUPABASE_URL:'https://ojptrukzildmkilwponx.supabase.co',SUPABASE_ANON_KEY:'test-only',SUPABASE_SECRET_KEY:'sb_secret_test-only'},stdio:'ignore',
   })
   let browser
   try {
@@ -53,74 +59,113 @@ async function main() {
     page.on('pageerror',error=>errors.push(error.message))
     const quiz=label=>page.getByRole('button',{name:new RegExp('^'+label)}).click()
     const title=page.locator('#spirit-title')
-    const spiritCards=page.locator('section[aria-labelledby="spirit-recipes"] article')
-    const mocktailCards=page.locator('section[aria-labelledby="mocktail-title"] article')
     const unresolvedMocktails=['mm-blood-orange-mocktail','mm-fig-mocktail','mm-quick-cranberry-mocktail','mm-vodka-mocktail']
     async function layout(label) {
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+' overflow')
       const small=await page.locator('main button, main a, main summary').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&r.height<43.5}).map(n=>n.textContent.trim()))
       assert.deepEqual(small,[],label+' targets')
     }
-    // Guide me is the spirit quiz (owner, 2026-10-31): drinking? taste, feel, serve, occasion, then the best match and its cocktails.
+    // Find a Drink (tools redesign, TR3): four questions on one page; the spirit, cocktail ideas and bottles update as you answer.
+    const legend=text=>page.locator('legend',{hasText:text})
+    const ideaLinks=page.locator('section[aria-labelledby="ideas-title"] article h3 a')
+    const bottlesTitle=page.locator('#bottles-title')
+    const prices=async(scope='section[aria-labelledby="bottles-title"] > ul:first-of-type')=>(await page.locator(scope+' li b').allTextContents()).map(t=>Number(t.replace(/[^\d]/g,'')))
     await page.goto(origin+'/find-my-drink')
-    await page.waitForTimeout(1500) // let the route cards hydrate before clicking
-    await page.getByRole('button',{name:/^Guide me/}).click()
-    await page.getByRole('heading',{name:'Are you drinking alcohol?'}).waitFor()
-    assert.equal(await page.locator('fieldset button[aria-pressed="true"]').count(),0,'no preselected answer')
+    await page.getByRole('heading',{name:'Find a Drink',level:1}).waitFor()
+    await page.waitForTimeout(1500) // let the answers hydrate before clicking
+    assert.equal(await page.locator('fieldset').first().locator('button[aria-pressed="true"]').count(),0,'no preselected alcohol answer')
+    assert.equal(await page.getByRole('button',{name:'No limit',exact:true}).getAttribute('aria-pressed'),'true','no budget limit until one is chosen')
+    for(const text of ['1 · Drinking alcohol?','2 · Which flavours? Up to two','3 · How do you like it?','4 · Budget for one bottle (750 ml)'])assert.equal(await legend(text).count(),1,text)
+    await page.getByText('Pick a flavour or two to narrow it down.',{exact:true}).waitFor()
     await quiz('Yes')
-    await page.getByRole('heading',{name:'Which flavours do you like?'}).waitFor()
     await page.getByRole('button',{name:'Herbal',exact:true}).click()
     await page.getByRole('button',{name:'Citrusy',exact:true}).click()
-    assert.ok(await page.getByRole('button',{name:'Sweet',exact:true}).isDisabled(),'two flavours at most')
-    await page.getByRole('button',{name:'Next',exact:true}).click()
-    await quiz('Light and fresh')
-    await quiz('With a mixer')
-    await quiz('Casual get-together')
-    await title.waitFor()
+    await page.getByRole('button',{name:'Sweet',exact:true}).click()
+    assert.equal(await page.getByRole('button',{name:'Herbal',exact:true}).getAttribute('aria-pressed'),'false','two flavours at most: the oldest drops')
+    await page.getByRole('button',{name:'Sweet',exact:true}).click()
+    await page.getByRole('button',{name:'Herbal',exact:true}).click()
+    await quiz('Light')
     assert.equal(await title.textContent(),'Gin')
-    assert.ok(await title.evaluate(n=>n===document.activeElement),'focus moves to the match')
-    await page.getByText('Herbal and citrusy, light and fresh, good with a mixer.',{exact:true}).waitFor()
-    assert.equal(await spiritCards.count(),3)
-    for(const text of await spiritCards.allInnerTexts())assert.match(text,/Gin/,'gin cocktails only')
-    await page.getByRole('button',{name:/^Show all \d+$/}).click()
-    assert.ok(await spiritCards.count()>3,'Show all lists every gin cocktail')
-    await page.getByRole('button',{name:'Show vodka instead',exact:true}).click()
-    assert.equal(await title.textContent(),'Vodka')
-    assert.equal(new URL(page.url()).searchParams.get('spirit'),'vodka')
+    await page.getByText('Citrusy and herbal, light and fresh, good with a mixer.',{exact:true}).waitFor()
+    for(const [key,value]of [['drink','cocktail'],['taste','citrusy,herbal'],['feel','light']])assert.equal(new URL(page.url()).searchParams.get(key),value,'url '+key)
+    assert.equal(new URL(page.url()).searchParams.get('serve'),null,'no separate serve answer')
+    assert.equal(await ideaLinks.count(),3,'three cocktail ideas')
+    for(const text of await page.locator('section[aria-labelledby="ideas-title"] article').allTextContents())assert.match(text,/Gin/i,'gin cocktails')
+    assert.deepEqual(await page.evaluate(()=>[...document.querySelectorAll('#spirit-title,#bottles-title,#ideas-title')].map(n=>n.id)),['spirit-title','bottles-title','ideas-title'],'ideas come after the bottles')
+    assert.match(await bottlesTitle.textContent(),/^\d+ gins$/)
+
+    await page.getByRole('button',{name:'Under ₹1,000',exact:true}).click()
+    assert.equal(new URL(page.url()).searchParams.get('budget'),'u1')
+    assert.match(await bottlesTitle.textContent(),/^\d+ gins under ₹1,000$/)
+    const cheap=await prices()
+    assert.ok(cheap.length>=2&&cheap.every(p=>p<1000),'bottles in the band')
+    await page.getByRole('heading',{name:'Just over your budget'}).waitFor()
+    const over=await prices('section[aria-labelledby="bottles-title"] > ul:last-of-type')
+    assert.ok(over.length===3&&over.every(p=>p>=930),'just over: three dearer bottles') // 700 ml bottles count by their 750 ml price
+    await page.getByLabel('Sort').selectOption('low')
+    const low=await prices()
+    assert.deepEqual(low,[...low].sort((a,b)=>a-b),'price low to high')
+    await page.getByLabel('Sort').selectOption('high')
+    const high=await prices()
+    assert.deepEqual(high,[...high].sort((a,b)=>b-a),'price high to low')
+    const total=cheap.length
+    await page.getByRole('button',{name:'Brand and size'}).click()
+    const dialog=page.getByRole('dialog',{name:'Brand and size'})
+    await dialog.waitFor()
+    const brandButton=dialog.locator('fieldset',{hasText:'Brand'}).getByRole('button').first()
+    const brandCount=Number((await brandButton.locator('span').textContent()).trim())
+    await brandButton.click()
+    await dialog.getByRole('button',{name:new RegExp('^Show '+brandCount+' bottles?$')}).click()
+    assert.equal(await bottlesTitle.textContent(),brandCount+' of '+total+' gins under ₹1,000')
+    assert.match(await page.getByRole('button',{name:/^Brand and size/}).textContent(),/· 1$/)
+    await page.getByRole('button',{name:/^Brand and size/}).click()
+    await dialog.getByRole('button',{name:'Clear',exact:true}).click()
+    await dialog.getByRole('button',{name:'Close',exact:true}).click()
+    assert.equal(await bottlesTitle.textContent(),total+' gins under ₹1,000')
+
+    const tryButton=page.getByRole('button',{name:/^Try .+ instead$/})
+    const other=(await tryButton.textContent()).replace(/^Try (.+) instead$/,'$1')
+    await tryButton.click()
+    assert.equal((await title.textContent()).toLowerCase(),other)
+    assert.equal(new URL(page.url()).searchParams.get('spirit'),other)
     await page.getByRole('button',{name:'Back to gin',exact:true}).click()
     assert.equal(new URL(page.url()).searchParams.get('spirit'),null)
-    await spiritCards.first().getByRole('link').click()
+
+    await ideaLinks.first().click()
     await page.getByRole('button',{name:'Start making'}).click()
     await page.getByRole('button',{name:'Next',exact:true}).click()
     await page.getByRole('button',{name:'View all steps'}).click()
     await page.getByRole('link',{name:'Back to results',exact:false}).click()
     await title.waitFor()
-    for(const [key,value]of [['drink','cocktail'],['taste','herbal,citrusy'],['feel','light'],['serve','mixer'],['occasion','casual-get-together']])assert.equal(new URL(page.url()).searchParams.get(key),value,'detail return '+key)
-    await page.getByRole('button',{name:'Change answers',exact:true}).click()
-    await page.getByRole('heading',{name:'Which flavours do you like?'}).waitFor()
-    assert.equal(await page.getByRole('button',{name:'Herbal',exact:true}).getAttribute('aria-pressed'),'true','answers are kept')
-    await page.getByRole('button',{name:'Back',exact:true}).click()
-    await page.getByRole('heading',{name:'Are you drinking alcohol?'}).waitFor()
+    for(const [key,value]of [['drink','cocktail'],['taste','citrusy,herbal'],['feel','light'],['budget','u1']])assert.equal(new URL(page.url()).searchParams.get(key),value,'detail return '+key)
+    assert.equal(await title.textContent(),'Gin')
 
-    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=bitter&feel=light&serve=neat&occasion=casual-get-together')
+    // The budget feeds the pick: a spirit needs two bottles in the band.
+    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=sweet&feel=rich&budget=u1')
+    assert.equal(await title.textContent(),'Whisky','one brandy under ₹1,000 is not enough')
+    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=sweet&feel=rich&budget=b4')
+    assert.equal(await title.textContent(),'Brandy')
+    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=bitter&budget=u1')
     assert.equal(await title.textContent(),'Beer')
-    await page.getByText('We don’t have beer recipes yet',{exact:true}).waitFor()
-    assert.equal(await page.getByRole('link',{name:'Find beer in Party Planner'}).getAttribute('href'),'/party-planner')
+    await page.getByText('We don’t have beer recipes yet.',{exact:true}).waitFor()
+    assert.match(await bottlesTitle.textContent(),/^\d+ beers under ₹1,000$/)
     await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&spirit=wine')
-    assert.equal(await spiritCards.count(),1)
-    assert.ok((await spiritCards.first().textContent()).includes('Mimosa')) // card names render in capitals; read the source text
-    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail')
-    await page.getByText('You skipped the questions, so this is a starting point.',{exact:true}).waitFor()
+    assert.equal(await ideaLinks.count(),1)
+    assert.ok((await ideaLinks.first().textContent()).includes('Mimosa')) // read the source text
+    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=citrusy&budget=o4&serve=neat&occasion=party')
+    await title.waitFor() // old serve and occasion links still open
 
-    await page.goto(origin+'/find-my-drink?mode=guided&stage=type')
+    // Not drinking: no spirit, no how or budget questions, mocktail ideas only.
+    await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=fruity&feel=light&budget=b2')
     await page.waitForTimeout(1500)
-    await quiz('No')
-    await page.getByRole('button',{name:'Fruity',exact:true}).click()
-    await page.getByRole('button',{name:'Show mocktails',exact:true}).click()
-    await page.getByRole('heading',{name:'Mocktails for you'}).waitFor()
-    assert.equal(await mocktailCards.count(),3)
-    for(const id of await mocktailCards.evaluateAll(nodes=>nodes.map(n=>n.id.slice(7))))assert.ok(id.startsWith('mm-')&&!unresolvedMocktails.includes(id),'reviewed mocktails only')
+    await quiz('No, mocktails')
     assert.equal(await page.locator('#spirit-title').count(),0,'no spirit for mocktails')
+    assert.equal(await legend('How do you like it?').count()+await legend('Budget for one bottle').count()+await bottlesTitle.count(),0,'how, budget and bottles hidden')
+    await page.getByRole('heading',{name:'Mocktail ideas'}).waitFor()
+    const mocktailIds=await ideaLinks.evaluateAll(nodes=>nodes.map(n=>decodeURIComponent(new URL(n.href).pathname.split('/').pop())))
+    assert.ok(mocktailIds.length>0&&mocktailIds.length<=6)
+    for(const id of mocktailIds)assert.ok(id.startsWith('mm-')&&!unresolvedMocktails.includes(id),'reviewed mocktails only')
+    for(const key of ['feel','budget'])assert.equal(new URL(page.url()).searchParams.get(key),null,'mocktails drop '+key)
 
     await page.evaluate(()=>sessionStorage.clear())
     await page.goto(origin+'/find-my-drink?mode=random&randomDrink=mocktail&drink=cocktail&base=gin&q=no-such-recipe&pick=dn-negroni')
@@ -135,25 +180,32 @@ async function main() {
     }
     await page.getByRole('button',{name:'Start again',exact:true}).click()
     assert.equal(await page.getByRole('region',{name:'Random recipe'}).locator('article').count(),1)
-    await page.getByRole('button',{name:/All ways to find a drink/}).click()
-    await page.getByRole('button',{name:/^Guide me/}).click()
-    await page.getByRole('heading',{name:'Are you drinking alcohol?'}).waitFor()
-    assert.equal(new URL(page.url()).searchParams.get('q'),'no-such-recipe','answers survive switching modes')
+    await page.getByRole('link',{name:/Back to Find a Drink/}).click()
+    await page.getByRole('heading',{name:'Find a Drink',level:1}).waitFor()
+    assert.equal(new URL(page.url()).searchParams.get('base'),'gin','answers survive switching modes')
 
     for(const width of [360,390,768,1024,1440]){
       await page.setViewportSize({width,height:844})
-      for(const url of ['?mode=guided&stage=type','?mode=guided&drink=cocktail&stage=feel','?mode=guided&drink=cocktail&taste=herbal,citrusy&feel=light&serve=mixer','?mode=guided&drink=mocktail&taste=fruity']){
+      for(const url of ['','?mode=guided&drink=cocktail&taste=herbal,citrusy&feel=light&budget=u1','?mode=guided&drink=cocktail&taste=bitter&feel=rich&budget=o4','?mode=guided&drink=mocktail&taste=fruity']){
         await page.goto(origin+'/find-my-drink'+url)
         await page.locator('h1').waitFor()
         await layout(url+' '+width)
       }
-      await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=herbal,citrusy&feel=light&serve=mixer')
+      await page.goto(origin+'/find-my-drink?mode=guided&drink=cocktail&taste=herbal,citrusy&feel=light&budget=u1')
       await title.waitFor()
+      if(width>=1024){ // the answers stay in view while the results scroll
+        await page.evaluate(()=>scrollTo(0,1200))
+        const top=await page.getByRole('region',{name:'Your answers'}).evaluate(n=>n.getBoundingClientRect().top)
+        assert.ok(await page.evaluate(()=>scrollY>600)&&top>=76&&top<=110,width+' sticky panel at '+top)
+        await page.evaluate(()=>scrollTo(0,0))
+      }
       await page.screenshot({path:path.join(output,'results-'+width+'.png'),fullPage:true})
+      await page.goto(origin+'/find-my-drink?mode=guided&drink=mocktail&taste=fruity')
+      await page.screenshot({path:path.join(output,'mocktails-'+width+'.png'),fullPage:true})
     }
     for(const width of [390,1440]){
       await page.setViewportSize({width,height:500})
-      for(const url of ['?mode=guided&drink=cocktail&stage=occasion','?mode=guided&drink=cocktail&taste=herbal,citrusy&feel=light&serve=mixer']){
+      for(const url of ['','?mode=guided&drink=cocktail&taste=herbal,citrusy&feel=light&budget=u1']){
         await page.goto(origin+'/find-my-drink'+url)
         await page.locator('h1').waitFor()
         await page.evaluate(()=>document.documentElement.style.fontSize='200%')
@@ -188,7 +240,7 @@ async function main() {
     await nojs.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort())
     const plain=await nojs.newPage()
     await plain.goto(origin+'/find-my-drink')
-    await plain.getByRole('link',{name:'Browse all',exact:true}).click()
+    await plain.getByRole('link',{name:'Browse all recipes',exact:true}).click()
     await plain.getByLabel('Search by name or ingredient').fill('grapefruit')
     await plain.getByRole('button',{name:'Search',exact:true}).click()
     const plainCards=await plain.locator('article').allTextContents() // names render in capitals; read the source text
@@ -200,7 +252,7 @@ async function main() {
     assert.equal(await page.getByRole('heading',{name:'Surprise me'}).count(),0,'eligibility gate')
     assert.deepEqual(errors,[],'no page errors')
     assert.ok(!fs.existsSync(rejected),'fixture rejects unexpected requests and all writes')
-    console.log('PASS: spirit quiz (drinking, taste, feel, serve, occasion, match, alternative, no-recipe match, mocktails), detail return, random, gate, invalid, no-JS, storage; fixture production at five widths, short 200% text. Screenshots: '+output)
+    console.log('PASS: Find a Drink (four questions, live spirit, cocktail ideas, bottles by budget, sort, brand and size filter, just over, try instead, budget-driven pick, no-recipe match, mocktails), detail return, random, gate, invalid, no-JS, storage; fixture production at five widths, short 200% text. Screenshots: '+output)
   } finally {
     await browser?.close()
     server.kill()

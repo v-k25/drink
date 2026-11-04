@@ -1,5 +1,50 @@
 # Implementation progress
 
+### Find a Drink brought into the main checkout; home cards one section, 2026-11-04
+
+**Done (not committed).** The owner saw the old Find a Drink on localhost because TR1–TR6 existed only as uncommitted work in `.claude/worktrees/tools-redesign-b08afe`. Copied from there: `app/catalogue/`, `app/find-my-drink/` (`page.tsx`, `discovery.ts`, `spirit.ts`, `bottles.ts`, `finder.module.css`, `components/finder.tsx`, `components/guided.tsx`), `scripts/spirit-check.cjs`, `scripts/recipe-guided-browser-check.cjs`, `scripts/catalogue-normalise-check.cjs`, `docs/tools-redesign-plan.md`. **Not copied:** the Party Planner redesign (`planner.tsx`, `planner.module.css`, `list.ts`, its checks), the worktree's `AGENTS.md`, and its older copies of the loader, `ui.css` and accounts, which are behind this checkout.
+
+Home tool cards (`app/home.module.css`, owner suggestion): one section, the photo fills the card behind the text under a dark wash; about 380px tall on desktop, was about 640px. Card text is bone instead of muted.
+
+**Checks actually run.** `tsc --noEmit`, `corepack pnpm build`, `spirit-check`, `catalogue-normalise-check`, `recipe-guided-check`, `recipe-guided-browser-check`, `recipe-discovery-check`, `recipe-detail-check`, `recipe-pantry-browser-check`, `recipe-browse-check`, `brewlist-home-check`, `brewlist-tools-style-check`, `design-polish-check`, `home-design-check`: PASS. Measured card text against the photo in its brightest state (hovered, colour) at 1280, 768, 390 and 320px: worst pixel 6.65:1.
+
+### Loading screen: Pour, 2026-11-04
+
+**Done (not committed).** The owner disliked the pink halo and the face, then a travelling-light version, and picked "Pour" from six live previews (pour, bass drop, equaliser, neon sign, token flip, drip). `LoadingScreen` (`app/logo.tsx`) is now only the logo's O on black, 88px: the O dim (24% pink), filling with pink like a drink being poured, level rising for 1.9 s with a wave on top, holding, then draining; 2.8 s a round (`.sf-pour-*` in `app/ui.css`, a wave path clipped to the O). Removed: `HornLoader`, the eyes, mouth, fangs, tongue, tail, pink glow and sweeping line. The first-visit intro holds for one fill (2.05 s) and is gone by ~2.8 s. It still plays under reduced motion. The small `.sf-spinner` on busy buttons is unchanged.
+
+**Checks actually run.** On a production server with reduced motion on: the intro, a header link, a recipe link and the Planner's first load all show this screen with both animations running and their own clip reference; the intro is gone afterwards; no page errors. `tsc --noEmit`, `corepack pnpm build`, `account-check`, `home-design-check`, `design-polish-check`, `planner-tool-shell-check`, `planner-retry-production-check`, `brewlist-home-check`, `recipe-detail-check`, `recipe-guided-browser-check`, `early-access-check`: PASS. Not rerun: the other Planner and recipe browser checks (those pages changed only in the loader).
+
+### Accounts: Create account refuses an existing email, 2026-11-04
+
+**Built (not committed); waiting on one owner step.** Owner chose the database check. `supabase/migrations/20261104_socifer_account_exists.sql` adds `socifer_account_exists(address)`: security definer, true only for a login with Socifer's consent record, callable only by `service_role`. `sociferAccountExists` in `app/account/session.ts` calls it with the existing server-only `SUPABASE_SECRET_KEY` (no new key). On the first send, Create account checks before contacting Supabase Auth: an existing account gets "You already have an account with this email. Sign in" on the form, with no code and no email; if the check can't run, nothing is sent and the form shows the generic error. The earlier "You already have an account" code screen is removed.
+
+**Owner step, done 2026-11-04:** the Supabase connection here is read-only, so the owner ran the migration in the Supabase SQL editor.
+
+**Checks actually run.** `tsc --noEmit`, `corepack pnpm build`, `account-check`, `planner-tool-shell-check`, `brewlist-home-check`: pass. Live function: the secret key gets an answer (200, false for an unknown address), the public key gets 401. Real form on a production server with an existing account's address, in its own and upper case: refused with the message and a Sign in link, no code field, and the login's sent-email timestamps and the account count unchanged.
+**Not verified:** Create account with a brand-new email through to a real code, because that sends mail and adds an account; it is left for the owner's test.
+
+### Accounts: existing vs new email, landing Sign in, saved note removed, 2026-11-04
+
+**Done (not committed).** Cause of the owner's report, from `auth.users` and the Supabase edge logs: the tests used a login created on 2026-08-17 with no Socifer consent, because this project is shared with EkQuarter. No account was created by the sign-in, and `/otp` with `create_user: true` signs existing logins in without saying so.
+- Sign in: an unknown email already got no code; the message now links to Create an account. A login with no Socifer consent record (`isSociferAccount`) is signed back out after the code and gets the same message.
+- Create account: the first send asks without create. If an account exists, that call has emailed its code, so the code screen says "You already have an account" and the code signs them in. If not, it sends again with create. A shared-project login that goes through here gets its ticked consent recorded on verify.
+- Landing header: `AccountLink` in the desktop nav and the phone menu (plain link, no second pink). The tool header's "Saved on this device · no account needed" note and `.saved` CSS are gone; `planner-tool-shell-check` now asserts it is absent.
+
+**Checks actually run.** `tsc --noEmit`, `corepack pnpm build`, `account-check`: pass. On `next start`: both landing navs show Sign in, `/party-planner` has no note, and sign-in with an unknown test address shows the message and link, sends no code and adds no `auth.users` row.
+Afterwards `planner-tool-shell-check`, `brewlist-home-check` (menu count updated for Sign in) and `home-design-check` were run on the production build: PASS.
+**Not verified:** the screens by screenshot (the pane wouldn't draw), and any path that sends a real code: create account with a new or existing email, and the shared-login sign-out. The worktree `tools-redesign-b08afe` still has the old copies of these files.
+
+### Accounts A1–A2: sign in and sign up with an email code, 2026-11-01
+
+**Done (not committed).** Plan and owner decisions in `docs/accounts-plan.md`. Supabase Auth on the existing project over REST with the server-only `SUPABASE_URL` / `SUPABASE_ANON_KEY` (same pattern as the early-access action, which is untouched). No new dependency, env variable, migration or Supabase setting.
+- `app/account/rules.ts` (checks, messages, `PHONE_CODES_ENABLED = false`), `session.ts` (server-only DAL, httpOnly `sf_access`/`sf_refresh`, `cache()`d `currentAccount`), `actions.ts` (send, resend, verify, change address, sign out; honeypot; 5 wrong codes per send), `auth-form.tsx`, `auth-page.tsx`, `account/page.tsx`, `account/refresh/route.ts`, `account-link.tsx`, `account.module.css`; routes `/sign-in`, `/sign-up`, `/account`.
+- Tool header: "Sign in" / "Account" link (outline, lights pink on hover), from the non-secret `sf_signed_in` hint cookie, so the Planner stays static. On phones it sits right-aligned on a second header row.
+- Black Tie: Archivo caps title, one pink action per screen (Send code / Continue / Plan a party), `.sf-spinner` on busy buttons, square inputs, errors inline with `aria-live`, code field `autocomplete="one-time-code"`.
+- `scripts/account-check.cjs`: rules, phone normalisation, masking, Supabase error mapping, and that the form never imports the session layer.
+
+**Checks actually run.** `tsc --noEmit`, `corepack pnpm build` (verify-deps warn), `git diff --check`, `account-check`: pass. On `next start`: `/account` signed out redirects to `/sign-in`; header shows Sign in; empty submit shows the email error; sign-in with an unknown address made a real Supabase call (`create_user: false`, nothing created or sent) and showed "couldn't find an account"; the code screen (reached through the honeypot path, so no email was sent) focuses the code field, counts down the resend, rejects a short code, and a wrong 6-digit code went to Supabase and showed "That code didn't work"; no tokens visible to page JavaScript; 375px with no overflow; no server errors. planner-tool-shell, design-polish, brewlist-tools-style: PASS.
+**Not yet verified:** a real code end to end (sign up, sign in, sign out, refresh). It needs the owner to change the Supabase "Magic link" and "Confirm signup" email templates to show `{{ .Token }}` (P1) and to name a test inbox. Phone codes untested (off).
+
 ### Loading animation: the winking devil O, 2026-11-01
 
 **Done (not committed).** "The Devil's Circle", from the owner's reference board after several rejected drafts (a draw-in outline, a cartoon face, slit-eye line art, a separate mascot head). The logo's pink horned O wakes up: sharp bone eyes with a straight angled top edge and black slit pupils open across the middle of the hole, each spilling over its edge onto the pink; a black grin with two bone fangs opens in the ring below the hole; a red tongue with a groove drops past the ring's bottom edge with a little bounce (placement measured from the board), a pointed pink tail curls out, the right eye winks, then everything resets to the plain O (3.6 s loop, sharp ease). Built flat in the site colours (the board's brushed metal would blur at 60px); the logo's own horns are kept. Under reduced motion it is the plain pink O, still.

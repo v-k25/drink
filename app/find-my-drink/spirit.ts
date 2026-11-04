@@ -31,6 +31,17 @@ export const SERVE_LABELS: Record<Serve, [string, string]> = {
   cocktail: ['In a cocktail', 'Mixed with a few ingredients'],
   neat: ['Neat or on ice', 'Just the drink'],
 }
+// Find a Drink (tools redesign, 2026-11-03) asks one "How do you like it?" question instead of Feel and Serve.
+// Each answer stands for a feel and the serve that goes with it, so the existing weights score it unchanged.
+export const HOW_SERVE: Record<Feel, Serve> = { light: 'mixer', smooth: 'cocktail', rich: 'neat' }
+export const HOW_LABELS: Record<Feel, [string, string]> = {
+  light: ['Light', 'With a mixer: soda, tonic, juice'],
+  smooth: ['Smooth', 'In a cocktail'],
+  rich: ['Rich', 'Neat or on ice'],
+}
+export const howAnswers = (tastes: readonly Taste[], how: Feel | null): SpiritAnswers =>
+  ({ tastes, feel: how, serve: how ? HOW_SERVE[how] : null, occasion: null })
+
 export const OCCASION_LABELS: Record<QuizOccasion, string> = {
   'casual-get-together': 'Casual get-together',
   'after-dinner': 'After dinner',

@@ -2,6 +2,7 @@ import audit from './discovery-audit.json'
 import { pantryMatches, pantrySignature, reviewedPantry, type PantryRequirement } from './pantry'
 import type { PreparationMethod, RecipeRow } from './queries'
 import { FEELS, QUIZ_OCCASIONS, SERVES, SPIRITS, type Feel, type QuizOccasion, type Serve, type Spirit } from './spirit'
+import { BANDS, type Band } from './bottles'
 
 export const TASTES = ['citrusy', 'fruity', 'sweet', 'bitter', 'herbal', 'creamy'] as const
 export type Taste = typeof TASTES[number]
@@ -28,6 +29,8 @@ export type DiscoveryState = Preferences & {
   // Spirit quiz answers (Guide me). `occasion` above keeps only the reviewed recipe occasions; `quizOccasion` also allows party.
   // `spirit` is set when someone switches to the runner-up instead of the best match.
   feel: Feel | null; serve: Serve | null; quizOccasion: QuizOccasion | null; spirit: Spirit | null
+  // Find a Drink (tools redesign): `feel` also carries the "How do you like it?" answer; `budget` is the bottle budget band.
+  budget: Band | null
 }
 const methods = ['shake', 'stir', 'blend', 'build', 'batch', 'hot'] as const
 const first = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v
@@ -43,7 +46,7 @@ export function parseDiscovery(params: Record<string, string | string[] | undefi
   const pick = first(params.pick)
   const randomType = first(params.randomDrink)
   const stage = first(params.stage)
-  const feel = first(params.feel), serve = first(params.serve), spirit = first(params.spirit)
+  const feel = first(params.feel), serve = first(params.serve), spirit = first(params.spirit), budget = first(params.budget)
   return {
     mode: mode === 'guided' || mode === 'random' || mode === 'browse' ? mode : ['q','drink','type','method','max','pick','cursor'].some(k => params[k] !== undefined) ? 'browse' : 'entry',
     randomType: randomType === 'cocktail' || randomType === 'mocktail' ? randomType : null,
@@ -57,6 +60,7 @@ export function parseDiscovery(params: Record<string, string | string[] | undefi
     feel: FEELS.includes(feel as Feel) ? feel as Feel : null,
     serve: SERVES.includes(serve as Serve) ? serve as Serve : null,
     spirit: type !== 'mocktail' && SPIRITS.includes(spirit as Spirit) ? spirit as Spirit : null,
+    budget: type !== 'mocktail' && BANDS.includes(budget as Band) ? budget as Band : null,
     q: (first(params.q) ?? '').slice(0,120), onlyIngredients: first(params.ingredients) === 'only',
     stage: !type || stage === 'type' ? 'type' : GUIDED_STAGES.includes(stage as GuidedStage) ? stage as GuidedStage : 'results',
     pick: pick && /^[A-Za-z0-9._~-]{1,200}$/.test(pick) ? pick : null,
@@ -74,6 +78,7 @@ export function discoveryHref(state: DiscoveryState): string {
   if (state.feel) p.set('feel', state.feel)
   if (state.serve) p.set('serve', state.serve)
   if (state.spirit && state.type !== 'mocktail') p.set('spirit', state.spirit)
+  if (state.budget && state.type !== 'mocktail') p.set('budget', state.budget)
   if (state.method) p.set('method', state.method)
   if (state.q) p.set('q', state.q)
   if (state.onlyIngredients) p.set('ingredients', 'only')

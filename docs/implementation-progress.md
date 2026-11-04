@@ -1,5 +1,9 @@
 # Implementation progress
 
+### Party Planner redesign brought into the main checkout, 2026-11-04
+
+**Done.** Owner asked to add the redesigned Planner to PR #8. Taken from `claude/tools-redesign-b08afe` (`5e1eb81`): `app/party-planner/planner.tsx`, `planner.module.css`, `list.ts`, `scripts/party-planner-list-check.cjs`, `scripts/planner-list-browser-check.cjs`, and that branch's `design-polish-check`, `brewlist-tools-style-check` and `AGENTS.md`. Removed the five checks it replaces: `planner-inventory-check`, `planner-redesign-check`, `planner-tool-shell-check`, `planner-ux-check`, `planner-ux-production-check`. The branch's older loader, `ui.css` and accounts were not taken. Also removed "Your plan is still saved on this device" from the catalogue-unavailable screen, per the owner's earlier request.
+
 ### Find a Drink brought into the main checkout; home cards one section, 2026-11-04
 
 **Done (not committed).** The owner saw the old Find a Drink on localhost because TR1–TR6 existed only as uncommitted work in `.claude/worktrees/tools-redesign-b08afe`. Copied from there: `app/catalogue/`, `app/find-my-drink/` (`page.tsx`, `discovery.ts`, `spirit.ts`, `bottles.ts`, `finder.module.css`, `components/finder.tsx`, `components/guided.tsx`), `scripts/spirit-check.cjs`, `scripts/recipe-guided-browser-check.cjs`, `scripts/catalogue-normalise-check.cjs`, `docs/tools-redesign-plan.md`. **Not copied:** the Party Planner redesign (`planner.tsx`, `planner.module.css`, `list.ts`, its checks), the worktree's `AGENTS.md`, and its older copies of the loader, `ui.css` and accounts, which are behind this checkout.

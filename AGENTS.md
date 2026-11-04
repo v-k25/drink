@@ -2,7 +2,7 @@
 
 ## Repository layout
 
-This is a Next.js 16 App Router + React 19 + Tailwind 4 + TypeScript project. The product is **Socifer**, a Jaipur-first, pre-launch nightlife site: the landing page (`app/page.tsx`, `app/home.module.css`), Party Planner (`app/party-planner/`, catalogue from `planner_products` via `catalogue-server.ts`) and Find My Drink (`app/find-my-drink/`, on the retained `drinks` recipe table). The preserved backend action is `app/early-access/actions.ts`.
+This is a Next.js 16 App Router + React 19 + Tailwind 4 + TypeScript project. The product is **Socifer**, a Jaipur-first, pre-launch nightlife site: the landing page (`app/page.tsx`, `app/home.module.css`), Party Planner (`app/party-planner/`, catalogue from `planner_products` via `catalogue-server.ts`, list logic in `list.ts`) and Find My Drink (`app/find-my-drink/`: spirit-first questions, bottles from `planner_products` and cocktail ideas from the retained `drinks` recipe table). Both tools read the catalogue through the clean-up layer in `app/catalogue/normalise.ts`. The preserved backend action is `app/early-access/actions.ts`.
 
 Read `docs/implementation-progress.md` first and update it after every completed checkpoint. The approved roadmap is `docs/socifer-product-plan.md` (backlog B0–B12).
 
@@ -62,6 +62,8 @@ Implemented + acceptance criteria met + verification passed + no known blockers 
 ## Scope and design
 
 Follow the Black Tie design approved on 2026-11-01. The plan and checkpoints (BT0–BT7) are in `docs/black-tie-redesign-plan.md`; it supersedes the Pre-Party design (`docs/pre-party-redesign-plan.md`, `docs/design/pre-party/`, kept for reference only). In brief: Archivo (wide caps headings) + Manrope; black, bone and champagne with one rani pink per screen; Little Horns logo; square corners; dark everywhere, tools included; black-and-white landing photos with the light-bringer colour reveal, full-colour photos in the tools; minimal, plain copy; WCAG 2.2 AA. Do not implement design changes ahead of their checkpoint.
+
+The tools redesign (Find a Drink and Party Planner, owner-approved 2026-11-03) is planned in `docs/tools-redesign-plan.md` (checkpoints TR0–TR6), from the design canvas https://claude.ai/artifact/StAsgBCuAU9hw1xq9N8xtN.
 
 ## Graphify
 

@@ -1,45 +1,71 @@
 'use client'
 
-import { useEffect, useRef, useState, type DragEvent } from 'react'
-import { formatMoney, parseBudget, planText, PRICE_LABEL, type Plan, type PlannerInput, type Product } from './model'
-import { suggestibleCategories, suggestStartingList, SUGGEST_LABEL, type Suggestion } from './suggest'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { formatMoney, parseBudget, planText, PRICE_LABEL, type Plan, type Product } from './model'
+import { CHIPS, CHIP_LABELS, DRINK_STYLES, DRINK_STYLE_LABELS, buildList, optionsFor, prePick, toPlannerInput, type Chip, type DrinkStyle } from './list'
 import { confirmEligibility, getCatalogue, validatePlan } from './actions'
+import { TASTES, type Taste } from '../find-my-drink/discovery'
+import { brandOf, cleanName, normaliseCatalogue } from '../catalogue/normalise'
+import { sizeLabel } from '../find-my-drink/bottles'
 import AgeCheck from '../age-check'
-import { CloseIcon } from '../icons'
 import { ToolFooter, ToolHeader, toolFonts, toolRoot } from '../tool-shell'
 import { LoadingScreen, Wordmark } from '../logo'
 import styles from './planner.module.css'
 
-const iconProps = { viewBox: '0 0 24 24', width: 20, height: 20, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true, focusable: false }
-const InfoIcon = () => <svg {...iconProps}><circle cx="12" cy="12" r="10" /><path d="M12 16v-5M12 8h.01" /></svg>
-const TrashIcon = () => <svg {...iconProps}><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" /></svg>
-const PencilIcon = () => <svg {...iconProps} width={16} height={16}><path d="M4 20h4L19 9l-4-4L4 16z" /></svg>
-const GripIcon = () => <svg {...iconProps} width={16} height={16} fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.6" /><circle cx="15" cy="6" r="1.6" /><circle cx="9" cy="12" r="1.6" /><circle cx="15" cy="12" r="1.6" /><circle cx="9" cy="18" r="1.6" /><circle cx="15" cy="18" r="1.6" /></svg>
-// Display-only: whole rupees drop ".00". Exact formatMoney strings stay available as visually hidden text where asserted.
+// Party Planner (tools redesign, TR5): one page. Guests and budget, two optional taste questions, eight category chips,
+// then the shopping list straight away (category, bottles, line total, total against the budget) and three real bottles
+// to choose from per category. The list itself is list.ts; Share, Copy and Print are checked on the server (validatePlan).
+// The draft stays on this device; there is no account save.
+
 const shortMoney = (paise: number) => formatMoney(paise).replace(/\.00$/, '')
-// Per-guest figures are estimates, so they show whole rupees everywhere.
 const perGuestMoney = (paise: number) => shortMoney(Math.round(paise / 100) * 100)
 const validCount = (value: string) => /^\d+$/.test(value) && Number(value) >= 1 && Number(value) <= 1000
-const estimateNote = 'Estimated from our Jaipur catalogue. Store prices and availability may differ.'
-type Confirmation = { kind: 'new' } | { kind: 'suggest' }
-const dragType = 'application/x-allcheers-product'
-const draftKey = 'allcheers_planner_draft'
+const budgetValue = (value: string) => parseBudget(value.replace(/[,\s₹]/g, ''))
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
+const draftKey = 'socifer_planner_draft_v2'
+// The pre-redesign draft: only its guests and budget carry over.
+const oldDraftKey = 'allcheers_planner_draft'
 const eligibilityError = 'Confirm eligibility to continue.'
-// Illustrative art by category name, so new or renamed catalogue categories still match.
-const categoryArt: [RegExp, string][] = [[/beer/i, 'beer'], [/champagne|sparkling/i, 'champagne'], [/wine/i, 'wine'], [/ready to drink|rtd|premix/i, 'rtd'], [/liqueur|aperitif/i, 'liqueur'], [/sake/i, 'sake'], [/scotch|single malt/i, 'scotch'], [/whisk|bourbon/i, 'whisky'], [/vodka/i, 'vodka'], [/\brum\b/i, 'rum'], [/\bgin\b/i, 'gin'], [/tequila|agave|mezcal/i, 'tequila'], [/brandy|cognac/i, 'brandy']]
-const artFor = (category: string) => `/images/drinks/${categoryArt.find(([pattern]) => pattern.test(category))?.[1] ?? 'bottle'}.svg`
-const confirmationCopy = (kind: Confirmation['kind'], items: number) => kind === 'new'
-  ? { title: 'Start a new plan?', description: 'This clears your party and your list on this device.', action: 'Start new plan', keep: 'Keep this plan' }
-  : { title: 'Replace your list?', description: `Your ${items} ${items === 1 ? 'item' : 'items'} will be swapped for a suggested list. You can undo right after.`, action: 'Replace list', keep: 'Keep my list' }
 const copiedMessage = 'List copied. Paste it into WhatsApp or notes.'
-const stageLabels = [['Set your party', 'Party'], ['Build your list', 'List'], ['Ready for the shops', 'Shops']]
-function Stages({ current, narrow }: { current: number, narrow?: boolean }) {
-  return <ol className={`sf-stages ${styles.stages} ${narrow ? styles.stagesNarrow : ''}`.trim()} aria-label="Progress">{stageLabels.map(([long, short], index) => <li key={long} className={index < current ? 'done' : undefined} aria-current={index === current ? 'step' : undefined}><span className={styles.stageLong}>{long}{index < current && <span className={styles.srOnly}> (done)</span>}</span><span className={styles.stageShort} aria-hidden="true">{short}</span></li>)}</ol>
+const DEFAULT_GUESTS = '20', DEFAULT_BUDGET = '10000'
+// The server checks the list with the raw catalogue rows; the copied, shared and printed list shows the clean names.
+const tidy = (plan: Plan): Plan => ({ ...plan, lines: plan.lines.map(line => { const name = cleanName(line.brand || line.name); return { ...line, name, brand: brandOf(name) } }) })
+
+type Draft = {
+  guests: string; budget: string; tastes: Taste[]; style: DrinkStyle | null
+  // null: the chips follow the answers. picks are bottle ids, so a catalogue change can't point a pick at the wrong bottle.
+  chips: Chip[] | null; picks: Partial<Record<Chip, string>>; quantities: Partial<Record<Chip, number>>
+}
+const emptyDraft: Draft = { guests: DEFAULT_GUESTS, budget: DEFAULT_BUDGET, tastes: [], style: null, chips: null, picks: {}, quantities: {} }
+
+function readDraft(): Draft {
+  const draft = { ...emptyDraft }
+  try {
+    const raw = localStorage.getItem(draftKey)
+    const value: unknown = raw ? JSON.parse(raw) : null
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      const d = value as Record<string, unknown>
+      if (typeof d.guests === 'string' && (d.guests === '' || validCount(d.guests))) draft.guests = d.guests
+      if (typeof d.budget === 'string' && (d.budget === '' || budgetValue(d.budget) !== null)) draft.budget = d.budget
+      if (Array.isArray(d.tastes)) draft.tastes = d.tastes.filter((t): t is Taste => TASTES.includes(t as Taste)).slice(0, 2)
+      if (DRINK_STYLES.includes(d.style as DrinkStyle)) draft.style = d.style as DrinkStyle
+      if (Array.isArray(d.chips)) draft.chips = CHIPS.filter(chip => (d.chips as unknown[]).includes(chip))
+      const record = (input: unknown, ok: (value: unknown) => boolean) => input && typeof input === 'object' && !Array.isArray(input)
+        ? Object.fromEntries(Object.entries(input).filter(([key, item]) => CHIPS.includes(key as Chip) && ok(item))) : {}
+      draft.picks = record(d.picks, item => typeof item === 'string' && item.length <= 200)
+      draft.quantities = record(d.quantities, item => Number.isSafeInteger(item) && (item as number) >= 1 && (item as number) <= 1000)
+      return draft
+    }
+    const old: unknown = JSON.parse(localStorage.getItem(oldDraftKey) ?? 'null')
+    if (old && typeof old === 'object') {
+      const o = old as Record<string, unknown>
+      if (typeof o.guests === 'string' && validCount(o.guests)) draft.guests = o.guests
+      if (typeof o.budget === 'string' && budgetValue(o.budget) !== null) draft.budget = o.budget
+    }
+  } catch { }
+  return draft
 }
 
-
-// Loading screen while the catalogue loads: the shared branded screen (LoadingScreen), the same as every other page load.
-// Decorative; the sr-only status is the accessible announcement.
 function PlannerLoading() {
   return <div className="sf-nav-loading sf-nav-loading--now">
     <LoadingScreen />
@@ -47,134 +73,43 @@ function PlannerLoading() {
   </div>
 }
 
-function Receipt({ plan, printing = false }: { plan: Plan; printing?: boolean }) {
+function Receipt({ plan }: { plan: Plan }) {
   const groups = [...new Set(plan.lines.map(line => line.category))]
-  const perGuest = perGuestMoney(plan.totalPaise / plan.guests)
-  // On screen the receipt is the done moment of the Planner (BT8): one short pink glow when it appears.
-  return <div className={printing ? styles.receipt : `${styles.receipt} sf-glow-once`}>
-    {printing && <p className={styles.printBrand}><Wordmark /></p>}
-    <h3 className={printing ? styles.printTitle : styles.receiptTitle}>{printing ? 'Socifer party list' : 'Party list'}</h3>
+  return <div className={styles.receipt}>
+    <p className={styles.printBrand}><Wordmark /></p>
+    <h3 className={styles.printTitle}>Socifer party list</h3>
     <p className={styles.receiptMeta}>{plan.guests} guests · budget {shortMoney(plan.budgetPaise)}</p>
     {groups.map(category => <div className={styles.receiptGroup} key={category}><h4>{category}</h4>{plan.lines.filter(line => line.category === category).map(line => <div className={styles.receiptLine} key={line.id}>
       <span><strong>{line.quantity}× {line.name}</strong><small>{line.sizeMl} ml · {shortMoney(line.pricePaise)} each</small></span><b>{shortMoney(line.subtotalPaise)}</b>
     </div>)}</div>)}
     <div className={styles.receiptTotal}><span>Estimated total</span><b>{shortMoney(plan.totalPaise)}</b></div>
-    <p className={styles.receiptStatus}><span className={plan.remainingPaise < 0 ? styles.overBudget : styles.goodBudget}>{plan.remainingPaise < 0 ? `Over budget by ${shortMoney(-plan.remainingPaise)}` : 'Within budget'}</span> · {perGuest} per guest</p>
-    <p className={styles.disclaimer}>{PRICE_LABEL}. Estimate only; shops may differ. Alcohol only.{printing ? ' For adults. Drink responsibly and never drink and drive.' : ''}</p>
+    <p className={styles.receiptStatus}>{plan.remainingPaise < 0 ? `Over budget by ${shortMoney(-plan.remainingPaise)}` : 'Within budget'} · {perGuestMoney(plan.totalPaise / plan.guests)} per guest</p>
+    <p className={styles.disclaimer}>{PRICE_LABEL}. Estimate only; shops may differ. Alcohol only. For adults. Drink responsibly and never drink and drive.</p>
   </div>
 }
 
 export default function Planner() {
-  const [step, setStep] = useState(0)
-  const [eligible, setEligible] = useState(false)
-  const [products, setProducts] = useState<Product[]>([])
-  const [guests, setGuests] = useState('')
-  const [budget, setBudget] = useState('')
-  const [servings, setServings] = useState('')
-  const [nonDrinkers, setNonDrinkers] = useState('0')
-  const [suggestCategories, setSuggestCategories] = useState<string[]>([])
-  const [suggestionOpen, setSuggestionOpen] = useState(false)
-  const [setupError, setSetupError] = useState(false)
-  const [startMode, setStartMode] = useState<'suggest' | 'self'>('suggest')
-  const [setupComplete, setSetupComplete] = useState(false)
-  const [guestNotice, setGuestNotice] = useState(false)
-  const [search, setSearch] = useState('')
-  const [categoryPickerOpen, setCategoryPickerOpen] = useState(false)
-  const categoryDialog = useRef<HTMLDialogElement>(null)
-  const categoryTrigger = useRef<HTMLButtonElement>(null)
-  const suggestionHeading = useRef<HTMLHeadingElement>(null)
-  const [estimate, setEstimate] = useState<Suggestion | null>(null)
-  const [suggestMessage, setSuggestMessage] = useState('')
-  const pendingSuggestion = useRef<Suggestion | null>(null)
+  const [products, setProducts] = useState<Product[] | null>(null)
   const [checkingGate, setCheckingGate] = useState(true)
+  const [eligible, setEligible] = useState(false)
   const [unavailable, setUnavailable] = useState(false)
   const [retrying, setRetrying] = useState(false)
   const [retryFailures, setRetryFailures] = useState(0)
-  const unavailableHeading = useRef<HTMLHeadingElement>(null)
-  const [categories, setCategories] = useState<string[]>([])
-  const [inventory, setInventory] = useState<Product[]>([])
-  const [quantities, setQuantities] = useState<Record<string, string>>({})
-  const [activeCategory, setActiveCategory] = useState('')
-  const [limits, setLimits] = useState<Record<string, number>>({})
-  const [brands, setBrands] = useState<Record<string, string[]>>({})
-  const [sizes, setSizes] = useState<Record<string, number[]>>({})
-  const [within, setWithin] = useState<Record<string, boolean>>({})
-  const [announcement, setAnnouncement] = useState('')
-  const [dragOver, setDragOver] = useState(false)
-  const draggedId = useRef<string | null>(null)
-  const inventoryDialog = useRef<HTMLDialogElement>(null)
-  const inventoryTrigger = useRef<HTMLButtonElement>(null)
-  const [drawerOpen, setDrawerOpen] = useState(false)
-  const [needsReview, setNeedsReview] = useState<Record<string, boolean>>({})
-  const [plan, setPlan] = useState<Plan | null>(null)
+  const [draft, setDraft] = useState<Draft>(emptyDraft)
+  const [hydrated, setHydrated] = useState(false)
   const [busy, setBusy] = useState(false)
   const pending = useRef(false)
   const [message, setMessage] = useState('')
-  const [copyFallback, setCopyFallback] = useState(false)
+  const [copyText, setCopyText] = useState('')
+  const [printPlan, setPrintPlan] = useState<Plan | null>(null)
   const heading = useRef<HTMLHeadingElement>(null)
-  const [confirmation, setConfirmation] = useState<Confirmation | null>(null)
-  const confirmationDialog = useRef<HTMLDialogElement>(null)
-  const confirmationAction = useRef<Confirmation | null>(null)
-  const confirmationTrigger = useRef<HTMLElement | null>(null)
-  const cancelButton = useRef<HTMLButtonElement>(null)
-  const focusHeading = useRef(false)
-  const [filterDialogOpen, setFilterDialogOpen] = useState(false)
-  const filterDialog = useRef<HTMLDialogElement>(null)
-  const filterTrigger = useRef<HTMLButtonElement>(null)
-  const filterHeading = useRef<HTMLHeadingElement>(null)
-  const [basicsOpen, setBasicsOpen] = useState(false)
-  const basicsDialog = useRef<HTMLDialogElement>(null)
-  const basicsTrigger = useRef<HTMLElement | null>(null)
-  const infoDialog = useRef<HTMLDialogElement>(null)
-  const infoTrigger = useRef<HTMLElement | null>(null)
-  const basicsHeading = useRef<HTMLHeadingElement>(null)
-  const basicsSnapshot = useRef({ guests: '', budget: '' })
-  const shelfRef = useRef<HTMLElement>(null)
-  const [toast, setToast] = useState<{ message: string; restore: () => void } | null>(null)
-  const toastTimer = useRef<number | null>(null)
+  const unavailableHeading = useRef<HTMLHeadingElement>(null)
 
-  const previousStep = useRef(step)
-  const quantityInputs = useRef<Record<string, HTMLInputElement | null>>({})
-  const [hydrated, setHydrated] = useState(false)
-  const [draftRestored, setDraftRestored] = useState(false)
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(draftKey)
-      if (raw) {
-        const draft = JSON.parse(raw)
-        const ok = typeof draft === 'object' && draft !== null
-          && Array.isArray(draft.categories) && draft.categories.every((category: unknown) => typeof category === 'string')
-          && Array.isArray(draft.inventory) && draft.inventory.every((item: any) => item && typeof item.id === 'string' && typeof item.category === 'string' && typeof item.name === 'string' && typeof item.brand === 'string' && Number.isFinite(item.sizeMl) && item.sizeMl > 0 && Number.isFinite(item.pricePaise) && item.pricePaise > 0)
-          && draft.quantities && typeof draft.quantities === 'object' && !Array.isArray(draft.quantities) && Object.values(draft.quantities).every((value: unknown) => typeof value === 'string')
-          && draft.needsReview && typeof draft.needsReview === 'object' && !Array.isArray(draft.needsReview) && Object.values(draft.needsReview).every((value: unknown) => typeof value === 'boolean')
-          && typeof draft.activeCategory === 'string'
-        if (ok) {
-          const restoredGuests = typeof draft.guests === 'string' && (draft.guests === '' || validCount(draft.guests)) ? draft.guests : ''
-          const restoredBudget = typeof draft.budget === 'string' && (draft.budget === '' || parseBudget(draft.budget) !== null) ? draft.budget : ''
-          setGuests(restoredGuests); setBudget(restoredBudget); setCategories(draft.categories); setInventory(draft.inventory); setQuantities(draft.quantities); setNeedsReview(draft.needsReview); setActiveCategory(draft.activeCategory); setDraftRestored(draft.inventory.length > 0)
-          setSetupComplete(validCount(restoredGuests) && parseBudget(restoredBudget) !== null)
-          if (typeof draft.servings === 'string' && (draft.servings === '' || validCount(draft.servings))) setServings(draft.servings)
-          if (typeof draft.nonDrinkers === 'string' && /^\d+$/.test(draft.nonDrinkers)) setNonDrinkers(draft.nonDrinkers)
-          if (Array.isArray(draft.suggestCategories) && draft.suggestCategories.every((value: unknown) => typeof value === 'string')) setSuggestCategories(draft.suggestCategories)
-          if (draft.estimate && typeof draft.estimate === 'object' && draft.estimate.ok === true
-            && Number.isSafeInteger(draft.estimate.guests) && Number.isSafeInteger(draft.estimate.drinkers)
-            && Number.isSafeInteger(draft.estimate.nonDrinkers) && Number.isSafeInteger(draft.estimate.servingsPerDrinker)
-            && Array.isArray(draft.estimate.categories) && draft.estimate.categories.every((category: unknown) => typeof category === 'string')
-            && Number.isSafeInteger(draft.estimate.totalServings) && Number.isFinite(draft.estimate.coveredServings) && draft.estimate.coveredServings >= 0 && draft.estimate.coveredServings <= 1_000_000 && Number.isSafeInteger(draft.estimate.totalPaise)
-            && Number.isSafeInteger(draft.estimate.perGuestPaise) && Array.isArray(draft.estimate.notes)
-            && draft.estimate.notes.every((note: unknown) => typeof note === 'string')
-            && Array.isArray(draft.estimate.lines) && draft.estimate.lines.every((line: any) => line && typeof line.productId === 'string' && typeof line.category === 'string' && Number.isSafeInteger(line.quantity) && Number.isSafeInteger(line.subtotalPaise))) setEstimate(draft.estimate)
-          if (draft.guestNotice === true) setGuestNotice(true)
-        } else localStorage.removeItem(draftKey)
-      }
-    } catch { }
-    setHydrated(true)
-  }, [])
+  useEffect(() => { setDraft(readDraft()); setHydrated(true) }, [])
   useEffect(() => {
     if (!hydrated) return
-    const savedBasics = basicsOpen ? basicsSnapshot.current : { guests, budget }
-    try { localStorage.setItem(draftKey, JSON.stringify({ ...savedBasics, categories, inventory, quantities, needsReview, activeCategory, servings, nonDrinkers, suggestCategories, estimate, guestNotice })) } catch { }
-  }, [guests, budget, categories, inventory, quantities, needsReview, activeCategory, servings, nonDrinkers, suggestCategories, estimate, guestNotice, basicsOpen])
+    try { localStorage.setItem(draftKey, JSON.stringify(draft)) } catch { }
+  }, [draft, hydrated])
   // Skip the age check when the eligibility cookie is already set (the server action checks it).
   useEffect(() => {
     let live = true
@@ -182,86 +117,19 @@ export default function Planner() {
     return () => { live = false }
   }, [])
   useEffect(() => { if (retryFailures) unavailableHeading.current?.focus() }, [retryFailures])
+  // Print once the server-checked list has rendered into the print-only receipt.
   useEffect(() => {
-    if (previousStep.current !== step) heading.current?.focus()
-    previousStep.current = step
-  }, [step])
-  useEffect(() => { if (step === 1 && setupComplete && suggestionOpen) suggestionHeading.current?.focus() }, [step, setupComplete, suggestionOpen])
-  useEffect(() => {
-    if (confirmation) { confirmationDialog.current?.showModal(); cancelButton.current?.focus() }
-    else if (focusHeading.current) { focusHeading.current = false; heading.current?.focus() }
-  }, [confirmation])
-  useEffect(() => () => { if (toastTimer.current) window.clearTimeout(toastTimer.current) }, [])
-
-  const budgetPaise = parseBudget(budget)
-  const basicsValid = validCount(guests) && budgetPaise !== null
-  const allCategories = [...new Set([...products.map(item => item.category), ...categories])]
-  const productFor = (id: string) => products.find(item => item.id === id)
-  const lineCost = (id: string) => validCount(quantities[id] || '') ? (productFor(id)?.pricePaise ?? 0) * Number(quantities[id]) : 0
-  const subtotal = inventory.reduce((total, item) => total + lineCost(item.id), 0)
-  const packs = inventory.reduce((total, item) => total + (validCount(quantities[item.id] || '') ? Number(quantities[item.id]) : 0), 0)
-  const readyCategories = categories.filter(category => {
-    const items = inventory.filter(item => item.category === category)
-    return items.length > 0 && items.every(item => productFor(item.id) && validCount(quantities[item.id] || '') && !needsReview[item.id])
-  })
-  const itemsIncomplete = inventory.length > 0 && inventory.some(item => !productFor(item.id) || !validCount(quantities[item.id] || '') || needsReview[item.id])
-  const issueCategories = categories.filter(category => !readyCategories.includes(category))
-  const reviewReady = basicsValid && readyCategories.length > 0 && !itemsIncomplete
-  const subtotalLabel = itemsIncomplete ? 'Subtotal · incomplete' : 'Subtotal'
-  const mobileStatus = !inventory.length ? 'Add at least one drink' : itemsIncomplete ? 'Check quantities' : issueCategories.length ? `${issueCategories.length} ${issueCategories.length === 1 ? 'category has' : 'categories have'} no items` : 'Ready to review'
-  const browsing = allCategories.includes(activeCategory) ? activeCategory : allCategories[0] || ''
-  const categoryProducts = search ? products.filter(product => `${product.name} ${product.brand} ${product.category}`.toLowerCase().includes(search.toLowerCase())) : products.filter(product => product.category === browsing)
-  const brandOptions = [...new Set(categoryProducts.map(product => product.brand))].sort((a, b) => a.localeCompare(b))
-  const sizeOptions = [...new Set(categoryProducts.map(product => product.sizeMl))].sort((a, b) => a - b)
-  const filterScope = search ? '__all__' : browsing
-  const selectedBrands = brands[filterScope] || []
-  const selectedSizes = sizes[filterScope] || []
-  const withinOn = !!within[filterScope]
-  // Affordability rule (single source of truth): one pack fits iff its price is within
-  // the remaining budget ignoring this product's own current line cost (prior quantities
-  // never change a card's tier). Card tier, over-label and the within-budget chip all
-  // read from these two helpers; the post-add announcement instead reports the actual
-  // post-add remaining (spec: "R reflects post-add subtotal").
-  const remainingExcluding = (product: Product) => (budgetPaise ?? 0) - (subtotal - lineCost(product.id))
-  const fitsBudget = (product: Product) => budgetPaise === null || product.pricePaise <= remainingExcluding(product)
-  const baseMatches = categoryProducts.filter(product =>
-    (!selectedBrands.length || selectedBrands.includes(product.brand))
-    && (!selectedSizes.length || selectedSizes.includes(product.sizeMl)))
-  const fitting = baseMatches.filter(fitsBudget)
-  const matches = withinOn ? fitting : baseMatches
-  const filtersActive = !!search || selectedBrands.length > 0 || selectedSizes.length > 0 || withinOn
-  const filterCount = selectedBrands.length + selectedSizes.length + (withinOn ? 1 : 0) + (search ? 1 : 0)
-  const remaining = budgetPaise === null ? null : budgetPaise - subtotal
-  const remainingLabel = remaining === null ? null : remaining < 0 ? `${formatMoney(-remaining)} over budget` : `${formatMoney(remaining)} left of budget`
-  const perGuest = budgetPaise !== null && validCount(guests) ? formatMoney(Math.round(budgetPaise / Number(guests))) : null
-  const limit = limits[browsing] ?? 24
-  function resetFilters() {
-    setBrands(current => ({ ...current, [filterScope]: [] }))
-    setSizes(current => ({ ...current, [filterScope]: [] }))
-    setWithin(current => ({ ...current, [filterScope]: false }))
-    setSearch('')
-  }
-  function openFilters() { filterDialog.current?.showModal(); setFilterDialogOpen(true); filterHeading.current?.focus() }
-  function closeFilters() { filterDialog.current?.close(); setFilterDialogOpen(false); filterTrigger.current?.focus() }
-  function openInfo(event: { currentTarget: HTMLElement }) { infoTrigger.current = event.currentTarget; infoDialog.current?.showModal() }
-  function closeInfo() { infoDialog.current?.close(); infoTrigger.current?.focus() }
-  function openBasics() { basicsSnapshot.current = { guests, budget }; basicsDialog.current?.showModal(); setBasicsOpen(true); basicsHeading.current?.focus() }
-  function closeBasics(save = false) {
-    if (save && !basicsValid) { setSetupError(true); basicsDialog.current?.querySelector<HTMLInputElement>(!validCount(guests) ? '#dialog-guests' : '#dialog-budget')?.focus(); return }
-    if (!save) { setGuests(basicsSnapshot.current.guests); setBudget(basicsSnapshot.current.budget) }
-    if (save && guests !== basicsSnapshot.current.guests && inventory.length) setGuestNotice(true)
-    setSetupError(false); basicsDialog.current?.close(); setBasicsOpen(false)
-    if (basicsTrigger.current?.isConnected && basicsTrigger.current.getClientRects().length) basicsTrigger.current.focus(); else heading.current?.focus()
-  }
-  const input = (): PlannerInput => ({ guests: Number(guests), budgetPaise: budgetPaise ?? 0, categories, lines: inventory.map(item => ({ productId: item.id, quantity: Number(quantities[item.id]) })) })
-  const exported = plan
+    if (!printPlan) return
+    const timer = window.setTimeout(() => window.print(), 0)
+    return () => window.clearTimeout(timer)
+  }, [printPlan])
 
   // Only the exact eligibility error shows the gate; any other failure means the catalogue read failed.
   async function loadCatalogue(live: () => boolean = () => true) {
     try {
       const result = await getCatalogue()
       if (!live()) return true
-      if (result.ok) { setUnavailable(false); setProducts(result.products); setEligible(true); setStep(1); return true }
+      if (result.ok) { setUnavailable(false); setProducts(result.products); return true }
       const failed = result.error !== eligibilityError
       setUnavailable(failed)
       return !failed
@@ -277,399 +145,201 @@ export default function Planner() {
     setRetrying(false)
     if (!loaded) setRetryFailures(count => count + 1)
   }
-
   async function run(action: () => Promise<void>) {
     if (pending.current) return
-    pending.current = true; setBusy(true)
-    setMessage('')
+    pending.current = true; setBusy(true); setMessage(''); setCopyText('')
     try { await action() }
-    catch { setMessage('Connection interrupted. Your choices are still here; please try again.') }
+    catch { setMessage('Connection interrupted. Your list is still here; please try again.') }
     finally { pending.current = false; setBusy(false) }
   }
-  function move(next: number) { setMessage(''); setCopyFallback(false); setPlan(null); setStep(next) }
-  function removeItem(id: string) {
-    if (pending.current) return
-    const snapshot = { categories, inventory, quantities, needsReview }
-    const item = inventory.find(product => product.id === id)
-    setInventory(current => current.filter(item => item.id !== id))
-    if (item && !inventory.some(product => product.id !== id && product.category === item.category)) setCategories(current => current.filter(category => category !== item.category))
-    setQuantities(current => { const next = { ...current }; delete next[id]; return next })
-    setNeedsReview(current => { const next = { ...current }; delete next[id]; return next })
-    if (item) showToast(`Removed ${item.name}.`, () => undoRemoval(snapshot))
-  }
-  function showToast(message: string, restore: () => void) {
-    if (toastTimer.current) window.clearTimeout(toastTimer.current)
-    setToast({ message, restore })
-    toastTimer.current = window.setTimeout(() => setToast(null), 8000)
-  }
-  function undoRemoval(snapshot: { categories: string[]; inventory: Product[]; quantities: Record<string, string>; needsReview: Record<string, boolean> }) {
-    setCategories(snapshot.categories); setInventory(snapshot.inventory); setQuantities(snapshot.quantities); setNeedsReview(snapshot.needsReview)
-    setToast(null); move(1); window.setTimeout(() => drawerOpen ? inventoryDialog.current?.querySelector('h2')?.focus() : heading.current?.focus(), 0)
-  }
-  function toggleCategory(category: string) {
-    if (pending.current) return
-    setActiveCategory(category)
-  }
-  function closeCategoryPicker() { categoryDialog.current?.close(); setCategoryPickerOpen(false); categoryTrigger.current?.focus() }
-  function focusIssue(category?: string) {
-    if (category) setActiveCategory(category)
-    if (drawerOpen) closeInventory()
-    window.setTimeout(() => {
-      const shelf = shelfRef.current
-      if (!shelf) return
-      shelf.focus({ preventScroll: true })
-      shelf.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' })
-    }, 0)
-  }
-  function addProduct(id: string) {
-    if (pending.current || !eligible || !setupComplete || !basicsValid) return
-    const product = productFor(id)
-    if (!product) return
-    const existing = inventory.some(item => item.id === id)
-    if (existing && !validCount(quantities[id] || '')) { setAnnouncement(`Correct ${product.name}'s pack quantity before adding another pack.`); return }
-    if (existing && Number(quantities[id]) >= 1000) { setAnnouncement(`${product.name} is at the maximum of 1,000 packs.`); return }
-    if (!existing) { setInventory(current => [...current, product]); setCategories(current => current.includes(product.category) ? current : [...current, product.category]) }
-    const next = existing ? Number(quantities[id]) + 1 : 1
-    const after = subtotal + product.pricePaise
-    const over = budgetPaise !== null && after > budgetPaise
-    setQuantities(current => ({ ...current, [id]: String(next) }))
-    const budgetNote = budgetPaise === null ? '' : over ? ` ${formatMoney(after - budgetPaise)} over budget.` : ` ${formatMoney(budgetPaise - after)} left of budget.`
-    setAnnouncement(`${product.name}: added 1 pack. Now ${next} ${next === 1 ? 'pack' : 'packs'} in inventory.${budgetNote}`)
-  }
-  function openInventory() { setDrawerOpen(true); inventoryDialog.current?.showModal(); inventoryDialog.current?.querySelector('h2')?.focus() }
-  function closeInventory() { inventoryDialog.current?.close(); setDrawerOpen(false); if (inventoryTrigger.current?.isConnected && inventoryTrigger.current.getClientRects().length) inventoryTrigger.current.focus(); else heading.current?.focus() }
-  function dropZoneOver(event: DragEvent<HTMLElement>) { event.preventDefault(); const valid = !pending.current && !!draggedId.current && !!productFor(draggedId.current) && event.dataTransfer.types.includes(dragType); setDragOver(valid); event.dataTransfer.dropEffect = valid ? 'copy' : 'none' }
-  function dropZoneLeave(event: DragEvent<HTMLElement>) { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragOver(false) }
-  function dropZoneDrop(event: DragEvent<HTMLElement>) { event.preventDefault(); event.stopPropagation(); const id = event.dataTransfer.getData(dragType); if (!pending.current && id === draggedId.current && productFor(id)) addProduct(id); draggedId.current = null; setDragOver(false) }
-  function reviewList() {
-    if (!reviewReady) return
-    const emptyCategories = categories.filter(category => !inventory.some(item => item.category === category))
-    if (emptyCategories.length) {
-      const snapshot = { categories, inventory, quantities, needsReview }
-      setCategories(current => current.filter(value => !emptyCategories.includes(value)))
-      showToast(`Removed ${emptyCategories.join(', ')} — no items added.`, () => undoRemoval(snapshot))
-    }
-    const keptCategories = categories.filter(category => !emptyCategories.includes(category))
-    closeInventory()
-    void run(async () => { const result = await validatePlan({ ...input(), categories: keptCategories }); if (!result.ok) { setMessage(result.error); return } setPlan(result.plan); setStep(2); setCopyFallback(false) })
-  }
-  function requestConfirmation(action: Confirmation, trigger: HTMLElement) {
-    if (pending.current || confirmationAction.current) return
-    confirmationTrigger.current = trigger; confirmationAction.current = action; setConfirmation(action)
-  }
-  function cancelConfirmation() {
-    if (confirmationAction.current?.kind === 'suggest' && estimate) {
-      setServings(String(estimate.servingsPerDrinker)); setNonDrinkers(String(estimate.nonDrinkers)); setSuggestCategories(estimate.categories)
-    }
-    pendingSuggestion.current = null
-    confirmationAction.current = null
-    confirmationDialog.current?.close(); setConfirmation(null)
-    confirmationTrigger.current?.focus()
-  }
-  function confirmAction() {
-    const action = confirmationAction.current
-    if (!action || pending.current) return
-    confirmationAction.current = null
-    confirmationDialog.current?.close(); setConfirmation(null)
-    if (action.kind === 'new') { startNew(); focusHeading.current = true }
-    if (action.kind === 'suggest' && pendingSuggestion.current) applySuggestion(pendingSuggestion.current)
-  }
-  function startNew() {
-    setGuests(''); setBudget(''); setCategories([]); setInventory([]); setQuantities({}); setActiveCategory(''); setLimits({}); setBrands({}); setSizes({}); setNeedsReview({}); setAnnouncement(''); setEstimate(null); setServings(''); setNonDrinkers('0'); setSuggestCategories([]); setSuggestionOpen(false); setSetupComplete(false); setGuestNotice(false); move(1)
-  }
-  function suggest(trigger: HTMLElement) {
-    setSuggestMessage('')
-    if (!basicsValid || budgetPaise === null) { setSuggestMessage('Enter guests and a budget first.'); return }
-    const others = /^\d+$/.test(nonDrinkers) ? Number(nonDrinkers) : -1
-    if (others < 0 || others > Number(guests)) { setSuggestMessage('Enter a whole number of non-drinking guests, no greater than total guests.'); document.getElementById('suggest-nondrinkers')?.focus(); return }
-    if (!validCount(servings) || Number(servings) > 20) { setSuggestMessage('Enter 1 to 20 whole servings per drinking guest.'); document.getElementById('suggest-servings')?.focus(); return }
-    if (!suggestCategories.length) { setSuggestMessage('Pick at least one category.'); document.getElementById('suggest-category-choice')?.focus(); return }
-    const result = suggestStartingList({ guests: Number(guests), budgetPaise, servingsPerDrinker: Number(servings), nonDrinkers: others, categories: suggestCategories }, products)
-    if (!result.ok) { setSuggestMessage(result.error); if (others === Number(guests)) document.getElementById('suggest-nondrinkers')?.focus(); return }
-    pendingSuggestion.current = result
-    if (inventory.length) requestConfirmation({ kind: 'suggest' }, trigger)
-    else applySuggestion(result)
-  }
-  function applySuggestion(result: Suggestion) {
-    pendingSuggestion.current = null
-    const snapshot = { categories, inventory, quantities, needsReview, estimate, servings, nonDrinkers, suggestCategories, guestNotice }
-    const picked = result.lines.map(line => products.find(product => product.id === line.productId)).filter((product): product is Product => !!product)
-    setCategories([...new Set(result.lines.map(line => line.category))])
-    setInventory(picked)
-    setQuantities(Object.fromEntries(result.lines.map(line => [line.productId, String(line.quantity)])))
-    setNeedsReview({}); setActiveCategory(result.lines[0]?.category || ''); setEstimate(result); setGuestNotice(false); setSuggestionOpen(false)
-    window.setTimeout(openInventory, 0)
-    setAnnouncement(`Starting list added: ${result.lines.length} drinks, ${formatMoney(result.totalPaise)}. ${SUGGEST_LABEL}`)
-    if (snapshot.inventory.length) showToast('Replaced your list with a starting list.', () => { undoRemoval(snapshot); setEstimate(snapshot.estimate); setServings(snapshot.estimate ? String(snapshot.estimate.servingsPerDrinker) : snapshot.servings); setNonDrinkers(snapshot.estimate ? String(snapshot.estimate.nonDrinkers) : snapshot.nonDrinkers); setSuggestCategories(snapshot.estimate ? snapshot.estimate.categories : snapshot.suggestCategories); setGuestNotice(snapshot.guestNotice) })
-  }
-  async function copyList(target: Plan) {
-    try { await navigator.clipboard.writeText(planText(target)); setMessage(copiedMessage) }
-    catch { setCopyFallback(true); setMessage('Select and copy the full list below.') }
-  }
-  async function shareList(target: Plan) {
-    if (!navigator.share) return copyList(target)
-    try { await navigator.share({ title: 'My Socifer list', text: planText(target) }) }
-    catch (error) { if (!(error instanceof DOMException && error.name === 'AbortError')) await copyList(target) }
-  }
 
-  // The budget is the hero of the plan (panel on desktop, sheet on mobile): spent figure, meter, state in text, guests and per-guest.
-  function infoButton() { return <button className={styles.iconButton} aria-label="How are quantities chosen?" aria-haspopup="dialog" onClick={openInfo}><InfoIcon /></button> }
-  function budgetHero() {
-    const over = remaining !== null && remaining < 0
-    const shortStatus = remaining === null ? null : over ? `${shortMoney(-remaining)} over` : `${shortMoney(remaining)} left`
-    return <div className={`${styles.hero} ${over ? styles.heroOver : ''}`.trim()} aria-label="Budget meter">
-      <div className={styles.heroTop}>
-        <p className={styles.heroFigure}><strong>{shortMoney(subtotal)}</strong><span>{budgetPaise === null ? 'Set budget' : `of ${shortMoney(budgetPaise)}`}</span></p>
-        <button className={styles.meterEdit} aria-label="Edit guests and budget" onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}><PencilIcon />Edit</button>
-      </div>
-      <div className={styles.meterTrack}><div className={over ? styles.meterFillOver : styles.meterFill} style={{ width: `${budgetPaise && budgetPaise > 0 ? Math.min(100, (subtotal / budgetPaise) * 100) : 0}%` }} /></div>
-      <p className={styles.heroRow}>
-        {shortStatus && <span className={over ? styles.overBudget : styles.goodBudget} aria-hidden="true">{shortStatus}</span>}
-        {guests && <span aria-hidden="true">{guests} guests</span>}
-        <span className={styles.srOnly}>{formatMoney(subtotal)}{budgetPaise === null ? '' : ` of ${formatMoney(budgetPaise)}`}. {remainingLabel} {guests || 'Set'} guests{perGuest ? ` · Budget per guest ${perGuest}` : ''}</span>
-      </p>
-    </div>
-  }
+  const bottles = useMemo(() => products ? normaliseCatalogue(products) : [], [products])
+  const categoryOf = useMemo(() => { const map = new Map((products ?? []).map(product => [product.id, product.category])); return (id: string) => map.get(id) }, [products])
+  const guestsValid = validCount(draft.guests)
+  const budgetPaise = budgetValue(draft.budget)
+  const guests = guestsValid ? Number(draft.guests) : 0
+  const answered = draft.tastes.length > 0 || !!draft.style
+  const chips = draft.chips ?? prePick(draft.tastes, draft.style)
+  const pickIndex = Object.fromEntries(CHIPS.map(chip => [chip, optionsFor(bottles, chip).findIndex(bottle => bottle.id === draft.picks[chip])]).filter(([, index]) => (index as number) >= 0))
+  const list = guestsValid && budgetPaise !== null && products ? buildList({ guests, budgetPaise, chips, picks: pickIndex, quantities: draft.quantities }, bottles) : null
+  const over = list ? list.remainingPaise < 0 : false
+  const status = list ? (over ? `${shortMoney(-list.remainingPaise)} over budget` : `${shortMoney(list.remainingPaise)} left`) : ''
 
-  function inventoryContents(prefix: string) {
-    return <fieldset className={styles.panel} disabled={busy}>
-      {budgetHero()}
-      <p className={`${styles.inventoryCount} ${styles.srOnly}`}>{guests || '—'} guests · {inventory.length} {inventory.length === 1 ? 'item' : 'items'} · {packs} {packs === 1 ? 'pack' : 'packs'}</p>
-      {!inventory.length && <p className={styles.emptySlot}><strong>Your list is empty</strong>Add drinks, or let us suggest a list.<span className={styles.srOnly}> Add a drink from the catalogue{prefix === 'desktop' ? ' or drag a product here' : ''}.</span></p>}
-      <div className={styles.inventoryLines} role="region" aria-label="Selected items" tabIndex={0}>{[...new Set(inventory.map(item => item.category))].map(group => <div className={styles.planGroup} key={group}><h4>{group}</h4>{inventory.filter(item => item.category === group).map(item => {
-        const current = productFor(item.id), quantityValid = validCount(quantities[item.id] || '')
-        const token = encodeURIComponent(item.id)
-        return <div className={styles.inventoryLine} key={item.id} data-inventory-id={item.id}>
-          <div className={styles.inventoryIdentity}><div><strong>{item.name}</strong><small><span aria-hidden="true">{item.category} · {current?.sizeMl ?? item.sizeMl} ml{quantityValid ? ` × ${Number(quantities[item.id])}` : ''}</span><span className={styles.srOnly}>{item.category} · {current?.sizeMl ?? item.sizeMl} ml · {formatMoney(current?.pricePaise ?? item.pricePaise)} per pack</span></small></div></div>
-          {!current && <p role="alert" className={styles.overBudget}>No longer in the catalogue. Remove this item before review.</p>}
-          <div className={styles.planQuantity}>
-            <label className={styles.srOnly} htmlFor={`plan-quantity-${prefix}-${token}`}>{item.name} pack quantity</label>
-            <span className={styles.quantityControls}>
-              <button aria-label={`Decrease ${item.name} packs`} disabled={!quantityValid || Number(quantities[item.id]) <= 1} onClick={() => setQuantities(values => ({ ...values, [item.id]: String(Number(values[item.id]) - 1) }))}>−</button>
-              <input id={`plan-quantity-${prefix}-${token}`} inputMode="numeric" value={quantities[item.id] || ''} aria-invalid={!quantityValid} aria-describedby={`plan-quantity-status-${prefix}-${token}`} onChange={event => setQuantities(values => ({ ...values, [item.id]: event.target.value }))} />
-              <button aria-label={`Increase ${item.name} packs`} disabled={!quantityValid || Number(quantities[item.id]) >= 1000} onClick={() => addProduct(item.id)}>+</button>
-            </span>
-          </div>
-          <p id={`plan-quantity-status-${prefix}-${token}`} className={styles.quantityReadout}>{quantityValid ? <><span className={styles.srOnly}>{`Line total: ${formatMoney(lineCost(item.id))}`}</span><span aria-hidden="true">{shortMoney(lineCost(item.id))}</span></> : 'Enter a whole number from 1 to 1,000.'}</p>
-          {current && needsReview[item.id] && <div className={styles.notice}><p>Pack size changed. Check your quantity before continuing.</p><button className={styles.secondary} disabled={!quantityValid} onClick={event => { event.currentTarget.closest('[data-inventory-id]')?.querySelector<HTMLInputElement>('input[id^="plan-quantity-"]')?.focus(); setNeedsReview(values => ({ ...values, [item.id]: false })) }}>I have reviewed my quantity</button></div>}
-          <button className={styles.iconButton} aria-label={`Remove ${item.name}`} onClick={() => removeItem(item.id)}><TrashIcon /></button>
-        </div>
-      })}</div>)}</div>
-      <div className={styles.inventorySummary}>{itemsIncomplete && <strong>{subtotalLabel} {formatMoney(subtotal)}</strong>}
-        {validCount(guests) && <p>About {perGuestMoney(subtotal / Number(guests))} per guest</p>}
-        {(!inventory.length || issueCategories.length > 0 || !basicsValid) && <div className={styles.issueChips} aria-label="List issues">{!basicsValid && <button className={styles.filter} onClick={event => { basicsTrigger.current = event.currentTarget; openBasics() }}>Set guests & budget</button>}{!inventory.length ? <button className={styles.filter} onClick={() => focusIssue(categories[0])}>Add at least one drink</button> : issueCategories.map(category => <button key={category} className={styles.filter} onClick={() => focusIssue(category)}>{category} — {inventory.some(item => item.category === category) ? 'check quantities' : 'add at least one item'}</button>)}</div>}
-        <button className={styles.primary} disabled={!reviewReady || busy} onClick={reviewList}>{busy ? 'Checking…' : <>Review list<span aria-hidden="true">{` · ${shortMoney(subtotal)}`}</span></>}</button></div>
-    </fieldset>
-  }
+  const patch = (next: Partial<Draft>) => { setDraft(current => ({ ...current, ...next })); setMessage(''); setCopyText('') }
+  // New answers start the list again from the answers; new guests reset the bottle counts to the suggestion.
+  const answer = (next: Partial<Draft>) => patch({ ...next, chips: null, picks: {}, quantities: {} })
+  const setGuests = (value: string) => patch({ guests: value, quantities: {} })
+  const stepGuests = (by: number) => setGuests(String(Math.min(1000, Math.max(1, (guestsValid ? guests : 0) + by))))
+  const toggleChip = (chip: Chip) => patch({ chips: chips.includes(chip) ? chips.filter(item => item !== chip) : [...chips, chip] })
+  const setQuantity = (chip: Chip, quantity: number) => patch({ quantities: { ...draft.quantities, [chip]: Math.min(1000, Math.max(1, quantity)) } })
 
-  // The setup fields also serve the later edit dialog; suggestion preferences live in their own step.
-  function basicsFields(prefix: 'setup' | 'dialog') {
-    const guestsInvalid = (setupError || guests !== '') && !validCount(guests)
-    const stepGuests = (delta: number) => setGuests(value => String(Math.min(1000, Math.max(1, (validCount(value) ? Number(value) : delta > 0 ? 0 : 2) + delta))))
-    return <>
-      <div className={styles.formGrid}>
-        <div className={styles.field}><label htmlFor={`${prefix}-guests`}>Guests</label><span className={styles.stepper}><button type="button" aria-label="Decrease guests" disabled={validCount(guests) && Number(guests) <= 1} onClick={() => stepGuests(-1)}>−</button><input id={`${prefix}-guests`} inputMode="numeric" value={guests} onChange={event => setGuests(event.target.value)} aria-describedby={guestsInvalid ? `${prefix}-guests-hint` : undefined} aria-invalid={guestsInvalid} placeholder="e.g. 20" /><button type="button" aria-label="Increase guests" disabled={validCount(guests) && Number(guests) >= 1000} onClick={() => stepGuests(1)}>+</button></span>{guestsInvalid && <small id={`${prefix}-guests-hint`}>Enter a whole number from 1 to 1,000.</small>}</div>
-        <label>Drinks budget<span className={styles.rupeeField}><span aria-hidden="true">₹</span><input id={`${prefix}-budget`} inputMode="decimal" value={budget} onChange={event => setBudget(event.target.value)} aria-describedby={setupError || budget !== '' ? `${prefix}-budget-hint` : undefined} aria-invalid={(setupError || budget !== '') && budgetPaise === null} placeholder="e.g. 5000" /></span>{(setupError || budget !== '') && budgetPaise === null && <small id={`${prefix}-budget-hint`}>Enter ₹0.01–₹10,00,000, with up to two decimal places.</small>}</label>
-      </div>
-      {perGuest && budgetPaise !== null && <p>Budget per guest: {perGuestMoney(budgetPaise / Number(guests))}</p>}
-      <p className={styles.hint}>Alcohol only. Mixers and food aren’t included.</p>
-      {prefix === 'setup' && <>
-        <fieldset className={`sf-fieldset ${styles.startChoice}`}><legend>How do you want to start?</legend>
-          <label className="sf-choice"><input type="radio" name="start-mode" checked={startMode === 'suggest'} onChange={() => setStartMode('suggest')} /><span><b>Suggest my list</b><small>We make a starting list you can edit.</small></span></label>
-          <label className="sf-choice"><input type="radio" name="start-mode" checked={startMode === 'self'} onChange={() => setStartMode('self')} /><span><b>Choose drinks myself</b><small>Start with an empty list.</small></span></label>
-        </fieldset>
-        <button type="button" className={styles.primary} onClick={() => finishSetup(startMode === 'suggest')}>Continue</button>
-      </>}
-    </>
+  async function checkedPlan(): Promise<Plan | null> {
+    if (!list || !list.lines.length || budgetPaise === null) return null
+    const result = await validatePlan(toPlannerInput(list, guests, budgetPaise, categoryOf))
+    if (!result.ok) { setMessage(result.error === eligibilityError ? 'Confirm your age again to continue.' : 'We couldn’t check this list. Please try again.'); return null }
+    return tidy(result.plan)
   }
-
-  function finishSetup(wantsSuggestion: boolean) {
-    setSetupError(true)
-    if (!basicsValid) { document.getElementById(!validCount(guests) ? 'setup-guests' : 'setup-budget')?.focus(); return }
-    setSetupComplete(true); setSuggestionOpen(wantsSuggestion); setSetupError(false)
+  async function copyPlan(plan: Plan) {
+    try { await navigator.clipboard.writeText(planText(plan)); setMessage(copiedMessage) }
+    catch { setCopyText(planText(plan)); setMessage('Select and copy the list below.') }
   }
+  const share = () => run(async () => {
+    const plan = await checkedPlan()
+    if (!plan) return
+    if (!navigator.share) return copyPlan(plan)
+    try { await navigator.share({ title: 'My Socifer list', text: planText(plan) }) }
+    catch (error) { if (!(error instanceof DOMException && error.name === 'AbortError')) await copyPlan(plan) }
+  })
+  const copy = () => run(async () => { const plan = await checkedPlan(); if (plan) await copyPlan(plan) })
+  const print = () => run(async () => { const plan = await checkedPlan(); if (plan) setPrintPlan({ ...plan }) })
 
-  function suggestionFields() {
-    const drinkers = validCount(guests) && /^\d+$/.test(nonDrinkers) ? Number(guests) - Number(nonDrinkers) : 0
-    const target = validCount(servings) && Number(servings) <= 20 && drinkers > 0 ? drinkers * Number(servings) : null
-    const eligibleCategories = suggestibleCategories(products)
-    return <section className={styles.setupCard} aria-labelledby="suggest-title"><h2 id="suggest-title" ref={suggestionHeading} tabIndex={-1}>Suggest my list</h2>
-      <div className={styles.formGrid}><label>Not drinking<input id="suggest-nondrinkers" inputMode="numeric" value={nonDrinkers} onChange={event => setNonDrinkers(event.target.value)} aria-describedby={suggestMessage ? 'suggest-error' : undefined} aria-invalid={!!suggestMessage && (!/^\d+$/.test(nonDrinkers) || Number(nonDrinkers) >= Number(guests))} /></label><label>Drinks each<input id="suggest-servings" inputMode="numeric" value={servings} onChange={event => setServings(event.target.value)} placeholder="Whole number, 1–20" aria-describedby={suggestMessage ? 'suggest-error' : undefined} aria-invalid={!!suggestMessage && (!validCount(servings) || Number(servings) > 20)} /></label></div>
-      <fieldset className={styles.facet} aria-describedby={suggestMessage ? 'suggest-error' : undefined}><legend>What would your guests like? Pick a few.</legend><div className={styles.facetChips}>{eligibleCategories.map((category, index) => <button id={index === 0 ? 'suggest-category-choice' : undefined} type="button" key={category} className={suggestCategories.includes(category) ? styles.filterActive : styles.filter} aria-pressed={suggestCategories.includes(category)} onClick={() => setSuggestCategories(current => current.includes(category) ? current.filter(value => value !== category) : [...current, category])}>{category}</button>)}</div></fieldset>
-      <div className={styles.suggestionNote}><p aria-live="polite">{target === null ? 'Enter drinks each to see your target' : `Target: ${target} servings`}</p><button type="button" className={styles.linkButton} onClick={openInfo}>How are quantities chosen?</button></div>
-      {suggestMessage && <p id="suggest-error" className={styles.overBudget} role="alert">{suggestMessage}</p>}
-      <div className={styles.actions}><button className={styles.primary} onClick={event => suggest(event.currentTarget)}>Generate list</button><button className={styles.secondary} onClick={() => { setSuggestionOpen(false); window.setTimeout(() => heading.current?.focus(), 0) }}>Choose drinks myself</button></div>
-    </section>
-  }
+  const pickNote = draft.chips ? 'Your picks.' : answered ? 'Picked from your answers. Change any.' : 'Our usual mix. Change any.'
+  const shareButton = (className: string) => <button type="button" className={`${styles.primary} ${className}`} disabled={busy || !list?.lines.length} aria-busy={busy} onClick={() => void share()}>Share list</button>
 
-  function categoryNavigation(label: string) {
-    return <><button ref={categoryTrigger} className={styles.categoryPicker} aria-haspopup="dialog" aria-expanded={categoryPickerOpen} onClick={() => { categoryDialog.current?.showModal(); setCategoryPickerOpen(true) }}>Browse category: {browsing}</button><nav className={styles.categoryIndex} aria-label={label}>{allCategories.map(category => {
-      const categoryProductsAll = products.filter(item => item.category === category)
-      return <span className={styles.categoryChoice} key={category}><button className={`${styles.categoryTab} ${browsing === category ? styles.categoryTabActive : ''}`.trim()} aria-current={browsing === category || undefined} onClick={() => toggleCategory(category)}><span>{category}</span><small>{categoryProductsAll.length}<span className={styles.srOnly}> drinks</span></small></button></span>
-    })}</nav></>
-  }
-
+  const ready = !checkingGate && !unavailable && products
   return <>
-    <div className={`${styles.shell} ${toolRoot}`} data-theme="tools" onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); draggedId.current = null; setDragOver(false) }}>
+    <div className={`${styles.shell} ${toolRoot}`} data-theme="tools">
       <a href="#planner-content" className="skip-link">Skip to planner</a>
       <ToolHeader current="planner" />
-      <main>
-      <h1 className={styles.srOnly}>Party Planner</h1>
-      <section className={step === 0 && !checkingGate ? styles.frameBare : styles.card} id="planner-content">
-        {message && <p className={`${styles.notice} ${message === copiedMessage ? styles.noticeOk : ''}`.trim()} role="status">{message}</p>}
-        <fieldset className={styles.panel} disabled={busy}>
-          {step === 0 && checkingGate && <PlannerLoading />}
-          {step === 0 && !checkingGate && unavailable && <div className={styles.gateStage}><div className={styles.gateCard}>
-            <h2 ref={unavailableHeading} tabIndex={-1}>Drinks are temporarily unavailable</h2>
-            <p>Your plan is still saved on this device.</p>
-            <p className={`${styles.hint} ${retrying ? styles.srOnly : ''}`.trim()} role="status">{retrying ? 'Trying again…' : retryFailures ? 'Still unavailable. Please try again in a moment.' : ''}</p>
-            <div className={styles.actions}><button className={styles.primary} disabled={retrying} aria-busy={retrying} onClick={() => void retryCatalogue()}>{retrying && <span className="sf-spinner" aria-hidden="true" />}Try again{retrying && <span className={styles.srOnly}> (trying again…)</span>}</button></div>
-          </div></div>}
-          {step === 0 && !checkingGate && !unavailable && <>
-            <AgeCheck lines={['Party', 'Planner']} headingRef={heading} checked={eligible} onCheckedChange={setEligible} continueLabel={draftRestored ? 'Continue your list' : 'Continue to planner'} busy={busy} busyLabel="loading…" onContinue={() => void run(async () => {
-              const confirmation = await confirmEligibility(eligible)
-              if (!confirmation.ok) { setMessage(confirmation.error || 'Please confirm eligibility.'); return }
-              const result = await getCatalogue()
-              if (!result.ok) { setUnavailable(true); setMessage('The drinks catalogue could not load. Try again; your choices are safe.'); return }
-              setProducts(result.products); move(1)
-            })} />
-          </>}
-          {step === 1 && !setupComplete && <><Stages current={0} narrow /><div className={styles.setupLayout}><section className={styles.setupStage}><h2 ref={heading} tabIndex={-1}>Set your party</h2>{basicsFields('setup')}</section>
-</div></>}
-          {step === 1 && setupComplete && suggestionOpen && <><Stages current={1} narrow />{suggestionFields()}</>}
-          {step === 1 && setupComplete && !suggestionOpen && <>
-            <Stages current={1} />
-            <h2 ref={heading} tabIndex={-1} className={styles.stepHeading}>Build your list</h2>
-            <p className={styles.additionStatus} role="status" aria-live="polite">{announcement || ''}</p>
-            <div className={styles.inventoryLayout}>
-              <div className={styles.browse}>
-            {guestNotice && <div className={styles.notice} role="status"><p>Guests changed; quantities have not been updated.</p><div className={styles.actions}>{estimate && <button className={styles.secondary} onClick={() => setSuggestionOpen(true)}>Update suggestion</button>}<button className={styles.secondary} onClick={() => { setGuestNotice(false); focusIssue() }}>{estimate ? 'Review quantities' : 'Review quantities'}</button><button className={styles.linkButton} onClick={() => setGuestNotice(false)}>Keep my quantities</button></div></div>}
-            <button className={styles.linkButton} onClick={() => setSuggestionOpen(true)}>{estimate ? 'Edit suggestion' : 'Suggest my list'}</button>
-              <div className={styles.categoryRail}>{categoryNavigation('Categories')}</div>
-              <section ref={shelfRef} tabIndex={-1} className={styles.shelf} aria-label={browsing ? `${browsing} selection` : 'Drink shelf'}>
-                {!browsing && <p className={styles.hint}>Select a category from the index to browse its drinks.</p>}
-                {browsing && <>
-                <div className={styles.filterBar}>
-                  <input className={styles.search} type="search" aria-label="Search all drinks" placeholder={`Search ${products.length.toLocaleString('en-IN')} drinks`} value={search} onChange={event => { setSearch(event.target.value); setLimits(current => ({ ...current, [filterScope]: 24 })) }} />
-                  <button ref={filterTrigger} className={styles.filterTrigger} aria-haspopup="dialog" aria-expanded={filterDialogOpen} onClick={openFilters}>Filters{filterCount > 0 ? ` (${filterCount})` : ''}</button>
-                </div>
-                <p className={styles.srOnly} role="status" aria-live="polite" aria-atomic="true">Showing {matches.length} of {categoryProducts.length} {categoryProducts.length === 1 ? 'drink' : 'drinks'}{(() => { if (!categoryProducts.length) return ''; const min = Math.min(...categoryProducts.map(product => product.pricePaise)); const max = Math.max(...categoryProducts.map(product => product.pricePaise)); return ` · ${min === max ? formatMoney(min) : `${formatMoney(min)}–${formatMoney(max)}`} · illustrative artwork` })()}</p>
-                {filtersActive && <div className={styles.activeFilters}>
-                  <span className={styles.resultCount} aria-hidden="true">{matches.length} {matches.length === 1 ? 'drink' : 'drinks'}</span>
-                  <span className={styles.activeFiltersLabel}>Active filters</span>
-                  {search && <button className={styles.filterChip} aria-label="Remove search filter" onClick={() => setSearch('')}><span className={styles.filterChipLabel}>{search}</span><CloseIcon size={16} /></button>}
-                  {selectedBrands.map(brand => <button key={brand} className={styles.filterChip} aria-label={`Remove ${brand} filter`} onClick={() => setBrands(current => ({ ...current, [filterScope]: (current[filterScope] || []).filter(value => value !== brand) }))}><span className={styles.filterChipLabel}>{brand}</span><CloseIcon size={16} /></button>)}
-                  {selectedSizes.map(size => <button key={size} className={styles.filterChip} aria-label={`Remove ${size} ml filter`} onClick={() => setSizes(current => ({ ...current, [filterScope]: (current[filterScope] || []).filter(value => value !== size) }))}><span className={styles.filterChipLabel}>{size} ml</span><CloseIcon size={16} /></button>)}
-                  {withinOn && <button className={styles.filterChip} aria-label="Remove within-budget filter" onClick={() => setWithin(current => ({ ...current, [filterScope]: false }))}><span className={styles.filterChipLabel}>Within budget</span><CloseIcon size={16} /></button>}
-                  <button className={styles.linkButton} onClick={resetFilters}>Clear all filters</button>
-                </div>}
-                {!matches.length && <div className={styles.emptySlot}><p><strong>No matching drinks</strong>Try another word or clear the filters.</p><button className={styles.secondary} onClick={resetFilters}>Clear filters</button></div>}
-                <ul className={styles.menuList}>{matches.slice(0, limit).map(product => {
-                  const fits = fitsBudget(product)
-                  const inInventory = inventory.some(item => item.id === product.id)
-                  const cardQuantityValid = validCount(quantities[product.id] || '')
-                  const cardToken = encodeURIComponent(product.id)
-                  return <li key={product.id} data-product-id={product.id} className={`${inInventory ? styles.menuItemSelected : styles.menuItem} ${fits ? '' : styles.menuItemOver}`.trim()} draggable={!busy} onDragStart={event => { if (pending.current || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) { event.preventDefault(); return } draggedId.current = product.id; event.dataTransfer.setData(dragType, product.id); event.dataTransfer.effectAllowed = 'copy' }} onDragEnd={() => { draggedId.current = null; setDragOver(false) }}>
-                  <span className={styles.dragHint} aria-hidden="true" title="Drag to plan"><GripIcon /></span><span className={styles.menuArt}><img src={artFor(product.category)} alt="" width={56} height={56} draggable={false} /></span>
-                  <div className={styles.menuIdentity}>
-                    <strong>{product.name}</strong>{search && <small>{product.category}</small>}
-                    <small>{product.sizeMl} ml · <b className={styles.menuPrice}>{shortMoney(product.pricePaise)}</b><span className={styles.srOnly}> ({formatMoney(product.pricePaise)})</span></small>
-                    {!fits && <small className={styles.overNote}><span aria-hidden="true">{shortMoney(product.pricePaise - remainingExcluding(product))} over budget</span><span className={styles.srOnly}>{formatMoney(product.pricePaise - remainingExcluding(product))} over remaining budget</span></small>}
-                  </div>
-                  <div className={styles.menuActions}>
-                  {inInventory ? <div className={styles.cardStepper}>
-                    <label className={styles.srOnly} htmlFor={`card-quantity-${cardToken}`}>{product.name} pack quantity</label>
-                    <div className={styles.quantityControls}>
-                      <button aria-label={`Decrease ${product.name} packs`} disabled={!cardQuantityValid || Number(quantities[product.id]) <= 1} onClick={() => setQuantities(values => ({ ...values, [product.id]: String(Number(values[product.id]) - 1) }))}>−</button>
-                      <input id={`card-quantity-${cardToken}`} ref={node => { quantityInputs.current[`card-quantity-${cardToken}`] = node }} inputMode="numeric" value={quantities[product.id] || ''} aria-invalid={!cardQuantityValid} aria-describedby={`card-quantity-status-${cardToken}`} onChange={event => setQuantities(values => ({ ...values, [product.id]: event.target.value }))} />
-                      <button aria-label={`Increase ${product.name} packs`} disabled={!cardQuantityValid || Number(quantities[product.id]) >= 1000} onClick={() => addProduct(product.id)}>+</button>
-                    </div>
-                    <p id={`card-quantity-status-${cardToken}`} className={`${styles.quantityMessage} ${cardQuantityValid ? styles.srOnly : ''}`.trim()}>{cardQuantityValid ? `Line total: ${formatMoney(lineCost(product.id))}` : 'Enter a whole number from 1 to 1,000.'}</p>
-                  </div> : <>
-                    {/* One Add per row. Over budget it is the quieter outlined button, and its name says so; the row's note gives the amount. */}
-                    {fits ? <button className={styles.primary} aria-label={`Add ${product.name} to inventory`} onClick={() => addProduct(product.id)}>Add</button>
-                      : <button className={styles.secondary} aria-label={`Add ${product.name} anyway (over budget)`} onClick={() => addProduct(product.id)}>Add</button>}
-                  </>}
-                  </div>
-                </li>})}</ul>
-                {matches.length > limit && <button className={styles.secondary} onClick={() => setLimits(current => ({ ...current, [browsing]: limit + 24 }))}>Show more {browsing} ({matches.length - limit} more)</button>}
-                </>}
-              </section>
-              </div>
-              <aside className={`${styles.planPanel} ${dragOver ? styles.validDrop : ''}`} aria-label="Your selected plan" onDragOverCapture={dropZoneOver} onDragLeave={dropZoneLeave} onDropCapture={dropZoneDrop}><div className={styles.panelHead}><h3>Your list</h3>{infoButton()}</div>{inventoryContents('desktop')}</aside>
-            </div>
-            <p className={styles.disclaimer}>{estimateNote} Mixers, food and ice aren’t included.</p>
-            <div className={styles.mobileBar}><div className={styles.mobileMeter} aria-hidden="true"><div className={remaining !== null && remaining < 0 ? styles.meterFillOver : styles.meterFill} style={{ width: `${budgetPaise && budgetPaise > 0 ? Math.min(100, (subtotal / budgetPaise) * 100) : 0}%` }} /></div><div><strong>{shortMoney(subtotal)}</strong><small><span aria-hidden="true">{inventory.length} {inventory.length === 1 ? 'item' : 'items'}{remaining === null ? '' : remaining < 0 ? ` · ! ${shortMoney(-remaining)} over` : ` · ✓ ${shortMoney(remaining)} left`}{mobileStatus === 'Ready to review' ? '' : ` · ${mobileStatus}`}</span><span className={styles.srOnly}>{inventory.length} {inventory.length === 1 ? 'item' : 'items'} · {remainingLabel ? `${remainingLabel} · ${mobileStatus}` : mobileStatus}</span></small></div><button ref={inventoryTrigger} className={styles.primary} aria-haspopup="dialog" aria-expanded={drawerOpen} onClick={openInventory}>View plan</button></div>
-          </>}
-          {step === 2 && plan && <>
-            <Stages current={2} />
-            <h2 ref={heading} tabIndex={-1} className={styles.stepHeading}>Ready for the shops</h2>
-            <div className={styles.reviewLayout}>
-              <Receipt plan={plan} />
-              <div id="list-export" className={styles.reviewActions}>
-                <div className={styles.reviewButtons}>
-                  <button className={styles.primary} onClick={() => void shareList(plan)}>Share list</button>
-                  <button className={styles.outline} onClick={() => void copyList(plan)}>Copy list</button>
-                  <button className={styles.outline} onClick={() => window.print()}>Print / Save as PDF</button>
-                  <button className={styles.outline} onClick={() => move(1)}>Edit list</button>
-                  <button className={styles.linkButton} onClick={event => requestConfirmation({ kind: 'new' }, event.currentTarget)}>Start a new plan</button>
+      <main id="planner-content" className={styles.page}>
+        {checkingGate && <PlannerLoading />}
+        {!checkingGate && unavailable && <div className={styles.gateCard}>
+          <h2 ref={unavailableHeading} tabIndex={-1}>Drinks are temporarily unavailable</h2>
+          <p className={`${styles.hint} ${retrying ? styles.srOnly : ''}`.trim()} role="status">{retrying ? 'Trying again…' : retryFailures ? 'Still unavailable. Please try again in a moment.' : ''}</p>
+          <div className={styles.actions}><button type="button" className={styles.primary} disabled={retrying} aria-busy={retrying} onClick={() => void retryCatalogue()}>{retrying && <span className="sf-spinner" aria-hidden="true" />}Try again{retrying && <span className={styles.srOnly}> (trying again…)</span>}</button></div>
+        </div>}
+        {!checkingGate && !unavailable && !products && <div className={styles.gate}>
+          <AgeCheck lines={['Party', 'Planner']} headingRef={heading} checked={eligible} onCheckedChange={setEligible} continueLabel="Continue to planner" busy={busy} busyLabel="loading…" message={message || undefined} onContinue={() => void run(async () => {
+            const confirmation = await confirmEligibility(eligible)
+            if (!confirmation.ok) { setMessage(confirmation.error || 'Please confirm eligibility.'); return }
+            if (!(await loadCatalogue())) setMessage('The drinks catalogue could not load. Try again; your choices are safe.')
+          })} />
+        </div>}
 
+        {ready && <>
+          <header className={styles.intro}>
+            <h1>Party Planner</h1>
+            <p className={styles.lede}>Guests and budget in, a shopping list out. No sign-in.</p>
+          </header>
+          <div className={styles.layout}>
+            <section className={styles.party} aria-labelledby="party-title">
+              <h2 id="party-title">Your party</h2>
+              <div className={styles.basics}>
+                <div className={styles.field}>
+                  <label htmlFor="planner-guests">Guests</label>
+                  <div className={styles.stepper}>
+                    <button type="button" aria-label="Fewer guests" disabled={guestsValid && guests <= 1} onClick={() => stepGuests(-1)}>−</button>
+                    <input id="planner-guests" inputMode="numeric" autoComplete="off" value={draft.guests} aria-invalid={!guestsValid || undefined} aria-describedby={!guestsValid ? 'guests-error' : undefined} onChange={event => setGuests(event.target.value.replace(/\D/g, '').slice(0, 4))} />
+                    <button type="button" aria-label="More guests" disabled={guestsValid && guests >= 1000} onClick={() => stepGuests(1)}>+</button>
+                  </div>
+                  {!guestsValid && <p id="guests-error" className={styles.fieldError}>Enter 1 to 1,000 guests.</p>}
+                </div>
+                <div className={styles.field}>
+                  <label htmlFor="planner-budget">Drinks budget</label>
+                  <div className={styles.money}>
+                    <span aria-hidden="true">₹</span>
+                    <input id="planner-budget" inputMode="numeric" autoComplete="off" value={draft.budget} aria-invalid={budgetPaise === null || undefined} aria-describedby={budgetPaise === null ? 'budget-error' : undefined} onChange={event => patch({ budget: event.target.value.replace(/[^\d,]/g, '').slice(0, 12) })} />
+                  </div>
+                  {budgetPaise === null && <p id="budget-error" className={styles.fieldError}>Enter a budget in rupees.</p>}
                 </div>
               </div>
+              <fieldset className={styles.group}>
+                <legend>What do your guests like? Optional</legend>
+                <div className={styles.chips}>
+                  {TASTES.map(taste => {
+                    const on = draft.tastes.includes(taste)
+                    return <button type="button" key={taste} className={styles.chip} aria-pressed={on} onClick={() => answer({ tastes: on ? draft.tastes.filter(t => t !== taste) : [...draft.tastes, taste].slice(-2) })}>{capitalize(taste)}</button>
+                  })}
+                </div>
+              </fieldset>
+              <fieldset className={styles.group}>
+                <legend>How do they drink? Optional</legend>
+                <div className={styles.pair}>
+                  {DRINK_STYLES.map(style => <button type="button" key={style} className={styles.chip} aria-pressed={draft.style === style} onClick={() => answer({ style: draft.style === style ? null : style })}>{DRINK_STYLE_LABELS[style]}</button>)}
+                </div>
+              </fieldset>
+              <fieldset className={styles.group}>
+                <legend>What to buy</legend>
+                <p className={styles.pickNote}>{pickNote}</p>
+                <div className={styles.chips}>
+                  {CHIPS.map(chip => <button type="button" key={chip} className={styles.chip} aria-pressed={chips.includes(chip)} onClick={() => toggleChip(chip)}>{CHIP_LABELS[chip]}</button>)}
+                </div>
+              </fieldset>
+            </section>
+
+            <div className={styles.results}>
+              <section className={styles.listPanel} aria-labelledby="list-title">
+                <div className={styles.listHead}>
+                  <h2 id="list-title">Shopping list</h2>
+                  {list && <span className={styles.muted}>{guests} {guests === 1 ? 'guest' : 'guests'} · {list.bottles} {list.bottles === 1 ? 'bottle' : 'bottles'}</span>}
+                </div>
+                {!list && <p className={styles.empty}>Enter your guests and budget to see the list.</p>}
+                {list && !list.lines.length && <p className={styles.empty}>Pick at least one thing to buy.</p>}
+                {list && list.lines.length > 0 && <>
+                  <div className={styles.tableWrap} tabIndex={0} role="region" aria-label="Shopping list table"><table className={styles.table}>
+                    <caption className={styles.srOnly}>Shopping list by category</caption>
+                    <thead><tr><th scope="col">Category</th><th scope="col">Bottles</th><th scope="col">Line total</th></tr></thead>
+                    <tbody>{list.lines.map(line => <tr key={line.chip}>
+                      <th scope="row"><b>{line.label}</b><span>{line.bottle.name}</span></th>
+                      <td>{line.quantity}</td>
+                      <td><span className={styles.srOnly}>{line.quantity} × {shortMoney(line.bottle.pricePaise)} = </span>{shortMoney(line.subtotalPaise)}</td>
+                    </tr>)}</tbody>
+                  </table></div>
+                  <div className={styles.total}><span>Estimated total</span><b>{shortMoney(list.totalPaise)}</b></div>
+                  <div className={`${styles.meter} ${over ? styles.meterOver : ''}`.trim()} aria-hidden="true"><span style={{ width: `${Math.min(100, budgetPaise ? list.totalPaise / budgetPaise * 100 : 0)}%` }} /></div>
+                  <p className={styles.statusLine}>
+                    <span className={over ? styles.overBudget : styles.goodBudget}>{status}</span>
+                    <span className={styles.muted}>{perGuestMoney(list.perGuestPaise)} per guest · budget {shortMoney(budgetPaise ?? 0)}</span>
+                  </p>
+                  {list.cheaper && <p className={styles.hint}>{over ? 'Even the cheaper bottles are over your budget. Try fewer categories or a bigger budget.' : 'Switched to cheaper bottles to fit your budget.'}</p>}
+                  {list.missing.length > 0 && <p className={styles.hint}>Not in our catalogue right now: {list.missing.map(chip => CHIP_LABELS[chip]).join(', ')}.</p>}
+                  <div className={styles.exportRow}>
+                    {shareButton(styles.shareWide)}
+                    <button type="button" className={styles.secondary} disabled={busy} onClick={() => void copy()}>Copy</button>
+                    <button type="button" className={styles.secondary} disabled={busy} onClick={() => void print()}>Print</button>
+                  </div>
+                </>}
+                {message && <p className={`${styles.notice} ${message === copiedMessage ? styles.noticeOk : ''}`.trim()} role="status">{message}</p>}
+                {copyText && <textarea className={styles.copyBox} aria-label="Your list" readOnly value={copyText} rows={8} onFocus={event => event.currentTarget.select()} />}
+              </section>
+
+              {list && list.lines.length > 0 && <section className={styles.choose} aria-labelledby="choose-title">
+                <h2 id="choose-title">Choose your bottles</h2>
+                {list.lines.map(line => <div className={styles.category} key={line.chip}>
+                  <div className={styles.categoryHead}>
+                    <div>
+                      <h3>{line.label}</h3>
+                      <span className={styles.muted}>Suggested {line.suggested} {line.suggested === 1 ? 'bottle' : 'bottles'} · {sizeLabel(line.bottle.sizeMl)} each</span>
+                    </div>
+                    <div className={styles.qty}>
+                      <button type="button" aria-label={`One fewer ${line.label} bottle`} disabled={line.quantity <= 1} onClick={() => setQuantity(line.chip, line.quantity - 1)}>−</button>
+                      <span aria-live="polite"><span className={styles.srOnly}>{line.label}: </span>{line.quantity}</span>
+                      <button type="button" aria-label={`One more ${line.label} bottle`} disabled={line.quantity >= 1000} onClick={() => setQuantity(line.chip, line.quantity + 1)}>+</button>
+                    </div>
+                  </div>
+                  <div className={styles.options} role="group" aria-label={`Choose a ${line.label} bottle`}>
+                    {line.options.map((bottle, index) => <button type="button" key={bottle.id} className={styles.option} aria-pressed={index === line.choice} onClick={() => patch({ picks: { ...draft.picks, [line.chip]: bottle.id } })}>
+                      <span className={styles.optionArt} aria-hidden="true"><img src={`/images/drinks/${bottle.kind}.svg`} alt="" width={36} height={36} /></span>
+                      <span className={styles.optionText}>
+                        <span>{bottle.name}</span>
+                        <small>{sizeLabel(bottle.sizeMl)}</small>
+                        <b>{shortMoney(bottle.pricePaise)}</b>
+                      </span>
+                    </button>)}
+                  </div>
+                </div>)}
+                <p className={styles.hint}>Estimate: about 3 drinks a guest. Alcohol only. {PRICE_LABEL}; shops may differ.</p>
+              </section>}
             </div>
-            {copyFallback && <label className={styles.searchLabel}>Full list for copying<textarea readOnly className={styles.shareText} value={planText(plan)} onFocus={event => event.target.select()} /></label>}
-          </>}
-        </fieldset>
-        {busy && <p role="status" className={`${styles.hint} ${styles.srOnly}`}>Working… Your choices are retained.</p>}
-      </section>
-      </main>
-      <ToolFooter />
-      <dialog ref={inventoryDialog} className={`${styles.modal} ${styles.inventoryDrawer} ${dragOver ? styles.validDrop : ''}`.trim()} aria-labelledby="inventory-title" onCancel={event => { event.preventDefault(); closeInventory() }} onDragOverCapture={dropZoneOver} onDragLeave={dropZoneLeave} onDropCapture={dropZoneDrop}>
-        <button className={styles.close} onClick={closeInventory} aria-label="Close plan"><CloseIcon size={22} /></button><div className={styles.sheetHead}><h2 id="inventory-title" tabIndex={-1}>Your list</h2>{infoButton()}</div>
-        <p role="status" className={styles.srOnly}>{announcement}</p>{drawerOpen && inventoryContents('drawer')}
-        {drawerOpen && toast && <div className={styles.toast} role="status"><span>{toast.message}</span><button className={styles.toastAction} onClick={() => toast.restore()}>Undo</button></div>}
-      </dialog>
-      <dialog ref={categoryDialog} className={`${styles.modal} ${styles.categorySheet}`} aria-labelledby="category-sheet-title" onCancel={event => { event.preventDefault(); closeCategoryPicker() }}><h2 id="category-sheet-title">Categories</h2><p>{products.length.toLocaleString('en-IN')} drinks. Browsing does not change your list.</p><div className={styles.categorySheetChoices}>{allCategories.map(category => <button key={category} className={browsing === category ? styles.filterActive : styles.filter} aria-current={browsing === category || undefined} onClick={() => { setActiveCategory(category); closeCategoryPicker() }}>{category}</button>)}</div><button className={styles.secondary} onClick={closeCategoryPicker}>Cancel</button></dialog>
-      <dialog ref={infoDialog} className={`${styles.modal} ${styles.basicsPanel}`} aria-labelledby="info-title" onCancel={event => { event.preventDefault(); closeInfo() }}>
-        <button className={styles.close} onClick={closeInfo} aria-label="Close how quantities are chosen"><CloseIcon size={22} /></button>
-        <h2 id="info-title" tabIndex={-1}>How are quantities chosen?</h2>
-        {estimate && <div role="note" className={styles.infoNote}><p><strong>{SUGGEST_LABEL}</strong> Original estimate for {estimate.drinkers} {estimate.drinkers === 1 ? 'drinker' : 'drinkers'} · target {estimate.totalServings} servings · packs cover about {estimate.coveredServings} category-specific servings · original total {formatMoney(estimate.totalPaise)} · original estimated cost per guest {formatMoney(estimate.perGuestPaise)}. Edits to your list do not change these original figures.</p>{estimate.notes.map(note => <p key={note}>{note}</p>)}</div>}
-        <ul className={styles.infoList}>
-          <li>Drinking guests × drinks each = total drinks.</li>
-          <li>Drinks are split evenly across the categories you pick.</li>
-          <li>We pick a mid-priced pack in each category and round up to whole bottles, or cheaper if you’re over budget.</li>
-        </ul>
-        <p className={styles.hint}>A shopping estimate, not a drinking recommendation. Changing guests doesn’t change your quantities.</p>
-        <div className={styles.actions}><button className={styles.primary} onClick={closeInfo}>Done</button></div>
-      </dialog>
-      <dialog ref={basicsDialog} className={`${styles.modal} ${styles.basicsPanel}`} aria-labelledby="basics-title" onCancel={event => { event.preventDefault(); closeBasics() }}>
-        <button className={styles.close} onClick={() => closeBasics()} aria-label="Close guests and budget"><CloseIcon size={22} /></button>
-        <h2 id="basics-title" tabIndex={-1} ref={basicsHeading}>Guests & budget</h2>
-        {basicsFields('dialog')}
-        <div className={styles.actions}><button className={styles.secondary} onClick={() => closeBasics()}>Cancel</button><button className={styles.primary} onClick={() => closeBasics(true)}>Save changes</button></div>
-      </dialog>
-      <dialog ref={confirmationDialog} className={`${styles.modal} ${styles.confirmation}`} aria-labelledby="confirmation-title" aria-describedby="confirmation-description" onCancel={event => { event.preventDefault(); cancelConfirmation() }}>
-        {confirmation && <>
-          <h2 id="confirmation-title">{confirmationCopy(confirmation.kind, inventory.length).title}</h2>
-          <p id="confirmation-description">{confirmationCopy(confirmation.kind, inventory.length).description}</p>
-          <div className={styles.actions}>
-            <button ref={cancelButton} autoFocus className={styles.secondary} onClick={cancelConfirmation}>{confirmationCopy(confirmation.kind, inventory.length).keep}</button>
-            <button className={styles.primary} onClick={confirmAction}>{confirmationCopy(confirmation.kind, inventory.length).action}</button>
           </div>
         </>}
-      </dialog>
-      <dialog ref={filterDialog} className={`${styles.modal} ${styles.filterPanel}`} aria-labelledby="filter-title" onCancel={event => { event.preventDefault(); closeFilters() }}>
-        <button className={styles.close} onClick={closeFilters} aria-label="Close filters"><CloseIcon size={22} /></button>
-        <h2 id="filter-title" tabIndex={-1} ref={filterHeading}>Filters</h2>
-        {browsing && <><p>Filters apply to {search ? 'all search results' : browsing}.</p>
-          <fieldset className={styles.facet}><legend>Brand</legend><div className={styles.facetChips}>{brandOptions.map(brand => <button key={brand} className={selectedBrands.includes(brand) ? styles.filterActive : styles.filter} aria-pressed={selectedBrands.includes(brand)} onClick={() => setBrands(current => { const selected = current[filterScope] || []; return { ...current, [filterScope]: selected.includes(brand) ? selected.filter(value => value !== brand) : [...selected, brand] } })}>{brand || 'Unlisted brand'} ({categoryProducts.filter(product => product.brand === brand).length})</button>)}</div></fieldset>
-          <fieldset className={styles.facet}><legend>Pack size</legend><div className={styles.facetChips}>{sizeOptions.map(size => <button key={size} className={selectedSizes.includes(size) ? styles.filterActive : styles.filter} aria-pressed={selectedSizes.includes(size)} onClick={() => setSizes(current => { const selected = current[filterScope] || []; return { ...current, [filterScope]: selected.includes(size) ? selected.filter(value => value !== size) : [...selected, size] } })}>{size} ml ({categoryProducts.filter(product => product.sizeMl === size).length})</button>)}</div></fieldset>
-          <fieldset className={styles.facet}><legend>Within budget</legend><div className={styles.facetChips}><button className={withinOn ? styles.filterActive : styles.filter} aria-pressed={withinOn} onClick={() => setWithin(current => ({ ...current, [filterScope]: !withinOn }))}>Within budget ({fitting.length})</button></div></fieldset>
-        </>}
-        <div className={styles.actions}><button className={styles.secondary} onClick={resetFilters}>Clear all filters</button><button className={styles.primary} onClick={closeFilters}>Done</button></div>
-      </dialog>
-      {!drawerOpen && toast && <div className={styles.toast} role="status"><span>{toast.message}</span><button className={styles.toastAction} onClick={() => toast.restore()}>Undo</button></div>}
+      </main>
+      {ready && list && list.lines.length > 0 && <section className={styles.bar} aria-label="List total">
+        <div><strong>{shortMoney(list.totalPaise)}</strong><span className={over ? styles.overBudget : styles.goodBudget}>{status}</span></div>
+        {shareButton('')}
+      </section>}
+      <ToolFooter />
     </div>
-    <div className={`${styles.printOnly} ${toolFonts}`} data-theme="tools">{exported && <Receipt plan={exported} printing />}</div>
+    <div className={`${styles.printOnly} ${toolFonts}`} data-theme="tools">{printPlan && <Receipt plan={printPlan} />}</div>
   </>
 }

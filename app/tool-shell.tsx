@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AccountLink from './account/account-link'
 import { archivo, manrope } from './fonts'
 import { Wordmark } from './logo'
 import NavPending from './nav-pending'
@@ -19,8 +20,7 @@ export function ToolHeader({ current }: { current?: ToolName }) {
       <Link href="/party-planner" aria-current={current === 'planner' ? 'page' : undefined}>Plan a party<NavPending /></Link>
       <Link href="/find-my-drink" aria-current={current === 'finder' ? 'page' : undefined}>Find a drink<NavPending /></Link>
     </nav>
-    {/* Only the Planner saves something you can see (your list), so only its header says so. */}
-    {current === 'planner' && <span className={styles.saved}>Saved on this device · no account needed</span>}
+    <AccountLink className={styles.account} />
   </header>
 }
 

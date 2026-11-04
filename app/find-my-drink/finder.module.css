@@ -1,6 +1,6 @@
-/* Find My Drink (Pre-Party R5, Black Tie BT6). Plain CSS on the design tokens (app/tokens.css) and the sf- primitives (app/ui.css).
+/* Find My Drink (Pre-Party R5, Black Tie BT6, tools redesign TR3). Plain CSS on the design tokens (app/tokens.css) and the sf- primitives (app/ui.css).
    The root carries data-theme="tools" (dark, Black Tie); print is black on white. Pink (--accent) is the one main action per
-   screen: Next in Guide me, the search button, View recipe, Start making, Next in cook mode. Headings are Archivo in capitals.
+   screen: the search button, View recipe, Start making, Next in cook mode, Show N bottles. Headings are Archivo in capitals.
    Recipe photos stay in full colour; a pink line runs under the photo on hover or keyboard focus.
    Lit states (BT8): chosen answers, chips, ticked ingredients and progress light up with the lit tokens.
    Text sizes and line heights are rem so a 200% text setting scales them; widths, borders and tap targets stay in px.
@@ -18,8 +18,7 @@
 .shell h2 { font-size: min(1.5rem, 9vw); }
 .shell h3 { font-size: 1.125rem; line-height: 1.15; }
 .shell :is(h1, h2, h3):focus { outline: none; }
-.hint, .disclaimer { margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
-.disclaimer { max-width: 64ch; }
+.hint { margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
 .eyebrow { margin: 0; color: var(--detail); font-size: 0.75rem; line-height: 1rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
 .lede { margin: 0; color: var(--text-muted); font-size: 1.0625rem; line-height: 1.625rem; }
 
@@ -41,7 +40,6 @@
 /* Notices and states carry a glyph and a word, never colour alone. */
 .notice { display: flex; gap: var(--space-3); align-items: flex-start; margin: 0; padding: 12px 16px; border-radius: var(--radius-md); background: var(--surface-raised); font: 600 0.875rem/1.25rem var(--font-text); overflow-wrap: anywhere; }
 .notice::before { content: "!"; content: "!" / ""; flex: none; color: var(--warning); font-weight: 800; }
-.noticeOk::before { content: "✓"; content: "✓" / ""; color: var(--success); }
 .stateCard { display: grid; justify-items: center; gap: var(--space-2); max-width: 440px; margin: var(--space-6) auto; padding: var(--space-5) 0; text-align: center; }
 .stateGlyph { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line-strong); color: var(--warning); }
 .stateCard :is(h2, h3) { font-size: min(1.5rem, 9vw); }
@@ -55,30 +53,14 @@
 .guideBack { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); align-items: center; margin-bottom: var(--space-4); }
 .guideSetup { display: grid; gap: var(--space-4); width: 100%; margin-inline: auto; max-width: 720px; align-content: start; }
 /* Centred columns: width 100% stops the auto margins shrinking a grid item to its content. */
-.entry { display: grid; gap: var(--space-4); width: 100%; margin-inline: auto; max-width: 720px; }
-.routes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-3); }
-.route { position: relative; display: flex; flex-direction: column; justify-content: flex-start; gap: var(--space-4); min-height: 150px; padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); text-align: left; text-decoration: none; font: inherit; cursor: pointer; transition: background-color .16s ease; }
-.route:hover { background: var(--surface-raised); border-color: var(--lit); }
-.route::after, .imgWrap::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .45s ease; pointer-events: none; }
-.route:is(:hover, :focus-visible)::after, .product:is(:hover, :has(a:focus-visible)) .imgWrap::after { transform: scaleX(1); }
-.routeLead, .routeLead:hover { background: var(--highlight); border-color: var(--highlight); color: var(--on-highlight); }
-.routeIcon { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: var(--radius-md); background: var(--surface-raised); }
-.routeLead .routeIcon { background: color-mix(in srgb, var(--on-highlight) 10%, transparent); }
-.route h2 { font-size: min(1rem, 4.2vw); overflow-wrap: normal; }
-.route p { margin: var(--space-1) 0 0; font-size: 0.9375rem; line-height: 1.3125rem; }
-.route:not(.routeLead) p { color: var(--text-muted); }
-@media (min-width: 1024px) { .routes { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); } .route { min-height: 200px; padding: var(--space-5); } }
 
-/* Guide me: stage bar, choices, results. */
-.stages { width: 100%; margin: 0 auto var(--space-3); max-width: 720px; }
-.stages li { min-width: 0; overflow-wrap: anywhere; }
-/* The six-step quiz bar: on narrow screens only the current step keeps its label, so 200% text cannot push it sideways. Labels stay in the accessibility tree. */
-@media (max-width: 599px) { .stages:has(li:nth-child(4)) li:not([aria-current="step"]) { font-size: 0; line-height: 0; gap: 0; } }
+.imgWrap::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .45s ease; pointer-events: none; }
+.product:is(:hover, :has(a:focus-visible)) .imgWrap::after { transform: scaleX(1); }
+
+/* Choices: Surprise me's type chips and Find a Drink's "How do you like it?" cards. */
 .guideFieldset { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: var(--space-3); }
 .guideFieldset legend { padding: 0; margin-bottom: var(--space-2); font: 700 0.9375rem/1.25rem var(--font-text); }
-.guideChoices, .guideActions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
-.guideActions { margin-top: var(--space-3); }
-.choiceCards { display: grid; gap: var(--space-2); }
+.guideChoices { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
 .choiceCard { display: grid; gap: 2px; min-height: 64px; padding: var(--space-3) var(--space-4); border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; }
 .choiceCard b { font-weight: 700; }
 .choiceCard span { color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
@@ -89,57 +71,20 @@
 .guideLabel { display: grid; gap: 6px; min-width: 0; font: 700 0.9375rem/1.25rem var(--font-text); }
 .guideLabel :is(input, select), .pantrySearch { width: 100%; min-width: 0; min-height: var(--target-primary); padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: 500 1rem/1.375rem var(--font-text); }
 .guideLabel input::placeholder, .pantrySearch::placeholder, .searchField input::placeholder { color: var(--text-muted); opacity: 1; }
-.guideCheck { display: flex; gap: var(--space-3); align-items: center; min-height: var(--target-min); font-weight: 600; }
-.guideCheck input, .pantryChecklist input, .checkItem input { flex: 0 0 auto; accent-color: var(--accent); }
-.guideCheck input { width: 22px; height: 22px; }
-.guidePreferences { display: grid; gap: var(--space-5); min-width: 0; }
-.guideIngredientPicker { min-width: 0; }
-.guideIngredientPicker summary { display: flex; align-items: center; min-height: var(--target-min); font-weight: 700; cursor: pointer; }
-.guideIngredientPicker .pantryContent { padding: 0; background: none; }
-.guideIngredientPicker .pantryChecklist { grid-template-columns: minmax(0, 1fr); max-height: 320px; }
-.guideLayout { display: grid; gap: var(--space-5); min-width: 0; }
-.guideResultHeading { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-4); align-items: flex-start; justify-content: space-between; }
-.guideResultHeading > div { display: grid; gap: var(--space-2); min-width: 0; }
-.guideDesktopPreferences { display: none; }
-.guideResults { display: grid; gap: var(--space-6); align-content: start; min-width: 0; }
-.guideResults section { display: grid; gap: var(--space-3); }
-.resultFacts { margin: 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
-.guideGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--space-3); }
-.guideRecommendation { display: grid; gap: var(--space-2); align-content: start; min-width: 0; }
-/* Spirit quiz result (Guide me): the match is the main answer, its cocktails follow. */
-.spiritResult { --focus: var(--on-bar); --bg: var(--bar); display: grid; gap: var(--space-3); max-width: 720px; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--bar); color: var(--on-bar); }
-/* The match is the payoff of the quiz: a raised block with a bone rule and champagne labels. */
-.spiritResult { border-top: 1px solid var(--line-strong); }
-.spiritResult .eyebrow { color: var(--detail); }
-.spiritResult .lede { color: var(--on-bar); }
-.spiritResult .secondary { border-color: var(--on-bar-muted); background: transparent; color: var(--on-bar); }
-.spiritResult .secondary:hover { background: color-mix(in srgb, var(--on-bar) 10%, transparent); }
-.spiritResult .backLink { color: var(--on-bar); }
-.spiritResult .backLink:hover { background: color-mix(in srgb, var(--on-bar) 10%, transparent); }
-.spiritResult h1 { font-size: min(clamp(2.5rem, 1.6rem + 3.6vw, 4rem), 16vw); line-height: 1; }
-.spiritFacts { display: grid; gap: var(--space-3); margin: 0; }
-.spiritFacts div { display: grid; gap: 2px; }
-.spiritFacts dt { color: var(--detail); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
-.spiritFacts dd { margin: 0; font-size: 1rem; line-height: 1.5rem; }
+.pantryChecklist input, .checkItem input { flex: 0 0 auto; accent-color: var(--accent); }
+/* Surprise me and the dialogs. */
 .guideRandom { display: grid; gap: var(--space-4); width: 100%; margin-inline: auto; max-width: 440px; }
 .guideRandom .product { width: 100%; }
 .randomActions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
-.guideDialog, .filterDialog { inset: 0; width: min(720px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: var(--space-4); overflow-y: auto; border: 0; border-radius: var(--radius-lg); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-dialog); }
-.guideDialog::backdrop, .filterDialog::backdrop { background: var(--scrim); }
-:global(html):has(:is(.guideDialog, .filterDialog)[open]) { overflow: hidden; }
+.filterDialog { inset: 0; width: min(720px, calc(100% - 24px)); max-width: none; max-height: calc(100dvh - 24px); margin: auto; padding: var(--space-4); overflow-y: auto; border: 0; border-radius: var(--radius-lg); background: var(--surface-raised); color: var(--text); box-shadow: var(--shadow-dialog); }
+.filterDialog::backdrop { background: var(--scrim); }
+:global(html):has(.filterDialog[open]) { overflow: hidden; }
 .dialogHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
 .dialogHeading h2 { font-size: min(1.75rem, 9vw); }
 .dialogClose { display: inline-grid; place-items: center; flex: none; width: var(--target-min); height: var(--target-min); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--text); font-size: 1.25rem; cursor: pointer; }
 .dialogClose:hover { background: var(--surface); }
 .dialogActions { position: sticky; bottom: calc(-1 * var(--space-4)); display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: flex-end; margin: var(--space-4) calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); padding: var(--space-3) var(--space-4); background: var(--surface-raised); border-top: 1px solid var(--line); }
-@media (max-width: 767px) { .guideDialog, .filterDialog { inset: auto 0 0 0; width: 100%; max-height: 92dvh; margin: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; } .guideDialog { inset: 0; max-height: 100dvh; height: 100dvh; border-radius: 0; } .guideDialog .dialogActions { }}
-@media (min-width: 768px) { .guideGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); } }
-@media (min-width: 1024px) {
-  .guideLayout { grid-template-columns: minmax(280px, 1fr) minmax(0, 2.4fr); align-items: start; }
-  .guideResultHeading { grid-column: 1 / -1; }
-  .guideDesktopPreferences { display: grid; gap: var(--space-4); min-width: 0; padding: var(--space-5); border-radius: var(--radius-lg); background: var(--surface); }
-  .guideEditButton { display: none; }
-}
+@media (max-width: 767px) { .filterDialog { inset: auto 0 0 0; width: 100%; max-height: 92dvh; margin: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }}
 
 /* Recipe card: image with a type tag, name, facts. One link per card, the name link covers the card. */
 .product { position: relative; display: block; min-width: 0; scroll-margin-top: 96px; }
@@ -180,7 +125,6 @@
 .activeFilters .filterActive { background: var(--surface-raised); border-color: transparent; color: var(--text); }
 .listing .resultsPanel { grid-area: results; display: grid; gap: var(--space-5); min-width: 0; }
 .statusLine { margin: 0; color: var(--text-muted); font-size: 0.875rem; }
-.listing .browseDisclaimer { grid-area: foot; max-width: 64ch; margin: var(--space-4) 0 0; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
 .listing .filterPanel { grid-area: filters; display: block; min-width: 0; }
 .listing .filterPanel > .facetContent, .listing .filterPanel > .filterFallback > .facetContent { display: grid; gap: var(--space-2); }
 .filterFallback { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
@@ -277,7 +221,6 @@
 .sourceContext a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--text); text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
 .related { grid-area: related; margin-top: var(--space-6); min-width: 0; }
 .related h2 { margin-bottom: var(--space-3); }
-.detailPage .disclaimer { grid-area: foot; margin-top: var(--space-6); }
 @media (max-width: 1023px) { .descriptionClamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; } }
 @media (min-width: 768px) { .relatedGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-4); } }
 @media (min-width: 1024px) {
@@ -327,9 +270,74 @@
   /* The loader keeps playing: it is a small loading indicator, not decorative motion (see .sf-loader in ui.css). */
   .shell *:not(:global(.sf-loader) *), .shell *::before, .shell *::after { animation: none !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
 }
+/* Find a Drink (tools redesign, TR3): four questions beside live results. One column below 1024px, questions first.
+   Chosen answers use the lit states; there is no solid pink action on this screen (answers update the results as you go). */
+.finder { display: grid; gap: var(--space-5); max-width: 1312px; margin: 0 auto; padding: var(--space-5) 16px var(--space-7); }
+.finderHead { display: grid; gap: var(--space-2); }
+.finderLayout { display: grid; gap: var(--space-6); min-width: 0; }
+.questions { display: grid; gap: var(--space-5); align-content: start; min-width: 0; padding: var(--space-5) 20px; border: 1px solid var(--line); background: var(--surface); }
+.question { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: var(--space-3); }
+.question legend { padding: 0; margin-bottom: var(--space-3); color: var(--detail); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
+.answerPair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.answerPair .filter { justify-content: center; text-align: center; }
+.howChoices { display: grid; gap: var(--space-2); }
+.howChoices .choiceCard { min-height: 56px; }
+.moreWays { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--line); }
+.moreWays a, .ideasHead a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--text); font: 700 0.875rem/1.25rem var(--font-text); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
+.moreWays a:hover, .ideasHead a:hover { text-decoration-color: var(--lit); color: var(--lit-text); }
+.finderResults { display: grid; gap: var(--space-6); align-content: start; min-width: 0; }
+
+.spiritPanel { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); padding: var(--space-5); border: 1px solid var(--text); background: var(--surface); }
+.spiritPanel > div { display: grid; gap: var(--space-1); flex: 1 1 260px; min-width: 0; }
+.spiritPanel h2 { font-size: min(2rem, 10vw); line-height: 1.1; }
+.spiritWhy { margin: 0; color: var(--text-muted); }
+
+.ideas { display: grid; gap: var(--space-4); min-width: 0; padding-top: var(--space-5); border-top: 1px solid var(--line); }
+.ideasHead, .bottlesHead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+.ideasHead h2 { font-size: min(1.25rem, 6.4vw); line-height: 1.15; }
+.finderResults > .ideas:first-child { padding-top: 0; border-top: 0; }
+.ideaCards { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-5) var(--space-3); }
+
+.bottles { display: grid; gap: var(--space-4); min-width: 0; }
+.bottlesHead h2 { font-size: min(1.25rem, 6.4vw); line-height: 1.15; }
+.bottleTools { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.sortLabel { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text-muted); font: 600 0.875rem/1.25rem var(--font-text); }
+.sortLabel select { min-height: var(--target-min); padding: 0 12px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--text); font: 600 0.9375rem/1.25rem var(--font-text); }
+.sortLabel select:hover { border-color: var(--lit); }
+.bottleGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
+.bottle { display: flex; min-width: 0; border: 1px solid var(--line); background: var(--surface); }
+.bottleArt { display: grid; place-items: center; flex: 0 0 88px; min-height: 120px; border-right: 1px solid var(--line); background: var(--surface-raised); }
+.bottleText { display: grid; align-content: start; gap: 2px; min-width: 0; padding: 14px 16px 16px; }
+.bottleBrand { color: var(--detail); font: 700 0.75rem/1rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; overflow-wrap: anywhere; }
+.bottleText strong { font-size: 1rem; line-height: 1.35; overflow-wrap: anywhere; }
+.bottleSize { color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
+.bottlePrice { margin-top: var(--space-1); font-size: 1.125rem; line-height: 1.5rem; font-variant-numeric: tabular-nums lining-nums; }
+.bottleQuiet { background: var(--bg); }
+.bottleQuiet .bottleBrand { color: var(--text-muted); }
+.bottleQuiet .bottleArt { background: var(--surface); opacity: .7; }
+.shell .overTitle { margin-top: var(--space-3); color: var(--text-muted); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; }
+.emptyNote { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-5); border: 1px dashed var(--line-strong); color: var(--text-muted); }
+.bottleFilterGroup { min-width: 0; margin: 0 0 var(--space-4); padding: 0; border: 0; }
+.bottleFilterGroup legend { padding: 0; margin-bottom: var(--space-2); color: var(--detail); font: 700 0.8125rem/1.25rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
+@media (min-width: 600px) {
+  .bottleGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bottle { flex-direction: column; }
+  .bottleArt { flex: none; min-height: 0; aspect-ratio: 4 / 3; border-right: 0; border-bottom: 1px solid var(--line); }
+  .ideaCards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 768px) { .finder { padding: var(--space-6) 32px var(--space-7); } .questions { padding: var(--space-5); } }
+@media (min-width: 1024px) {
+  .finder { padding: var(--space-6) 64px var(--space-7); gap: var(--space-6); }
+  .finderLayout { grid-template-columns: 360px minmax(0, 1fr); gap: 40px; align-items: start; }
+  /* The answers stay in view while the results scroll (owner, 2026-11-03), just under the sticky tool header.
+     A tall panel (200% text, short window) scrolls inside itself instead of hiding its last answers. */
+  .questions { position: sticky; top: calc(4.75rem + var(--space-5)); max-height: calc(100dvh - 4.75rem - 2 * var(--space-5)); overflow-y: auto; overscroll-behavior: contain; }
+  .ideaCards, .bottleGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
 @media print {
   .shell { background: #fff; color: #000; }
-  .imgWrap::after, .cook, .backLink, .detailJumps, .related, .sourceContext, .heroImage, .moreText, .gatherBar, .discoveryControls, .filterPanel { display: none !important; }
+  .imgWrap::after, .cook, .backLink, .detailJumps, .related, .sourceContext, .heroImage, .moreText, .gatherBar, .discoveryControls, .filterPanel, .questions, .bottleTools, .bottleArt { display: none !important; }
   .detailBody { padding: 0; }
   .detailPage, .making { display: block; }
   .descriptionClamp { display: block; overflow: visible; }

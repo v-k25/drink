@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import AccountLink from './account/account-link'
 import EarlyAccessForm from './early-access/form'
 import MobileMenu from './mobile-menu'
 import { ArrowRightIcon } from './icons'
@@ -35,11 +36,13 @@ export default function Home() {
           <a className={styles.wordmark} href="#top" aria-label="Socifer home"><Wordmark label={null} /></a>
           <nav className={styles.desktopNav} aria-label="Main navigation">
             {navLinks.map(([href, label]) => href.startsWith('/') ? <Link href={href} key={href}>{label}<NavPending /></Link> : <a href={href} key={href}>{label}</a>)}
+            <AccountLink />
           </nav>
           {/* Secondary here: the hero's Join the list is the one pink button on the first screen. */}
           <a className={`sf-btn sf-btn--secondary ${styles.navCta}`} href="#early-access">Join the list</a>
           <MobileMenu className={styles.mobileMenu}>
             {navLinks.map(([href, label]) => href.startsWith('/') ? <Link href={href} key={href}>{label}<NavPending /></Link> : <a href={href} key={href}>{label}</a>)}
+            <AccountLink />
             <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
           </MobileMenu>
         </div>

@@ -173,51 +173,28 @@ fieldset.sf-fieldset legend { font: 600 0.9375rem/1.25rem var(--font-text); marg
 .sf-age { max-width: 400px; padding: var(--space-6) var(--space-5) var(--space-5); background: var(--surface); border-radius: var(--radius-lg); text-align: left; }
 .sf-age .mark { font: 800 2.75rem/.95 var(--font-display); letter-spacing: -.01em; text-transform: uppercase; color: var(--text); }
 
-/* Loading animation (HornLoader in app/logo.tsx, "the Devil's Circle"), one 3.6s loop with a sharp ease: the plain
-   pink O wakes up (eyes open, grin opens, tail curls out), sticks its tongue out with a little bounce, winks, then resets
-   to the plain O. .sf-nav-loading covers the page while a link to another page loads (app/nav-pending.tsx), appearing only if
-   the wait passes 150ms. It keeps playing under reduced motion: it is a small loading indicator with no large
-   movement (only the glow and the sweeping line stop). Colours: the O and tail are --lit; eyes and fangs bone; pupils --on-accent; the mouth and
-   tongue use the loader's own black and red. */
-.sf-loader { --horn-mouth: #0a0a0b; --horn-tongue: #d4102c; --horn-tongue-line: #8e0a1f; --horn-bone: #eee8df; display: block; width: 70px; height: 60px; overflow: visible; }
-.sf-loader g, .sf-loader path { transform-box: fill-box; animation-duration: 3.6s; animation-iteration-count: infinite; animation-timing-function: cubic-bezier(.7, 0, .2, 1); }
-.sf-horn-o, .sf-horn-tip { fill: var(--lit); }
-.sf-horn-tail-line { fill: none; stroke: var(--lit); stroke-width: 30; stroke-linecap: round; }
-.sf-horn-white, .sf-horn-fang { fill: var(--horn-bone); }
-.sf-horn-pupil { fill: var(--on-accent); }
-.sf-horn-mouth { fill: var(--horn-mouth); }
-.sf-horn-tongue-fill { fill: var(--horn-tongue); }
-.sf-horn-tongue-line { fill: none; stroke: var(--horn-tongue-line); stroke-width: 9; stroke-linecap: round; }
-.sf-horn-eye { transform-origin: center; transform: scaleY(0); animation-name: sf-horn-eye; }
-.sf-horn-wink { animation-name: sf-horn-wink; }
-.sf-horn-grin { transform-origin: 50% 30%; transform: scaleY(0); animation-name: sf-horn-grin; }
-.sf-horn-tongue { transform-origin: 50% 0; transform: scaleY(0); animation-name: sf-horn-tongue; }
-.sf-horn-tail { transform-origin: 0 60%; transform: scale(0) rotate(-20deg); animation-name: sf-horn-tail; }
-@keyframes sf-horn-eye { 0%, 8% { transform: scaleY(0); } 18%, 70% { transform: scaleY(1); } 78%, 100% { transform: scaleY(0); } }
-@keyframes sf-horn-wink { 0%, 8% { transform: scaleY(0); } 18%, 46% { transform: scaleY(1); } 50% { transform: scaleY(.08); } 55%, 70% { transform: scaleY(1); } 78%, 100% { transform: scaleY(0); } }
-@keyframes sf-horn-grin { 0%, 14% { transform: scaleY(0); } 24%, 70% { transform: scaleY(1); } 80%, 100% { transform: scaleY(0); } }
-@keyframes sf-horn-tongue { 0%, 26% { transform: scaleY(0); } 34% { transform: scaleY(1.12); } 38% { transform: scaleY(.94); } 42%, 64% { transform: scaleY(1); } 72%, 100% { transform: scaleY(0); } }
-@keyframes sf-horn-tail { 0%, 14% { transform: scale(0) rotate(-20deg); } 28% { transform: scale(1.05) rotate(4deg); } 34%, 70% { transform: scale(1) rotate(0); } 80%, 100% { transform: scale(0) rotate(-20deg); } }
-/* Branded loading screen (LoadingScreen in app/logo.tsx): the loader large in a slow pink glow and a thin pink line
-   sweeping beneath. Under reduced motion the glow is still and the line is hidden. */
-.sf-ls { position: relative; display: grid; justify-items: center; gap: 26px; }
-.sf-ls-glow { position: absolute; top: 50%; left: 50%; width: 460px; height: 460px; max-width: 120vw; max-height: 120vw; transform: translate(-50%, -62%); background: radial-gradient(circle, color-mix(in srgb, var(--lit) 24%, transparent) 0%, color-mix(in srgb, var(--lit) 8%, transparent) 38%, transparent 66%); pointer-events: none; animation: sf-ls-glow 3.6s ease-in-out infinite; }
-.sf-ls .sf-loader { position: relative; width: 150px; height: 128px; }
-.sf-ls-bar { position: relative; display: block; width: 168px; height: 2px; overflow: hidden; background: color-mix(in srgb, var(--text) 14%, transparent); }
-.sf-ls-bar span { position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: var(--lit); animation: sf-ls-sweep 1.3s cubic-bezier(.7, 0, .2, 1) infinite; }
-@keyframes sf-ls-glow { 0%, 100% { opacity: .65; } 50% { opacity: 1; } }
-@keyframes sf-ls-sweep { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
-/* Once-per-visit intro (app/layout.tsx): hidden unless the inline script put .sf-intro-on on <html>. Plays one wink
-   (the loader's wink is at ~1.8s), then the screen closes into a circle in the middle and is gone (~2.8s); it never
+/* Loading screen (LoadingScreen in app/logo.tsx), "Pour": the logo's O on black, dim, filling with pink like a drink being
+   poured: the level rises for 1.9s with a wave on top, holds, drains, and pours again (2.8s a round). .sf-nav-loading covers
+   the page while a link to another page loads (app/nav-pending.tsx), appearing only if the wait passes 150ms. It keeps
+   playing under reduced motion: it is a small loading indicator with no large movement. Transforms are in SVG user units. */
+.sf-loader { display: block; width: 88px; height: 88px; overflow: visible; }
+.sf-pour-empty { fill: color-mix(in srgb, var(--lit) 24%, var(--bg)); }
+.sf-pour-wave { fill: var(--lit); animation: sf-pour-wave .9s linear infinite; }
+.sf-pour-level { animation: sf-pour-level 2.8s cubic-bezier(.5, 0, .3, 1) infinite; }
+@keyframes sf-pour-wave { to { transform: translateX(-440px); } }
+@keyframes sf-pour-level { 0% { transform: translateY(900px); } 68%, 84% { transform: translateY(-70px); } 100% { transform: translateY(900px); } }
+/* Once-per-visit intro (app/layout.tsx): hidden unless the inline script put .sf-intro-on on <html>. Holds while one
+   pour fills the O (2.05s), then the screen closes into a circle in the middle and is gone (~2.8s); it never
    takes clicks, so the page works underneath. */
 /* Its own colours (the Black Tie values): it sits outside any [data-theme] root, so pages and scripts that look up the
    first [data-theme] element still find the page. */
-.sf-intro { --bg: #0a0a0b; --lit: #ff2d87; --accent: #ff2d87; --on-accent: #0a0a0b; --text: #eee8df; display: none; }
+.sf-intro { --bg: #0a0a0b; --lit: #ff2d87; display: none; }
 .sf-intro-on .sf-intro { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--bg); pointer-events: none; clip-path: circle(150% at 50% 46%); animation: sf-intro-out .75s cubic-bezier(.7, 0, .2, 1) 2.05s forwards; }
 @keyframes sf-intro-out { to { clip-path: circle(0% at 50% 46%); visibility: hidden; } }
 @keyframes sf-intro-fade { to { opacity: 0; visibility: hidden; } }
-/* The intro shows one loop, so its loader stops after it is gone instead of animating unseen. */
-.sf-intro .sf-loader g, .sf-intro .sf-loader path, .sf-intro .sf-ls-glow, .sf-intro .sf-ls-bar span { animation-iteration-count: 1; }
+/* One pour lasts as long as the intro, so its loader stops after it is gone instead of animating unseen. */
+.sf-intro .sf-pour-level { animation-iteration-count: 1; }
+.sf-intro .sf-pour-wave { animation-iteration-count: 4; }
 .sf-nav-loading { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: var(--bg); animation: sf-nav-in .2s ease .15s both; }
 @keyframes sf-nav-in { from { opacity: 0; } to { opacity: 1; } }
 .sf-nav-loading--now { animation: none; }
@@ -225,8 +202,6 @@ fieldset.sf-fieldset legend { font: 600 0.9375rem/1.25rem var(--font-text); marg
 @media (prefers-reduced-motion: reduce) {
   .sf-nav-loading { animation: none; }
   .sf-intro-on .sf-intro { clip-path: none; animation-name: sf-intro-fade; }
-  .sf-ls-glow { animation: none; opacity: .8; }
-  .sf-ls-bar { display: none; }
 }
 
 /* Done moment (BT8): a list made, a recipe finished, the launch list joined. One short pink glow, then rest. */
@@ -243,8 +218,9 @@ fieldset.sf-fieldset legend { font: 600 0.9375rem/1.25rem var(--font-text); marg
 
 @media (prefers-reduced-motion: reduce) {
   .sf *, .sf *::before, .sf *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
-  /* The loader is a small loading indicator, so it keeps playing (its glow and sweeping line stop, above). */
-  .sf .sf-loader g, .sf .sf-loader path { animation-duration: 3.6s !important; animation-iteration-count: infinite !important; }
+  /* The loader is a small loading indicator, so it keeps playing. */
+  .sf .sf-pour-level { animation-duration: 2.8s !important; animation-iteration-count: infinite !important; }
+  .sf .sf-pour-wave { animation-duration: .9s !important; animation-iteration-count: infinite !important; }
   .sf-bone::after { display: none; }
   .sf-glow-once { animation: none; }
 }

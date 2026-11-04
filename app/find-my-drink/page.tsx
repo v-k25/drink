@@ -2,14 +2,17 @@ import type { Metadata } from 'next'
 import { eligibilityAccepted } from '../party-planner/session'
 import Gate from './gate'
 import Browse from './components/browse'
+import Finder from './components/finder'
 import Guided from './components/guided'
 import Shell from './components/shell'
 import { parseDiscovery, discoveryHref } from './discovery'
 import { buildListingData, loadRecipes, type ListingFilters } from './queries'
+import { readCatalogue } from '../party-planner/catalogue-server'
+import { normaliseCatalogue, type Bottle } from '../catalogue/normalise'
 
 export const metadata: Metadata = {
-  title: 'Find a recipe | Socifer',
-  description: 'Browse curated cocktail and mocktail recipes, with method and making help.',
+  title: 'Find a Drink | Socifer',
+  description: 'Four quick questions: your spirit, the bottles we list in your budget in Jaipur, and a few cocktails to make with it.',
 }
 
 type SearchParams = { [key: string]: string | string[] | undefined }
@@ -45,6 +48,10 @@ function parseInput(params: SearchParams): { filters: ListingFilters; cursor: { 
   return { filters: { q, types, drinkType, method, maxIngredients, picks }, cursor }
 }
 
+async function readBottles(): Promise<Bottle[] | null> {
+  try { return normaliseCatalogue(await readCatalogue()).filter(bottle => bottle.kind !== 'rtd') } catch { return null }
+}
+
 // Gate first (both list and detail); the eligible-only listing renders after.
 export default async function FindMyDrinkPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const eligible = await eligibilityAccepted()
@@ -53,8 +60,14 @@ export default async function FindMyDrinkPage({ searchParams }: { searchParams: 
   const { filters, cursor } = parseInput(params)
   const discovery = parseDiscovery(params)
   const outcome = await loadRecipes()
-  if (discovery.mode !== 'browse' && outcome.state === 'ok' && outcome.data.length > 0) {
+  if (discovery.mode === 'random' && outcome.state === 'ok' && outcome.data.length > 0) {
     return <Shell><Guided key={discoveryHref(discovery)} rows={outcome.data} initial={discovery} /></Shell>
+  }
+  // Find a Drink (tools redesign): the four questions and live results. Bottles are optional: if the catalogue is down,
+  // the spirit and cocktail ideas still show and the bottle grid says so.
+  if (discovery.mode !== 'browse' && outcome.state === 'ok' && outcome.data.length > 0) {
+    const bottles = await readBottles()
+    return <Shell><Finder rows={outcome.data} bottles={bottles} initial={discovery} /></Shell>
   }
   const data = outcome.state === 'ok' ? buildListingData(outcome.data, filters, cursor) : null
   return <Browse eligibleRows={outcome.state === 'ok' ? outcome.data : []} state={outcome.state} data={data} filters={filters} cursor={cursor} />

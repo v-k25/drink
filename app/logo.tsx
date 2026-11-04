@@ -1,3 +1,5 @@
+import { useId } from 'react'
+
 // Little Horns logo (Black Tie, BT2). Letters are Archivo ExtraBold at its widest width, converted to outlines; the O is a
 // drawn ring with two horns. Paths were generated once from the font with fontTools (see docs/implementation-progress.md, BT2).
 // The letters take currentColor; the O takes --accent (rani pink, black in print).
@@ -19,29 +21,15 @@ export function LogoMark({ className, label = 'Socifer' }: { className?: string;
   </svg>
 }
 
-// Loading animation (Little Horns loader, "the Devil's Circle"): the pink horned O wakes up. Sharp white eyes with slit
-// pupils open across the middle of the hole (each spilling over its edge onto the pink), a black grin with two fangs
-// opens in the ring below the hole, a red tongue drops past the ring's bottom edge, a pointed tail curls out, it winks, then everything resets to the plain logo O. Decorative: the caller supplies
-// the spoken status. Timing and the reduced-motion fallback (the plain O, still) are .sf-loader in ui.css.
-export function HornLoader({ className }: { className?: string }) {
-  return <svg className={className ? `sf-loader ${className}` : 'sf-loader'} viewBox="900 -54 1250 1070" aria-hidden="true" focusable="false">
-    <g className="sf-horn-tail"><path className="sf-horn-tail-line" d="M1823 694C1890 740 1960 730 1985 650C2005 585 2030 540 2075 520" /><path className="sf-horn-tip" d="M2058 488L2142 512L2068 550L2077 518Z" /></g>
-    <path className="sf-horn-o" d={HORNED_O} />
-    <g className="sf-horn-eye"><path className="sf-horn-white" d="M1122 419L1334 496Q1330 586 1232 590Q1140 582 1122 419Z" /><ellipse className="sf-horn-pupil" cx="1270" cy="522" rx="14" ry="34" /></g>
-    <g className="sf-horn-eye sf-horn-wink"><path className="sf-horn-white" d="M1696 419L1484 496Q1488 586 1586 590Q1678 582 1696 419Z" /><ellipse className="sf-horn-pupil" cx="1548" cy="522" rx="14" ry="34" /></g>
-    <g className="sf-horn-grin"><path className="sf-horn-mouth" d="M1248 724Q1413 806 1579 724Q1413 960 1248 724Z" /></g>
-    <g className="sf-horn-tongue"><path className="sf-horn-tongue-fill" d="M1354 777L1472 777L1472 930Q1472 996 1413 996Q1354 996 1354 930Z" /><path className="sf-horn-tongue-line" d="M1413 800L1413 942" /></g>
-    <g className="sf-horn-grin"><path className="sf-horn-fang" d="M1295 741L1350 757L1320 810Z" /><path className="sf-horn-fang" d="M1531 741L1476 757L1506 810Z" /></g>
-  </svg>
-}
-
-// Branded loading screen contents, shared by the once-per-visit intro (app/layout.tsx) and slow page loads
-// (app/nav-pending.tsx): the loader in a soft pink glow with a thin pink line sweeping beneath it.
-// Decorative; the caller supplies any spoken status. Styles are .sf-ls in ui.css.
+// Loading screen contents, shared by the once-per-visit intro (app/layout.tsx), slow page loads (app/nav-pending.tsx),
+// Find My Drink links and the Planner's first load: "Pour". The logo's O, dim, fills with pink like a drink being poured,
+// a wave on top of the level, then drains and pours again. Decorative; the caller supplies any spoken status.
+// Styles are .sf-loader in ui.css.
 export function LoadingScreen() {
-  return <div className="sf-ls">
-    <span className="sf-ls-glow" />
-    <HornLoader />
-    <span className="sf-ls-bar"><span /></span>
-  </div>
+  const clip = useId()
+  return <svg className="sf-loader" viewBox="958 -26 903 903" aria-hidden="true" focusable="false">
+    <clipPath id={clip}><path d={HORNED_O} /></clipPath>
+    <path className="sf-pour-empty" d={HORNED_O} />
+    <g clipPath={`url(#${clip})`}><g className="sf-pour-level"><path className="sf-pour-wave" d="M700 0q110 -46 220 0t220 0t220 0t220 0t220 0t220 0t220 0t220 0v1100H700Z" /></g></g>
+  </svg>
 }

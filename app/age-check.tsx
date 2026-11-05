@@ -44,6 +44,6 @@ export default function AgeCheck({ lines, checked, onCheckedChange, onContinue, 
     {form
       ? <form action={form.action} onSubmit={event => { if (!checked) { event.preventDefault(); setMissing(true); box.current?.focus() } }}><input type="hidden" name="next" value={form.next} />{fields}</form>
       : fields}
-    <p className={styles.note}>We’ll remember this on this device for 30 days.</p>
+    <p className={styles.note}>We’ll remember this for 30 days.</p>
   </div></div>
 }

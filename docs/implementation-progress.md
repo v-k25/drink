@@ -2,7 +2,7 @@
 
 ### Phone pass across the site, 2026-11-05
 
-**Done (not committed).** Owner: the phone is the main device. Audited every page at 390 and 320px with touch on.
+**Done.** Owner: the phone is the main device. Audited every page at 390 and 320px with touch on.
 
 - Header: logo, Sign in and the menu on one row on every page (tool header 97px to 60px). Tool links moved into the menu below 768px. Home: Sign in moved from the menu to the row. Headers can still wrap at 200% text.
 - Touch: every `:hover` rule is now inside `@media (hover: hover)`, because a tap left things lit. `:focus-visible` and `data-lit` behaviour is unchanged.
@@ -11,6 +11,8 @@
 - Recipes: Filters and Use what I have share a row, type tabs fit one row, two columns at 320px (10,262px to about 4,170px), no gap under the card name.
 - Accounts: the form no longer stretches to fill the page, so Send code is 52px, not 72px. This applies at all widths.
 - Home: section spacing 96px to 64px on phone.
+
+Copy: removed "Your plan stays on this device" from the home FAQ, the age check now says "We'll remember this for 30 days", and the home card and gate say Find a Drink.
 
 Checks changed: `brewlist-home-check` menu count is 4; `recipe-guided-browser-check` and `recipe-discovery-check` measure the whole card for a recipe name's stretched link; `recipe-browse-check` looks for the current listing title (it was stale since `d526bbf`).
 

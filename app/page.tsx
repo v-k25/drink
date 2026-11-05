@@ -108,14 +108,14 @@ export default function Home() {
             <Link className={`${styles.tool} sf-lit`} href="/find-my-drink" data-light-card>
               <picture className={styles.photo}><source type="image/avif" srcSet="/images/nightlife/drink-1200.avif" /><source type="image/webp" srcSet="/images/nightlife/drink-1200.webp" /><img src="/images/nightlife/drink-1200.webp" alt="" width={1200} height={1800} loading="lazy" decoding="async" /></picture>
               <div className={styles.toolBody}>
-                <div><h3>Find My Drink</h3><p>Find a spirit you’ll like, then browse 50 cocktails and mocktails to make at home.</p></div>
+                <div><h3>Find a Drink</h3><p>Find a spirit you’ll like, then browse 50 cocktails and mocktails to make at home.</p></div>
                 <div className={styles.preview} aria-hidden="true">
                   <span className={styles.previewHead}>How should it feel?</span>
                   <span className={styles.previewChips}><span>Light and fresh</span><span className={styles.previewPicked}>Smooth and rounded</span><span>Rich and warming</span></span>
                 </div>
                 <span className={styles.go}>Find a drink <ArrowRightIcon size={18} /></span>
               </div>
-              <NavPending label="Loading Find My Drink…" />
+              <NavPending label="Loading Find a Drink…" />
             </Link>
           </div>
         </section>
@@ -146,7 +146,7 @@ export default function Home() {
             <details><summary>Are bookings live?</summary><div className="body">Not yet. Join the list and we’ll email you when they are.</div></details>
             <details><summary>Who confirms my booking?</summary><div className="body">The venue will. You’ll get your pass once they do.</div></details>
             <details><summary>What will it cost?</summary><div className="body">Pricing isn’t set yet. We’ll share it before bookings open.</div></details>
-            <details><summary>Can I use the tools without an account?</summary><div className="body">Yes. Both are free and need no login. Your plan stays on this device.</div></details>
+            <details><summary>Can I use the tools without an account?</summary><div className="body">Yes. Both are free and need no login.</div></details>
             <details><summary>Does Socifer sell alcohol?</summary><div className="body">No. We don’t sell or deliver alcohol.</div></details>
             <details id="responsible-use"><summary>Who is Socifer for?</summary><div className="body">Adults in Jaipur going out with friends, whether they drink or not. If you drink, stick to the legal age, drink responsibly and never drink and drive.</div></details>
           </div>

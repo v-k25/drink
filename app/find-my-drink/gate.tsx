@@ -18,7 +18,7 @@ export default function Gate() {
     <a href="#main" className="skip-link">Skip to content</a>
     <ToolHeader current="finder" />
     <main id="main" tabIndex={-1}>
-      <h1 className={styles.srOnly}>Find My Drink</h1>
+      <h1 className={styles.srOnly}>Find a Drink</h1>
       <AgeCheck lines={['Find', 'My Drink']} checked={checked} onCheckedChange={setChecked} continueLabel="Continue" busy={false} busyLabel="confirming…" message={message} form={{ action: acceptEligibilityForm, next }} />
     </main>
     <ToolFooter />

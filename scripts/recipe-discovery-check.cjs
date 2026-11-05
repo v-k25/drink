@@ -70,7 +70,8 @@ async function main() {
       const searchBox = await page.getByLabel('Search by name or ingredient').boundingBox()
       if (width < 800) assert.ok(searchBox.y + searchBox.height < 600, 'compact entry keeps search above first substantial scroll')
       for (const element of await page.locator('main a, main button, summary').all()) {
-        const box = await element.boundingBox()
+        // A recipe name's link stretches over its whole card (::after), so the card is the target.
+        const box = await element.evaluate(el => { const card = getComputedStyle(el, '::after').position === 'absolute' && el.closest('article'); const r = (card || el).getBoundingClientRect(); return { x: r.x, y: r.y, width: r.width, height: r.height } })
         if (box?.height) assert.ok(box.height >= 43.5, `target under 44px at ${width}: ${await element.evaluate(el => el.outerHTML)} / ${JSON.stringify(box)}`)
       }
       await settlePhotos()

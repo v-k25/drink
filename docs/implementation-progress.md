@@ -1,5 +1,23 @@
 # Implementation progress
 
+### Phone pass across the site, 2026-11-05
+
+**Done.** Owner: the phone is the main device. Audited every page at 390 and 320px with touch on.
+
+- Header: logo, Sign in and the menu on one row on every page (tool header 97px to 60px). Tool links moved into the menu below 768px. Home: Sign in moved from the menu to the row. Headers can still wrap at 200% text.
+- Touch: every `:hover` rule is now inside `@media (hover: hover)`, because a tap left things lit. `:focus-visible` and `data-lit` behaviour is unchanged.
+- Find a Drink (10,458px to about 3,060px at 390): compact bottle rows, 6 bottles then "Show all" below 768px, a bottom bar with the spirit and a jump to the bottles while the answers are on screen (below 1024px), tighter questions, two-column ideas, 16px sort select.
+- Party Planner: the three bottle choices sit side by side below 768px, no sideways swipe.
+- Recipes: Filters and Use what I have share a row, type tabs fit one row, two columns at 320px (10,262px to about 4,170px), no gap under the card name.
+- Accounts: the form no longer stretches to fill the page, so Send code is 52px, not 72px. This applies at all widths.
+- Home: section spacing 96px to 64px on phone.
+
+Copy: removed "Your plan stays on this device" from the home FAQ, the age check now says "We'll remember this for 30 days", and the home card and gate say Find a Drink.
+
+Checks changed: `brewlist-home-check` menu count is 4; `recipe-guided-browser-check` and `recipe-discovery-check` measure the whole card for a recipe name's stretched link; `recipe-browse-check` looks for the current listing title (it was stale since `d526bbf`).
+
+**Checks actually run.** `tsc --noEmit`, `corepack pnpm build`, `git diff --check`, `planner-list-browser-check`, `brewlist-tools-style-check`, `recipe-guided-browser-check`, `recipe-discovery-check`, `recipe-pantry-browser-check`, `recipe-browse-check`, `brewlist-home-check`, `design-polish-check`, `recipe-detail-check`, `home-design-check` on the final build: PASS. `account-check`, `party-planner-list-check`, `spirit-check`, `catalogue-normalise-check`, `planner-retry-production-check`, `recipe-guided-check`: PASS on the build before the last wrap fix. `recipe-pantry-browser-check` timed out once and passed on the rerun. Not tested on a real phone.
+
 ### Party Planner redesign brought into the main checkout, 2026-11-04
 
 **Done.** Owner asked to add the redesigned Planner to PR #8. Taken from `claude/tools-redesign-b08afe` (`5e1eb81`): `app/party-planner/planner.tsx`, `planner.module.css`, `list.ts`, `scripts/party-planner-list-check.cjs`, `scripts/planner-list-browser-check.cjs`, and that branch's `design-polish-check`, `brewlist-tools-style-check` and `AGENTS.md`. Removed the five checks it replaces: `planner-inventory-check`, `planner-redesign-check`, `planner-tool-shell-check`, `planner-ux-check`, `planner-ux-production-check`. The branch's older loader, `ui.css` and accounts were not taken. Also removed "Your plan is still saved on this device" from the catalogue-unavailable screen, per the owner's earlier request.

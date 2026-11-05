@@ -94,7 +94,7 @@ async function main() {
         await menu.locator('summary').focus()
         await page.keyboard.press('Enter')
         const links = menu.locator('nav a')
-        assert.equal(await links.count(), 5, 'three destinations, Sign in and the launch-updates CTA')
+        assert.equal(await links.count(), 4, 'three destinations and the launch-updates CTA; Sign in sits on the header row')
         for (const link of await links.all()) {
           assert.ok(await link.isVisible())
           const box = await link.boundingBox()

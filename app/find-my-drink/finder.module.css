@@ -25,14 +25,14 @@
 /* Buttons and chips (same look as the Party Planner). */
 .primary, .secondary, .filter, .filterActive, .resetFilters, .backLink, .moreButton, .pickButton, .mobileFilters, .moreText { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: var(--target-min); border: 1px solid transparent; font: 700 0.9375rem/1.25rem var(--font-text); text-decoration: none; cursor: pointer; transition: background-color .16s ease, border-color .16s ease; }
 .primary { min-height: var(--target-primary); padding: 12px 22px; border-radius: var(--radius-md); background: var(--accent); color: var(--on-accent); }
-.primary:hover:not(:disabled) { box-shadow: 0 0 28px 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+@media (hover: hover) { .primary:hover:not(:disabled) { box-shadow: 0 0 28px 2px color-mix(in srgb, var(--accent) 55%, transparent); } }
 .secondary, .moreButton, .pickButton, .mobileFilters { padding: 10px 18px; border-radius: var(--radius-md); background: transparent; border-color: var(--line-strong); color: var(--text); }
-.secondary:hover, .moreButton:hover, .pickButton:hover, .mobileFilters:hover { background: var(--surface-raised); border-color: var(--lit); }
+@media (hover: hover) { .secondary:hover, .moreButton:hover, .pickButton:hover, .mobileFilters:hover { background: var(--surface-raised); border-color: var(--lit); } }
 .resetFilters, .backLink, .moreText { padding: 0 10px; border-radius: var(--radius-md); background: transparent; color: var(--text); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
-.resetFilters:hover, .backLink:hover, .moreText:hover { background: var(--surface-raised); text-decoration-color: var(--lit); }
+@media (hover: hover) { .resetFilters:hover, .backLink:hover, .moreText:hover { background: var(--surface-raised); text-decoration-color: var(--lit); } }
 .backLink { justify-self: start; padding-left: 0; }
 .filter, .filterActive { padding: 0 16px; border-radius: var(--radius-pill); border-color: var(--line-strong); background: transparent; color: var(--text); text-align: left; overflow-wrap: anywhere; }
-.filter:hover { background: var(--surface-raised); border-color: var(--lit); }
+@media (hover: hover) { .filter:hover { background: var(--surface-raised); border-color: var(--lit); } }
 .filterActive, .filter[aria-pressed="true"], .filter[aria-current="true"], .filter[aria-current="page"] { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
 .shell button:disabled { cursor: not-allowed; opacity: .45; }
 .pendingLinkStatus { margin-left: 6px; font-size: 0.75rem; font-weight: 700; }
@@ -55,7 +55,8 @@
 /* Centred columns: width 100% stops the auto margins shrinking a grid item to its content. */
 
 .imgWrap::after { content: ""; position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .45s ease; pointer-events: none; }
-.product:is(:hover, :has(a:focus-visible)) .imgWrap::after { transform: scaleX(1); }
+.product:is(:has(a:focus-visible)) .imgWrap::after { transform: scaleX(1); }
+@media (hover: hover) { .product:is(:hover, :has(a:focus-visible)) .imgWrap::after { transform: scaleX(1); } }
 
 /* Choices: Surprise me's type chips and Find a Drink's "How do you like it?" cards. */
 .guideFieldset { min-width: 0; margin: 0; padding: 0; border: 0; display: grid; gap: var(--space-3); }
@@ -64,7 +65,7 @@
 .choiceCard { display: grid; gap: 2px; min-height: 64px; padding: var(--space-3) var(--space-4); border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: var(--surface); color: var(--text); text-align: left; font: inherit; cursor: pointer; }
 .choiceCard b { font-weight: 700; }
 .choiceCard span { color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; }
-.choiceCard:hover { background: var(--surface-raised); border-color: var(--lit); }
+@media (hover: hover) { .choiceCard:hover { background: var(--surface-raised); border-color: var(--lit); } }
 .choiceCard[aria-pressed="true"] { background: var(--lit-bg); border-color: var(--lit); box-shadow: inset 3px 0 0 var(--lit); }
 .choiceCard[aria-pressed="true"] b { color: var(--lit-text); }
 .choiceCard[aria-pressed="true"] span { color: var(--text); }
@@ -82,7 +83,7 @@
 .dialogHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-3); }
 .dialogHeading h2 { font-size: min(1.75rem, 9vw); }
 .dialogClose { display: inline-grid; place-items: center; flex: none; width: var(--target-min); height: var(--target-min); border: 0; border-radius: var(--radius-md); background: transparent; color: var(--text); font-size: 1.25rem; cursor: pointer; }
-.dialogClose:hover { background: var(--surface); }
+@media (hover: hover) { .dialogClose:hover { background: var(--surface); } }
 .dialogActions { position: sticky; bottom: calc(-1 * var(--space-4)); display: flex; flex-wrap: wrap; gap: var(--space-2); justify-content: flex-end; margin: var(--space-4) calc(-1 * var(--space-4)) calc(-1 * var(--space-4)); padding: var(--space-3) var(--space-4); background: var(--surface-raised); border-top: 1px solid var(--line); }
 @media (max-width: 767px) { .filterDialog { inset: auto 0 0 0; width: 100%; max-height: 92dvh; margin: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }}
 
@@ -100,7 +101,6 @@
 .cardMeta, .cardFacts { display: block; color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; overflow-wrap: anywhere; }
 .matchReason { display: block; color: var(--detail); font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; overflow-wrap: anywhere; }
 .productGrid, .choiceGrid, .relatedGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-3); margin: 0; }
-@media (max-width: 359px) { .productGrid, .choiceGrid { grid-template-columns: minmax(0, 1fr); } }
 /* Three picks in two columns would leave the last one alone on its row: the first spans the row instead. */
 @media (max-width: 767px) { .choiceGrid > :first-child:nth-last-child(3) { grid-column: 1 / -1; } }
 @media (min-width: 768px) { .productGrid, .choiceGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); } }
@@ -112,13 +112,13 @@
 .listing .discoveryControls { grid-area: controls; display: grid; gap: var(--space-3); min-width: 0; }
 .searchForm { min-width: 0; max-width: 100%; }
 .searchField { display: flex; align-items: center; gap: var(--space-2); min-height: var(--target-primary); padding: 0 4px 0 14px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-muted); }
-.searchField:hover { border-color: var(--lit); }
+@media (hover: hover) { .searchField:hover { border-color: var(--lit); } }
 .searchField:focus-within { border-color: var(--lit); outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 2px var(--bg); }
 .searchField input { flex: 1 1 0; width: 0; min-width: 0; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--text); font: 500 1rem/1.375rem var(--font-text); outline: none; }
 .searchSubmit { display: inline-grid; place-items: center; flex: none; width: var(--target-min); height: var(--target-min); border: 0; border-radius: var(--radius-sm); background: var(--accent); color: var(--on-accent); font-size: 1.25rem; font-weight: 800; cursor: pointer; }
 .typeControl { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .typeOption, .typeActive { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-min); padding: 0 16px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); color: var(--text); font: 700 0.9375rem/1.25rem var(--font-text); text-decoration: none; white-space: nowrap; }
-.typeOption:hover { background: var(--surface-raised); border-color: var(--lit); }
+@media (hover: hover) { .typeOption:hover { background: var(--surface-raised); border-color: var(--lit); } }
 .typeActive { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
 .count { font-size: 0.8125rem; font-variant-numeric: tabular-nums lining-nums; opacity: .8; }
 .listing .activeFilters { grid-area: chips; display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
@@ -154,7 +154,7 @@
 /* Use what I have. */
 .pantry { min-width: 0; }
 .pantryToggle { display: inline-flex; align-items: center; gap: var(--space-2); min-height: var(--target-min); padding: 0 18px; border: 1px solid var(--line-strong); border-radius: var(--radius-md); background: transparent; color: var(--text); font: 700 0.9375rem/1.25rem var(--font-text); cursor: pointer; }
-.pantryToggle:hover { background: var(--surface-raised); border-color: var(--lit); }
+@media (hover: hover) { .pantryToggle:hover { background: var(--surface-raised); border-color: var(--lit); } }
 .pantryToggle[aria-expanded="true"] { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
 .pantryContent { display: grid; gap: var(--space-3); margin-top: var(--space-3); padding: var(--space-4); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
 .pantryContent h2 { font-size: min(1.375rem, 8vw); }
@@ -164,7 +164,7 @@
 .pantrySelected .filterActive { background: var(--surface-raised); border-color: transparent; color: var(--text); }
 .pantryChecklist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px var(--space-3); max-height: 320px; overflow-y: auto; }
 .pantryChecklist label { display: flex; align-items: center; gap: var(--space-3); min-height: var(--target-min); padding: 6px 8px; border-radius: var(--radius-sm); font-size: 0.9375rem; cursor: pointer; overflow-wrap: anywhere; }
-.pantryChecklist label:hover { background: var(--surface-raised); }
+@media (hover: hover) { .pantryChecklist label:hover { background: var(--surface-raised); } }
 .pantryChecklist label:has(input:checked) { background: var(--lit-bg); box-shadow: inset 3px 0 0 var(--lit); }
 .pantryChecklist input { width: 20px; height: 20px; }
 .pantryChecklist label:focus-within { outline: 2px solid var(--focus); outline-offset: -2px; }
@@ -197,7 +197,7 @@
 .makingBlock h2 { font-size: 1.5rem; }
 .checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .checkItem label { display: flex; align-items: center; gap: var(--space-3); min-height: 56px; padding: 8px 14px; border-radius: var(--radius-md); background: var(--surface); cursor: pointer; overflow-wrap: anywhere; }
-.checkItem label:hover { box-shadow: inset 0 0 0 1px var(--lit); }
+@media (hover: hover) { .checkItem label:hover { box-shadow: inset 0 0 0 1px var(--lit); } }
 .checkItem label:has(input:checked) { background: var(--lit-bg); box-shadow: inset 3px 0 0 var(--lit); }
 .checkItem input { width: 24px; height: 24px; margin: 0; }
 .ingredientText { min-width: 0; font-size: 1.0625rem; line-height: 1.5rem; }
@@ -215,7 +215,8 @@
 .sourceContext summary::-webkit-details-marker { display: none; }
 /* A plus that turns into a minus, as in the landing page's questions, so it reads as something to open. */
 .sourceContext summary::after { content: "+"; color: var(--detail); font: 700 1.5rem/1 var(--font-text); }
-.sourceContext summary:hover::after, .sourceContext[open] summary::after { color: var(--lit-text); }
+.sourceContext[open] summary::after { color: var(--lit-text); }
+@media (hover: hover) { .sourceContext summary:hover::after { color: var(--lit-text); } }
 .sourceContext[open] summary::after { content: "\2212"; }
 .sourceContext p { margin: var(--space-2) 0; overflow-wrap: anywhere; }
 .sourceContext a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--text); text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
@@ -242,7 +243,7 @@
 .shell .cookName { flex: 1 1 8rem; min-width: 0; margin: 0; font: 800 1rem/1.2 var(--font-display); text-transform: uppercase; overflow-wrap: anywhere; }
 .cookTools { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
 .cookTool { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-width: var(--target-min); min-height: var(--target-min); padding: 0 14px; border: 1px solid var(--on-bar-muted); border-radius: var(--radius-md); background: transparent; color: var(--on-bar); font: 700 0.875rem/1.25rem var(--font-text); cursor: pointer; }
-.cookTool:hover { background: rgb(255 255 255 / 10%); border-color: var(--lit); }
+@media (hover: hover) { .cookTool:hover { background: rgb(255 255 255 / 10%); border-color: var(--lit); } }
 .cookTool[aria-pressed="true"] { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
 .cookClose { padding: 0; font-size: 1.25rem; }
 .cookProgress { display: grid; gap: 2px; padding: 8px 16px 0; }
@@ -262,7 +263,7 @@
 .cookPrev, .cookNext { min-height: var(--target-primary); padding: 0 24px; border-radius: var(--radius-md); font: 800 1.0625rem/1.25rem var(--font-text); cursor: pointer; }
 .cookPrev { border: 1px solid var(--on-bar-muted); background: transparent; color: var(--on-bar); }
 .cookNext { border: 0; background: var(--accent); color: var(--on-accent); }
-.cookNext:hover { box-shadow: 0 0 28px 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+@media (hover: hover) { .cookNext:hover { box-shadow: 0 0 28px 2px color-mix(in srgb, var(--accent) 55%, transparent); } }
 @media (max-width: 519px) { .cookTool > span:not([aria-hidden]) { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; } .cookTool { padding: 0; } .cookClose { width: var(--target-min); } }
 @media (min-width: 768px) { .cookNav { grid-template-columns: minmax(max-content, 200px) minmax(0, 360px); justify-content: center; } }
 
@@ -284,7 +285,7 @@
 .howChoices .choiceCard { min-height: 56px; }
 .moreWays { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--line); }
 .moreWays a, .ideasHead a { display: inline-flex; align-items: center; min-height: var(--target-min); color: var(--text); font: 700 0.875rem/1.25rem var(--font-text); text-decoration: underline; text-decoration-color: var(--line-strong); text-underline-offset: 4px; }
-.moreWays a:hover, .ideasHead a:hover { text-decoration-color: var(--lit); color: var(--lit-text); }
+@media (hover: hover) { .moreWays a:hover, .ideasHead a:hover { text-decoration-color: var(--lit); color: var(--lit-text); } }
 .finderResults { display: grid; gap: var(--space-6); align-content: start; min-width: 0; }
 
 .spiritPanel { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4) var(--space-5); padding: var(--space-5); border: 1px solid var(--text); background: var(--surface); }
@@ -303,7 +304,7 @@
 .bottleTools { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
 .sortLabel { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--text-muted); font: 600 0.875rem/1.25rem var(--font-text); }
 .sortLabel select { min-height: var(--target-min); padding: 0 12px; border: 1px solid var(--line-strong); background: var(--surface); color: var(--text); font: 600 0.9375rem/1.25rem var(--font-text); }
-.sortLabel select:hover { border-color: var(--lit); }
+@media (hover: hover) { .sortLabel select:hover { border-color: var(--lit); } }
 .bottleGrid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
 .bottle { display: flex; min-width: 0; border: 1px solid var(--line); background: var(--surface); }
 .bottleArt { display: grid; place-items: center; flex: 0 0 88px; min-height: 120px; border-right: 1px solid var(--line); background: var(--surface-raised); }
@@ -346,4 +347,52 @@
   .ingredientsBlock { position: static; }
   .makingBlock { break-inside: avoid; margin-bottom: 20px; }
   .stepsList li::before { background: none; border: 1px solid #000; color: #000; }
+}
+
+/* Phone (main device): less to scroll past, and the result in reach while answering. */
+.showAll { display: none; }
+.resultBar { display: none; }
+@media (max-width: 1023.98px) {
+  .resultBar { position: sticky; bottom: 0; z-index: 4; display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-inline: -16px; padding: 10px 16px; border-top: 1px solid var(--line-strong); background: var(--surface-raised); color: var(--text); text-decoration: none; }
+  .resultBarText { display: grid; min-width: 0; }
+  .resultBarText small { color: var(--detail); font: 700 0.75rem/1rem var(--font-text); letter-spacing: .08em; text-transform: uppercase; }
+  .resultBarText strong { font-size: 1rem; line-height: 1.375rem; overflow-wrap: anywhere; }
+  .resultBarAction { display: inline-flex; flex: none; align-items: center; min-height: var(--target-min); padding: 0 16px; background: var(--accent); color: var(--on-accent); font: 800 0.9375rem/1.25rem var(--font-text); }
+  .ideaCards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ideaCards > :first-child:nth-last-child(3) { grid-column: 1 / -1; }
+}
+@media screen and (max-width: 767.98px) {
+  .bottleGridLimited > li:nth-child(n + 7) { display: none; }
+  .showAll { display: inline-flex; justify-content: center; width: 100%; }
+  .questions { gap: var(--space-4); padding: var(--space-4); }
+  .question legend { margin-bottom: var(--space-2); }
+  .answerPair .filter { padding-inline: 6px; }
+  .howChoices .choiceCard { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 48px; padding: 8px 14px; }
+  .howChoices .choiceCard span { text-align: right; }
+  .sortLabel select { font-size: 1rem; }
+  /* The whole recipe card is the link, so the name does not need its own tall target. */
+  .cardName a { min-height: 0; padding: var(--space-1) 0; }
+  .sectionHeading h2 { font-size: 1.125rem; }
+  .typeControl { gap: 6px; }
+  .typeOption, .typeActive { flex: 1 1 auto; justify-content: center; gap: 4px; padding: 0 8px; font-size: 0.875rem; white-space: nowrap; }
+}
+@media screen and (max-width: 599.98px) {
+  .bottle { align-items: stretch; }
+  .bottleArt { flex: 0 0 56px; min-height: 64px; }
+  .bottleArt img { width: 32px; height: 32px; }
+  .bottleText { flex: 1 1 auto; grid-template-columns: minmax(0, 1fr) auto; align-content: center; gap: 0 var(--space-3); padding: 8px 12px; }
+  .bottleBrand { display: none; }
+  .bottleText strong { grid-column: 1; line-height: 1.25; }
+  .bottleSize { grid-column: 1; }
+  .bottlePrice { grid-column: 2; grid-row: 1 / span 2; align-self: center; margin: 0; }
+}
+@media screen and (max-width: 359.98px) { .shell .cardName { font-size: 0.78rem; } }
+/* Filters and Use what I have share a row above the results while the filters are a sheet. */
+@media (max-width: 799.98px) {
+  .listing { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: "controls controls" "filters pantry" "chips chips" "results results" "foot foot"; }
+  .listing .resultsPanel { display: contents; }
+  .listing .resultsPanel > :not(.pantry) { grid-column: 1 / -1; }
+  .listing .resultsPanel > .pantry { grid-area: pantry; }
+  .listing .resultsPanel > .pantry:has(.pantryToggle[aria-expanded="true"]) { grid-area: auto; grid-column: 1 / -1; }
+  .listing .filterPanel .mobileFilters, .pantryToggle { justify-content: center; width: 100%; padding-inline: 8px; }
 }

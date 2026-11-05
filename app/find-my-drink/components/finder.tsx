@@ -20,6 +20,8 @@ import styles from '../finder.module.css'
 const PLURAL: Record<Spirit, string> = { gin: 'gins', vodka: 'vodkas', rum: 'rums', whisky: 'whiskies', tequila: 'tequilas', brandy: 'brandies', wine: 'wines', beer: 'beers', liqueur: 'liqueurs' }
 const money = (paise: number) => formatMoney(paise).replace(/\.00$/, '')
 const IDEAS = 3, MOCKTAIL_IDEAS = 6
+// Bottles shown first on a phone; .bottleGridLimited in finder.module.css hides the rest until Show all.
+const PHONE_BOTTLES = 6
 
 function bandPhrase(band: Band) {
   if (band === 'any') return ''
@@ -72,6 +74,9 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
   const [filter, setFilter] = useState<{ key: string; value: BottleFilter }>({ key: '', value: NO_FILTER })
   const [filterOpen, setFilterOpen] = useState(false)
   const filterTrigger = useRef<HTMLButtonElement>(null)
+  const [allBottlesFor, setAllBottlesFor] = useState('')
+  const questions = useRef<HTMLElement>(null)
+  const [questionsInView, setQuestionsInView] = useState(true)
   const returnTo = discoveryHref(view)
 
   function update(patch: Partial<DiscoveryState>) {
@@ -87,6 +92,15 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
     }
     window.addEventListener('popstate', back)
     return () => window.removeEventListener('popstate', back)
+  }, [])
+
+  // The bottom bar on a phone shows the result while the answers fill the screen, and goes once they scroll away.
+  useEffect(() => {
+    const node = questions.current
+    if (!node || !('IntersectionObserver' in window)) return
+    const observer = new IntersectionObserver(([entry]) => setQuestionsInView(entry.isIntersecting), { rootMargin: '0px 0px -96px 0px' })
+    observer.observe(node)
+    return () => observer.disconnect()
   }, [])
 
   const drinking = view.type !== 'mocktail'
@@ -120,7 +134,7 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
     </header>
 
     <div className={styles.finderLayout}>
-      <section className={styles.questions} aria-label="Your answers">
+      <section ref={questions} className={styles.questions} aria-label="Your answers">
         <fieldset className={styles.question}>
           <legend>1 · Drinking alcohol?</legend>
           <div className={styles.answerPair}>
@@ -160,7 +174,7 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
       </section>
 
       <div className={styles.finderResults}>
-        {drinking && <section className={`${styles.spiritPanel} sf-glow-once`} key={shown.spirit} aria-labelledby="spirit-title">
+        {drinking && <section id="your-spirit" className={`${styles.spiritPanel} sf-glow-once`} key={shown.spirit} aria-labelledby="spirit-title">
           <div>
             <p className={styles.eyebrow}>Your spirit</p>
             <h2 id="spirit-title">{shown.name}</h2>
@@ -188,7 +202,8 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
           {!listing && <p className={styles.emptyNote}>Bottle prices aren’t loading right now. Try again in a minute.</p>}
           {listing && !listing.total && <p className={styles.emptyNote}>No bottles in this range. Try the next budget up.</p>}
           {listing && listing.total > 0 && !listing.bottles.length && <p className={styles.emptyNote}>Nothing matches that brand and size. <button type="button" className={styles.backLink} onClick={() => setFilter({ key: filterKey, value: NO_FILTER })}>Clear</button></p>}
-          {listing && listing.bottles.length > 0 && <ul className={styles.bottleGrid}>{listing.bottles.map(bottle => <BottleCard key={bottle.id} bottle={bottle} />)}</ul>}
+          {listing && listing.bottles.length > 0 && <ul className={`${styles.bottleGrid} ${listing.bottles.length > PHONE_BOTTLES && allBottlesFor !== filterKey ? styles.bottleGridLimited : ''}`.trim()}>{listing.bottles.map(bottle => <BottleCard key={bottle.id} bottle={bottle} />)}</ul>}
+          {listing && listing.bottles.length > PHONE_BOTTLES && <button type="button" className={`${styles.secondary} ${styles.showAll}`} aria-expanded={allBottlesFor === filterKey} onClick={() => setAllBottlesFor(allBottlesFor === filterKey ? '' : filterKey)}>{allBottlesFor === filterKey ? 'Show fewer' : `Show all ${listing.bottles.length} ${PLURAL[shown.spirit]}`}</button>}
           {listing && listing.justOver.length > 0 && <>
             <h3 className={styles.overTitle}>Just over your budget</h3>
             <ul className={styles.bottleGrid}>{listing.justOver.map(bottle => <BottleCard key={bottle.id} bottle={bottle} quiet />)}</ul>
@@ -198,7 +213,7 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
             onChange={value => setFilter({ key: filterKey, value })} shown={listing.bottles.length} />}
         </section>}
 
-        <section className={styles.ideas} aria-labelledby="ideas-title">
+        <section id="drink-ideas" className={styles.ideas} aria-labelledby="ideas-title">
           <div className={styles.ideasHead}>
             <h2 id="ideas-title">{drinking ? `Make it with ${lower}` : 'Mocktail ideas'}</h2>
             <Link href={drinking ? '/find-my-drink?mode=browse&drink=cocktail' : '/find-my-drink?mode=browse&drink=mocktail'}>See all recipes</Link>
@@ -213,5 +228,9 @@ export default function Finder({ rows, bottles, initial }: { rows: RecipeRow[]; 
         </section>
       </div>
     </div>
+    {questionsInView && (drinking || mocktails.length > 0) && <a className={styles.resultBar} href={drinking ? '#your-spirit' : '#drink-ideas'}>
+      <span className={styles.resultBarText}><small>{drinking ? 'Your spirit' : 'Mocktails'}</small><strong>{drinking ? shown.name : `${mocktails.length} ${mocktails.length === 1 ? 'idea' : 'ideas'}`}{drinking && listing ? ` · ${listing.bottles.length} ${listing.bottles.length === 1 ? 'bottle' : 'bottles'}` : ''}</strong></span>
+      <span className={styles.resultBarAction}>{drinking ? 'See bottles' : 'See ideas'}</span>
+    </a>}
   </div>
 }

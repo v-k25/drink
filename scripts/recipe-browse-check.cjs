@@ -376,7 +376,7 @@ async function main() {
   const listing = await get('/find-my-drink?mode=browse', ELIGIBLE_COOKIE)
   assert.equal(listing.status, 200, 'the listing must respond 200 once eligible')
   const listingBody = bodyOnly(listing.body)
-  assert.ok(listingBody.includes('Find a recipe'), 'the listing title must render once eligible')
+  assert.ok(/All \d* ?recipes/.test(listingBody), 'the listing title must render once eligible')
   const launch = JSON.parse(fs.readFileSync(path.join(root, 'output/recipe-launch/remote-before.json'), 'utf8')).rows
   let allPages = listingBody
   const next = listingBody.match(/href="([^"]*cursor=[^"]*)"/)

@@ -40,9 +40,9 @@ export default function Home() {
           </nav>
           {/* Secondary here: the hero's Join the list is the one pink button on the first screen. */}
           <a className={`sf-btn sf-btn--secondary ${styles.navCta}`} href="#early-access">Join the list</a>
+          <AccountLink className={styles.mobileAccount} />
           <MobileMenu className={styles.mobileMenu}>
             {navLinks.map(([href, label]) => href.startsWith('/') ? <Link href={href} key={href}>{label}<NavPending /></Link> : <a href={href} key={href}>{label}</a>)}
-            <AccountLink />
             <a className="sf-btn sf-btn--primary" href="#early-access">Join the list</a>
           </MobileMenu>
         </div>

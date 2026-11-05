@@ -21,8 +21,9 @@
 .mobileMenu { position: static; }
 .mobileMenu summary { align-items: center; border: 1px solid var(--line-strong); border-radius: 0; cursor: pointer; display: grid; height: var(--target-min); list-style: none; place-items: center; width: var(--target-min); }
 .mobileMenu summary::-webkit-details-marker { display: none; }
-.mobileMenu summary:hover, .mobileMenu[open] summary { border-color: var(--lit); color: var(--lit-text); }
-.mobileMenu nav a:not(:global(.sf-btn)):hover { color: var(--lit-text); }
+.mobileMenu[open] summary { border-color: var(--lit); color: var(--lit-text); }
+@media (hover: hover) { .mobileMenu summary:hover { border-color: var(--lit); color: var(--lit-text); } }
+@media (hover: hover) { .mobileMenu nav a:not(:global(.sf-btn)):hover { color: var(--lit-text); } }
 .mobileMenu nav { background: var(--bg); border-bottom: 1px solid var(--line); display: grid; gap: 4px; left: 0; padding: 8px var(--space-4) 20px; position: absolute; right: 0; top: 100%; z-index: 1; }
 /* Dims the page under the open menu, so nothing behind it competes with the links. */
 .mobileMenu :global(.menu-scrim) { background: var(--scrim); height: 100dvh; left: 0; position: absolute; right: 0; top: 100%; }
@@ -50,7 +51,7 @@
 .cta :global(.sf-btn) { width: 100%; }
 
 /* Sections: space separates them, no rules. */
-.home .section { padding-top: var(--space-8); scroll-margin-top: 80px; }
+.home .section { padding-top: var(--space-7); scroll-margin-top: 80px; }
 .h2 { font: 800 1.625rem/1 var(--font-display); letter-spacing: -.005em; margin: 0; text-transform: uppercase; }
 .h3 { font: 800 1.125rem/1.15 var(--font-display); margin: 0; text-transform: uppercase; }
 
@@ -71,7 +72,7 @@
 .tool h3 { font: 800 1.5rem/1.02 var(--font-display); margin: 0; text-transform: uppercase; }
 .tool p { color: var(--text); font-size: 1.0625rem; line-height: 1.5625rem; margin: 10px 0 0; max-width: 420px; }
 .go { align-items: center; color: var(--text); display: inline-flex; font-weight: 700; gap: 8px; min-height: var(--target-min); }
-.tool:hover { border-color: var(--lit); }
+@media (hover: hover) { .tool:hover { border-color: var(--lit); } }
 
 /* Tool previews: a static glimpse of each tool's result, built from the same tokens as the tools. */
 .preview { background: var(--bg); border: 1px solid var(--line); display: grid; font-size: 0.875rem; gap: 6px; line-height: 1.25rem; padding: 14px 16px; }
@@ -82,8 +83,10 @@
 .previewChips { display: flex; flex-wrap: wrap; gap: 6px; }
 .previewChips > span { border: 1px solid var(--line-strong); color: var(--text-muted); font-weight: 700; padding: 5px 12px; }
 .previewChips > .previewPicked { border-color: var(--text); color: var(--text); }
-.tool:is(:hover, :focus-visible, [data-lit]) .previewChips > .previewPicked { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
-.tool:is(:hover, :focus-visible, [data-lit]) .previewTotal b { color: var(--lit-text); }
+.tool:is(:focus-visible, [data-lit]) .previewChips > .previewPicked { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); }
+@media (hover: hover) { .tool:is(:hover, :focus-visible, [data-lit]) .previewChips > .previewPicked { background: var(--lit-bg); border-color: var(--lit); color: var(--lit-text); } }
+.tool:is(:focus-visible, [data-lit]) .previewTotal b { color: var(--lit-text); }
+@media (hover: hover) { .tool:is(:hover, :focus-visible, [data-lit]) .previewTotal b { color: var(--lit-text); } }
 
 /* For venues: a bone band with black text; the mail button is black on bone at rest. On hover or keyboard focus pink wipes
    in from the left and the envelope lifts; a click presses it in and sends the envelope off. */
@@ -97,12 +100,15 @@
 @keyframes mail-send { 0% { transform: translate(0, 0); opacity: 1; } 55% { transform: translate(14px, -8px) rotate(-12deg); opacity: 0; } 56% { transform: translate(-14px, 8px); opacity: 0; } 100% { transform: translate(0, 0); opacity: 1; } }
 .venueSolid { background: var(--on-city); color: var(--city); isolation: isolate; overflow: hidden; position: relative; }
 .venueSolid::before { background: var(--accent); content: ""; inset: 0; position: absolute; transform: scaleX(0); transform-origin: left; z-index: -1; }
-.venueSolid:is(:hover, :focus-visible) { color: var(--on-accent); }
-.venueSolid:is(:hover, :focus-visible)::before { transform: scaleX(1); }
+.venueSolid:is(:focus-visible) { color: var(--on-accent); }
+@media (hover: hover) { .venueSolid:is(:hover, :focus-visible) { color: var(--on-accent); } }
+.venueSolid:is(:focus-visible)::before { transform: scaleX(1); }
+@media (hover: hover) { .venueSolid:is(:hover, :focus-visible)::before { transform: scaleX(1); } }
 .venueSolid:active::before { background: color-mix(in srgb, var(--accent) 82%, var(--on-accent)); transform: scaleX(1); }
 .venueSolid:active { box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 35%, transparent); color: var(--on-accent); }
 .venueOutline { border: 2px solid var(--on-city); color: var(--on-city); }
-.venueOutline:is(:hover, :focus-visible) { background: var(--on-city); color: var(--city); }
+.venueOutline:is(:focus-visible) { background: var(--on-city); color: var(--city); }
+@media (hover: hover) { .venueOutline:is(:hover, :focus-visible) { background: var(--on-city); color: var(--city); } }
 .venue :focus-visible { box-shadow: 0 0 0 2px var(--city); outline-color: var(--on-city); }
 
 /* One card holds the heading and the form, so the section has no empty column beside the form. */
@@ -116,7 +122,7 @@
 .privacy .h3 { font-size: 1rem; }
 .privacy p { color: var(--text-muted); font-size: 0.875rem; line-height: 1.25rem; margin: 8px 0 0; }
 
-.footer { border-top: 1px solid var(--line); display: block; margin-top: var(--space-8); padding: 28px 0 36px; }
+.footer { border-top: 1px solid var(--line); display: block; margin-top: var(--space-7); padding: 28px 0 36px; }
 .footer .wrap { display: grid; gap: 20px; }
 .footer nav { display: flex; flex-wrap: wrap; font-size: 0.9375rem; font-weight: 600; gap: 0 20px; }
 .footer nav a { align-items: center; display: inline-flex; justify-content: center; min-height: var(--target-min); min-width: var(--target-min); text-decoration: none; }
@@ -129,16 +135,17 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .venueButton { transition: transform 160ms ease, color 200ms ease, background-color 200ms ease, box-shadow 200ms ease; }
-  .venueButton:hover { transform: translateY(-2px); }
+  @media (hover: hover) { .venueButton:hover { transform: translateY(-2px); } }
   .venueButton:active { transform: translateY(0) scale(.97); transition-duration: 80ms; }
   .venueSolid::before { transition: transform 320ms cubic-bezier(.2, .7, .2, 1), background-color 120ms ease; }
   .mailIcon { transition: transform 240ms cubic-bezier(.2, .7, .2, 1); }
-  .venueSolid:is(:hover, :focus-visible) .mailIcon { transform: translate(2px, -2px) rotate(-8deg); }
+  .venueSolid:is(:focus-visible) .mailIcon { transform: translate(2px, -2px) rotate(-8deg); }
+  @media (hover: hover) { .venueSolid:is(:hover, :focus-visible) .mailIcon { transform: translate(2px, -2px) rotate(-8deg); } }
   .venueButton:active .mailIcon { animation: mail-send 420ms ease-out; }
   .previewChips > span, .previewTotal b { transition: background-color 300ms ease, border-color 300ms ease, color 300ms ease; }
 
   .tool { transition: border-color 160ms ease, transform 160ms ease; }
-  .tool:hover { transform: translateY(-2px); }
+  @media (hover: hover) { .tool:hover { transform: translateY(-2px); } }
 }
 
 @media (min-width: 768px) {
@@ -174,7 +181,7 @@
   .wordmark svg { height: 1.375rem; }
   .desktopNav { color: var(--text-muted); display: flex; font-size: 0.9375rem; font-weight: 600; gap: 28px; margin-left: auto; }
   .desktopNav a { align-items: center; display: inline-flex; min-height: var(--target-min); text-decoration: none; }
-  .desktopNav a:hover { color: var(--text); text-decoration: underline; text-decoration-color: var(--lit); text-underline-offset: 6px; }
+  @media (hover: hover) { .desktopNav a:hover { color: var(--text); text-decoration: underline; text-decoration-color: var(--lit); text-underline-offset: 6px; } }
   .navCta { display: inline-flex; }
   .mobileMenu { display: none; }
   .hero { min-height: max(640px, calc(100svh - 80px)); }
@@ -186,3 +193,12 @@
   .steps { grid-template-columns: repeat(4, 1fr); }
   .join { gap: 64px; grid-template-columns: 1fr 480px; padding: 56px; }
 }
+
+/* Phone and tablet: Sign in stays on the logo's row, beside the menu. */
+.mobileAccount { align-items: center; border: 1px solid var(--line-strong); color: var(--text); display: inline-flex; font: 700 0.875rem/1.25rem var(--font-text); min-height: var(--target-min); padding: 0 14px; text-decoration: none; white-space: nowrap; }
+@media (hover: hover) { .mobileAccount:hover { border-color: var(--lit); color: var(--lit-text); } }
+@media (max-width: 1023.98px) {
+  .headerRow { flex-wrap: wrap; gap: 8px; height: auto; justify-content: flex-start; min-height: 64px; }
+  .wordmark { margin-inline-end: auto; }
+}
+@media (min-width: 1024px) { .mobileAccount { display: none; } }

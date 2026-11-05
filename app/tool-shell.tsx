@@ -2,6 +2,7 @@ import Link from 'next/link'
 import AccountLink from './account/account-link'
 import { archivo, manrope } from './fonts'
 import { Wordmark } from './logo'
+import MobileMenu from './mobile-menu'
 import NavPending from './nav-pending'
 import styles from './tool-shell.module.css'
 
@@ -21,6 +22,11 @@ export function ToolHeader({ current }: { current?: ToolName }) {
       <Link href="/find-my-drink" aria-current={current === 'finder' ? 'page' : undefined}>Find a drink<NavPending /></Link>
     </nav>
     <AccountLink className={styles.account} />
+    <MobileMenu className={styles.menu}>
+      <Link href="/">Home<NavPending /></Link>
+      <Link href="/party-planner" aria-current={current === 'planner' ? 'page' : undefined}>Plan a party<NavPending /></Link>
+      <Link href="/find-my-drink" aria-current={current === 'finder' ? 'page' : undefined}>Find a drink<NavPending /></Link>
+    </MobileMenu>
   </header>
 }
 

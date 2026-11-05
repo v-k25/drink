@@ -62,7 +62,7 @@ async function main() {
     const unresolvedMocktails=['mm-blood-orange-mocktail','mm-fig-mocktail','mm-quick-cranberry-mocktail','mm-vodka-mocktail']
     async function layout(label) {
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label+' overflow')
-      const small=await page.locator('main button, main a, main summary').evaluateAll(nodes=>nodes.filter(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0&&r.height<43.5}).map(n=>n.textContent.trim()))
+      const small=await page.locator('main button, main a, main summary').evaluateAll(nodes=>nodes.filter(n=>{const card=getComputedStyle(n,'::after').position==='absolute'&&n.closest('article');const r=(card||n).getBoundingClientRect();return r.width>0&&r.height>0&&r.height<43.5}).map(n=>n.textContent.trim()))
       assert.deepEqual(small,[],label+' targets')
     }
     // Find a Drink (tools redesign, TR3): four questions on one page; the spirit, cocktail ideas and bottles update as you answer.
